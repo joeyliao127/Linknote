@@ -1,6 +1,6 @@
 services:
     redis:
-        container_name: redis
+        container_name: ${PROJECT_NAME}_redis
         image: redis:7.2.3-alpine
         ports:
             - "${REDIS_PORT}:${REDIS_PORT}"
@@ -9,7 +9,7 @@ services:
                 ipv4_address: ${REDIS_HOST}
 
     pg:
-        container_name: pg
+        container_name: ${PROJECT_NAME}_pg
         image: postgres:17.5-bookworm
         ports:
             - "${POSTGRES_PORT}:${POSTGRES_PORT}"

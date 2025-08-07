@@ -1,4 +1,4 @@
-package com.penguin.template.entity;
+package com.penguin.linknote.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

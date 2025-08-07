@@ -1,10 +1,8 @@
-package com.penguin.template.service;
+package com.penguin.linknote.service;
 
-import com.penguin.template.entity.Orders;
-import com.penguin.template.repo.OrderRepository;
+import com.penguin.linknote.entity.Orders;
+import com.penguin.linknote.repo.OrderRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class OrderService {

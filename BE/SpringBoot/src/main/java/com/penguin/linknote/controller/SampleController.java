@@ -1,7 +1,6 @@
-package com.penguin.template.controller;
+package com.penguin.linknote.controller;
 
-import com.penguin.template.repo.OrderRepository;
-import com.penguin.template.service.OrderService;
+import com.penguin.linknote.service.OrderService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

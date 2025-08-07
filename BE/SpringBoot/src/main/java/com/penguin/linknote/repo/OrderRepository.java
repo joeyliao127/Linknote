@@ -1,6 +1,6 @@
-package com.penguin.template.repo;
+package com.penguin.linknote.repo;
 
-import com.penguin.template.entity.Orders;
+import com.penguin.linknote.entity.Orders;
 import org.springframework.data.repository.CrudRepository;
 
 

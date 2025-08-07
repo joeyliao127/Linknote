@@ -1,10 +1,10 @@
-package com.penguin.template;
+package com.penguin.linknote;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TemplateApplicationTests {
+class LinknoteApplicationTests {
 
 	@Test
 	void contextLoads() {

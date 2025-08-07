@@ -31,11 +31,11 @@ export default defineNuxtConfig({
         plugins: [tailwindcss()],
         server: {
             // TODO: Domain 改為 project name
-            allowedHosts: ["nuxt", "template.local.com"],
+            allowedHosts: ["nuxt", "linknote.local.com"],
         },
         hmr: {
             protocol: "ws",
-            host: "template.local.com",
+            host: "linknote.local.com",
             clientPort: 443, // 如果你沒用 HTTPS 可改成 80
         },
     },
