@@ -1,17 +1,4 @@
 services:
-    pgadmin:
-        image: dpage/pgadmin4:latest
-        container_name: ${PROJECT_NAME}_pgadmin
-        restart: always
-        environment:
-            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-            PGADMIN_LISTEN_PORT: ${PGADMIN_PORT}
-        ports:
-            - "${PGADMIN_PORT}:${PGADMIN_PORT}"
-        networks:
-            project_net:
-                ipv4_address: ${PGADMIN_HOST}
     springboot:
         container_name: ${PROJECT_NAME}_springboot
         build:
