@@ -10,7 +10,7 @@ build:
 
 up:
 	@echo "🐳 Starting container..."
-	docker compose -f ../../Docker/docker-compose-app.yaml up -d springboot
+	docker-compose -f ../../Docker/docker-compose-app.yaml restart springboot
 	@echo "✅ Docker container running."
 
 re: build up

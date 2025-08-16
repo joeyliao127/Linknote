@@ -1,0 +1,1013 @@
+openapi: 3.0.3
+info:
+  title: Linknote API
+  version: 1.0.0
+  description: |
+    Linknote 筆記系統 API（設計為全域資源 ID + query 過濾）。
+    使用 JWT Bearer token 作為 Authentication。
+
+servers:
+  - url: /api
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ----- 基本模型 -----
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        username:
+          type: string
+          example: "joey"
+        email:
+          type: string
+          format: email
+          example: "joey@example.com"
+        userStatus:
+          type: string
+          example: "active"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, username, email]
+
+    Notebook:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "My Notebook"
+        description:
+          type: string
+        isActive:
+          type: boolean
+          example: true
+        ownerId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, title, ownerId]
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        notebookId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "new Note"
+        question:
+          type: string
+        content:
+          type: string
+        keypoint:
+          type: string
+        star:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, notebookId]
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "javascript"
+        userId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+      required: [title, userId]
+
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: integer
+        inviterEmail:
+          type: string
+          format: email
+        inviteeEmail:
+          type: string
+          format: email
+        notebookId:
+          type: string
+          format: uuid
+        message:
+          type: string
+        invitationStatus:
+          type: string
+          example: "pending"
+        createdAt:
+          type: string
+          format: date-time
+
+    PermissionEntry:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        roleId:
+          type: integer
+        roleTitle:
+          type: string
+        grantedAt:
+          type: string
+          format: date-time
+
+    PagedNotes:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        size:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+  parameters:
+    # 共用 query params
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+      description: page number, 1-based
+    sizeParam:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 20
+    starParam:
+      name: star
+      in: query
+      schema:
+        type: boolean
+      description: filter by starred notes
+    tagsParam:
+      name: tags
+      in: query
+      schema:
+        type: string
+      description: comma-separated tag titles or tag ids (視實作決定)
+    sortParam:
+      name: sort
+      in: query
+      schema:
+        type: string
+      description: sort field and order (e.g. createdAt_desc, createdAt_asc)
+    keywordParam:
+      name: keyword
+      in: query
+      schema:
+        type: string
+      description: keyword full-text search (title/content/question)
+
+security:
+  - BearerAuth: []
+
+paths:
+  # -------------------------
+  # User
+  # -------------------------
+  /me:
+    get:
+      summary: 取得當前使用者資訊
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 當前使用者
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 未授權
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /me/tags:
+    get:
+      summary: 取得當前使用者所有 tags
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Tag list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+  /me:
+    put:
+      summary: 更新當前使用者
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /me/disable:
+    post:
+      summary: 停用帳號
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: 成功停用（無內容）
+
+  # -------------------------
+  # Notebooks
+  # -------------------------
+  /notebooks:
+    get:
+      summary: 取得 notebooks（可加 query 過濾）
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: e.g. "collaborative" 或 "own"
+      responses:
+        '200':
+          description: notebooks list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notebook'
+    post:
+      summary: 建立 notebook
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        '201':
+          description: 建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+
+  /notebooks/{notebookId}:
+    get:
+      summary: 取得單一 notebook
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: notebook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+    put:
+      summary: 更新 notebook
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      summary: 刪除 notebook
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 刪除成功（無內容）
+
+  # -------------------------
+  # Notes (全域 resource)
+  # -------------------------
+  /notes:
+    get:
+      summary: 取得 notes（可用 notebookId, star, tags, keyword, sort 過濾）
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/starParam'
+        - $ref: '#/components/parameters/tagsParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/keywordParam'
+        - name: notebookId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: filter by notebook
+      responses:
+        '200':
+          description: 分頁的筆記列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedNotes'
+    post:
+      summary: 建立 note（若要快速新 note，帶 notebookId）
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [notebookId]
+              properties:
+                notebookId:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                question:
+                  type: string
+                content:
+                  type: string
+                keypoint:
+                  type: string
+      responses:
+        '201':
+          description: 建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+
+  /notes/{noteId}:
+    get:
+      summary: 取得單一 note
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+    put:
+      summary: 更新 note (patch-like, 可更新 title/content/keys/star)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                question: { type: string }
+                content: { type: string }
+                keypoint: { type: string }
+                star: { type: boolean }
+                notebookId:
+                  type: string
+                  format: uuid
+                  description: 可用於移動 note 到另一個 notebook
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      summary: 刪除 note
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 刪除成功（無內容）
+
+  # Note 的 tags
+  /notes/{noteId}/tags:
+    get:
+      summary: 取得 note 的 tags
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: tag list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    post:
+      summary: 新增 tag 到 note（若 tag 不存在則建立）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tagTitle:
+                  type: string
+                  example: "javascript"
+      responses:
+        '201':
+          description: 已加入或建立 tag
+    delete:
+      summary: 從 note 移除 tag（由 body 或 path 指定 tagId）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tagId]
+              properties:
+                tagId:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: 移除成功
+
+  # -------------------------
+  # Tags (user scope)
+  # -------------------------
+  /tags:
+    get:
+      summary: 取得當前使用者所有 tags (可 query noteId 過濾)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: noteId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 若給 noteId，回傳與該 note 關聯的 tags
+      responses:
+        '200':
+          description: tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    post:
+      summary: 建立 tag（user scope）
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+      responses:
+        '201':
+          description: 建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+  /tags/{tagId}:
+    put:
+      summary: 更新 tag（例如更名）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      summary: 刪除 tag（會同時解除與 notes 的關聯）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 刪除成功
+
+  # -------------------------
+  # Permissions (notebook level)
+  # -------------------------
+  /notebooks/{notebookId}/permissions:
+    get:
+      summary: 取得 notebook 的 permission list
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: permission 列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PermissionEntry'
+    post:
+      summary: 發送存取權限邀請（或直接授權，視系統流程）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inviteeEmail, roleId]
+              properties:
+                inviteeEmail:
+                  type: string
+                  format: email
+                roleId:
+                  type: integer
+                message:
+                  type: string
+      responses:
+        '201':
+          description: 已發送邀請或授權
+    delete:
+      summary: 移除某 user 的權限（或撤回）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 要移除權限的 userId
+      responses:
+        '204':
+          description: 移除成功
+
+  /notebooks/{notebookId}/permissions/{userId}:
+    put:
+      summary: 更新某 user 的 role（變更權限）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roleId]
+              properties:
+                roleId:
+                  type: integer
+      responses:
+        '200':
+          description: 更新成功
+
+  # -------------------------
+  # Collaborative notebooks (view)
+  # -------------------------
+  /collaborative_notebooks:
+    get:
+      summary: 取得所有 user 可協作的 notebooks
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: notebooks list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notebook'
+
+  /collaborative_notebooks/{notebookId}/notes:
+    get:
+      summary: 取得指定的 collaborative notebook 的 notes（等同 /notes?notebookId=xxx）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notebookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+      responses:
+        '200':
+          description: notes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedNotes'
+
+  # -------------------------
+  # Invitations
+  # -------------------------
+  /invitations:
+    get:
+      summary: 取得 invitations（可用 type=sent|received 過濾）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [sent, received, all]
+          description: '預設 all'
+      responses:
+        '200':
+          description: invitations list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+    post:
+      summary: 建立邀請（發送邀請）
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inviteeEmail, notebookId]
+              properties:
+                inviteeEmail:
+                  type: string
+                  format: email
+                notebookId:
+                  type: string
+                  format: uuid
+                message:
+                  type: string
+      responses:
+        '201':
+          description: 已發送邀請
+
+  /invitations/{invitationId}:
+    get:
+      summary: 取得單一 invitation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+    put:
+      summary: 更新 invitation 狀態（accept/reject）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [accept, reject, revoke]
+      responses:
+        '200':
+          description: 狀態更新
+    delete:
+      summary: 刪除 / 撤回 invitation（僅發起者）
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 刪除成功
+
+  # -------------------------
+  # Authentication (範例)
+  # -------------------------
+  /auth/login:
+    post:
+      summary: 使用 email/password 登入（回傳 JWT）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: 登入成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: 認證失敗
+
+  /auth/refresh:
+    post:
+      summary: refresh token（視實作）
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: 回傳新的 token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  # -------------------------
+  # Generic error response (example)
+  # -------------------------
+  /error-example:
+    get:
+      summary: error example
+      responses:
+        '400':
+          description: 範例錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+tags:
+  - name: user
+    description: User related operations
+  - name: notebooks
+    description: Notebook & collaboration
+  - name: notes
+    description: Note operations and filters
+  - name: tags
+    description: Tag management
+  - name: permissions
+    description: Notebook permissions
+  - name: invitations
+    description: Invitation workflows
+  - name: auth
+    description: Authentication
