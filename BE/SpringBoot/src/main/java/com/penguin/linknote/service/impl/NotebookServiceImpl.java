@@ -8,6 +8,7 @@ import com.penguin.linknote.repository.NotebookRepository;
 import com.penguin.linknote.service.NotebookService;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class NotebookServiceImpl implements NotebookService {
     }
 
     @Override
-    public Notebook createNotebook(NotebookCommand notebookCommand) {
+    public NotebookDTO createNotebook(NotebookCommand notebookCommand, UUID userId) {
         Notebook notebook = new Notebook();
         notebook.setId(generateUUID());
         notebook.setTitle(notebookCommand.getTitle());
@@ -59,8 +60,29 @@ public class NotebookServiceImpl implements NotebookService {
         notebook.setIsActive(true);
         notebook.setCreatedAt(Instant.now());
         notebook.setUpdatedAt(Instant.now());
-        notebook.setUserId(notebookCommand.getUserId());
-        return notebookRepository.save(notebook);
+        notebook.setUserId(userId);
+
+        return  NotebookDTO.fromEntity(notebookRepository.save(notebook));
+    }
+
+    @Override
+    public NotebookDTO updateNotebook(UUID notebookId, NotebookCommand notebookCommand) {
+        Notebook existingNotebook = notebookRepository.findById(notebookId).orElseThrow(()-> new EntityNotFoundException("Notebook not found"));
+
+        Notebook notebook = new Notebook();
+        notebook.setId(notebookId);
+        notebook.setTitle(notebookCommand.getTitle() == null ? existingNotebook.getTitle() : notebookCommand.getTitle());
+        notebook.setDescription(notebookCommand.getDescription() == null ? existingNotebook.getDescription() : notebookCommand.getDescription());
+        notebook.setIsActive(notebookCommand.getActive() == null ? existingNotebook.getIsActive() : notebookCommand.getActive());
+        notebook.setUserId(existingNotebook.getUserId());
+        notebook.setUpdatedAt(Instant.now());
+
+        return NotebookDTO.fromEntity(notebookRepository.save(notebook));
+    }
+
+    @Override
+    public void deleteNotebook(UUID notebookId) {
+        notebookRepository.deleteById(notebookId);
     }
 
     private UUID generateUUID() {

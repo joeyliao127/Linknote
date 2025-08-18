@@ -1,5 +1,6 @@
 package com.penguin.linknote.controller;
 
+import com.penguin.linknote.config.ApiResponse;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.entity.Notebook;
@@ -33,25 +34,26 @@ public class NotebookController {
         return ResponseEntity.ok(notebookDTOList);
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "test update1";
-    }
-
-    @PostMapping("/test")
-    public String test_post() {
-        return "test post";
-    }
-
     @PostMapping
-    public ResponseEntity<Notebook> post(@RequestBody @Valid NotebookCommand notebookCommand) {
-
-        // TODO: Get user id from token
-        notebookCommand.setUserId(UUID.fromString("a60b42ae-0659-4f89-aa31-0442b56642eb"));
-        Notebook notebook = notebookService.createNotebook(notebookCommand);
+    public ResponseEntity<NotebookDTO> post(@RequestBody @Valid NotebookCommand notebookCommand) {
+        UUID userId = UUID.fromString("a60b42ae-0659-4f89-aa31-0442b56642eb");
+        NotebookDTO notebook = notebookService.createNotebook(notebookCommand, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(URI.create("/api/" + this.path + "/" + notebook.getId()))
                 .body(notebook);
+    }
+
+    @PutMapping("/{notebookId}")
+    public ResponseEntity<NotebookDTO> update(@PathVariable UUID notebookId, @RequestBody @Valid NotebookCommand notebookCommand) {
+        NotebookDTO notebookDTO = notebookService.updateNotebook(notebookId, notebookCommand);
+
+        return ResponseEntity.ok(notebookDTO);
+    }
+
+    @DeleteMapping("/{notebookId}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable UUID notebookId) {
+        notebookService.deleteNotebook(notebookId);
+        return ResponseEntity.ok(new ApiResponse(true, "Delete notebook successfully!"));
     }
 }

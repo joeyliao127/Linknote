@@ -2,7 +2,6 @@ package com.penguin.linknote.service;
 
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
-import com.penguin.linknote.entity.Notebook;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,5 +11,9 @@ public interface NotebookService {
 
     NotebookDTO getNotebookById(UUID notebookId);
 
-    Notebook createNotebook(NotebookCommand notebookCommand);
+    NotebookDTO createNotebook(NotebookCommand notebookCommand, UUID userId);
+
+    NotebookDTO updateNotebook(UUID notebookId, NotebookCommand notebookCommand);
+
+    void deleteNotebook(UUID notebookId);
 }
