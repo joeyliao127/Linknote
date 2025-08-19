@@ -1,4 +1,4 @@
-package com.penguin.linknote.controller;
+package com.penguin.linknote.controller.user;
 
 import com.penguin.linknote.domain.user.UserCommand;
 import com.penguin.linknote.domain.user.UserDTO;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")

@@ -1,4 +1,4 @@
-package com.penguin.linknote.controller;
+package com.penguin.linknote.controller.notebook;
 
 import com.penguin.linknote.common.ApiResponse;
 import com.penguin.linknote.domain.notebook.NotebookCommand;

@@ -1,5 +1,6 @@
 package com.penguin.linknote.service.impl;
 
+import com.penguin.linknote.common.exception.user.EmailAlreadyExistException;
 import com.penguin.linknote.domain.user.UserCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.entity.User;
@@ -38,7 +39,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserCommand userCommand) {
-        // TODO: 驗證 email 是否已經存在 & hash password with salt
+        User existUser = userRepository.findByEmail(userCommand.getEmail());
+
+        if(existUser != null) {
+            throw new EmailAlreadyExistException("Email already exist");
+        }
+
+        // TODO: hash password with salt
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(userCommand.getEmail());
