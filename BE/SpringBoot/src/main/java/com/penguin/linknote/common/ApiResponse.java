@@ -1,7 +1,8 @@
-package com.penguin.linknote.config;
+package com.penguin.linknote.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
 
 @Data
 @AllArgsConstructor

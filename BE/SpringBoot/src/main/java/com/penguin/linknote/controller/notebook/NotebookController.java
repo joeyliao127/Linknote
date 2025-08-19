@@ -1,9 +1,8 @@
 package com.penguin.linknote.controller;
 
-import com.penguin.linknote.config.ApiResponse;
+import com.penguin.linknote.common.ApiResponse;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
-import com.penguin.linknote.entity.Notebook;
 import com.penguin.linknote.service.NotebookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
