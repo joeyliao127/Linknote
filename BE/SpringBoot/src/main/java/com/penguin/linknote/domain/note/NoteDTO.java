@@ -1,4 +1,45 @@
 package com.penguin.linknote.domain.note;
 
+import com.penguin.linknote.domain.notebook.NotebookDTO;
+import com.penguin.linknote.entity.Note;
+import com.penguin.linknote.entity.Notebook;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Data
+@Builder
 public class NoteDTO {
+    private UUID id;
+    private UUID notebookId;
+    private String title;
+    private String content;
+    private String question;
+    private String keypoint;
+    private Boolean star;
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    public static NoteDTO fromEntity(Note note) {
+        return NoteDTO.builder()
+                .id(note.getId())
+                .title(note.getTitle())
+                .question(note.getQuestion())
+                .content(note.getContent())
+                .keypoint(note.getKeypoint())
+                .star(note.getStar())
+                .createdAt(note.getCreatedAt())
+                .updatedAt(note.getUpdatedAt())
+                .notebookId(note.getNotebookId())
+                .build();
+    }
+
+    public static List<NoteDTO> fromEntityList(List<Note> noteList) {
+        return noteList.stream().map(NoteDTO::fromEntity).toList();
+    }
 }

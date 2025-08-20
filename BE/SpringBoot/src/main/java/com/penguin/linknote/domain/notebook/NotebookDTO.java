@@ -29,7 +29,7 @@ public class NotebookDTO {
                 .build();
     }
 
-    public static List<NotebookDTO> fromEntityList(List<Notebook> notebooks) {
-        return notebooks.stream().map(NotebookDTO::fromEntity).toList();
+    public static List<NotebookDTO> fromEntityList(List<Notebook> notebookList) {
+        return notebookList.stream().map(NotebookDTO::fromEntity).toList();
     }
 }
