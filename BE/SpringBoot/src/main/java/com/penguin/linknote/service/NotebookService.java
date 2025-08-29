@@ -17,3 +17,7 @@ public interface NotebookService {
 
     void deleteNotebook(UUID notebookId);
 }
+
+
+
+

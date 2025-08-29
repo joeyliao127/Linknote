@@ -1,8 +1,11 @@
 package com.penguin.linknote.controller.notebook;
 
 import com.penguin.linknote.common.ApiResponse;
+import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
+import com.penguin.linknote.entity.Note;
+import com.penguin.linknote.service.NoteService;
 import com.penguin.linknote.service.NotebookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +22,13 @@ import java.util.UUID;
 public class NotebookController {
 
     private final NotebookService notebookService;
-    private String path;
+    private final NoteService noteService;
+    private final String path;
 
     @Autowired
-    public NotebookController(NotebookService notebookService) {
+    public NotebookController(NotebookService notebookService, NoteService noteService) {
         this.notebookService = notebookService;
+        this.noteService = noteService;
         this.path = "/notebooks";
     }
 
@@ -33,8 +38,14 @@ public class NotebookController {
         return ResponseEntity.ok(notebookDTOList);
     }
 
+    @GetMapping("/{notebookId}/notes")
+    public ResponseEntity<List<NoteDTO>> list(@PathVariable UUID notebookId) {
+        List<NoteDTO> noteList =  noteService.indexNotesByNotebookId(notebookId);
+        return ResponseEntity.ok(noteList);
+    }
+
     @PostMapping
-    public ResponseEntity<NotebookDTO> post(@RequestBody @Valid NotebookCommand notebookCommand) {
+    public ResponseEntity<NotebookDTO> create(@RequestBody @Valid NotebookCommand notebookCommand) {
         UUID userId = UUID.fromString("a60b42ae-0659-4f89-aa31-0442b56642eb");
         NotebookDTO notebook = notebookService.createNotebook(notebookCommand, userId);
 
