@@ -140,24 +140,24 @@ CREATE TABLE invitation_status_codes (
 INSERT INTO invitation_status_codes (title) VALUES ('pending'), ('accepted');
 
 CREATE TABLE invitations (
-  id                    BIGINT        NOT NULL GENERATED ALWAYS AS IDENTITY,
-  inviter_email         VARCHAR(320)  NOT NULL,
-  invitee_email         VARCHAR(320)  NOT NULL,
+  id                    UUID  NOT NULL,
+  inviter_id            UUID  NOT NULL,
+  invitee_id            UUID  NOT NULL,
   message               TEXT,
   invitation_status_id  INT           NOT NULL,
   created_at            TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at            TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   notebook_id           UUID          NOT NULL,
   CONSTRAINT fk_invitations_notebook_id    FOREIGN KEY (notebook_id)            REFERENCES notebooks (id)               ON DELETE CASCADE,
-  CONSTRAINT fk_invitations_inviter_email  FOREIGN KEY (inviter_email)          REFERENCES users (email)                ON DELETE CASCADE,
-  CONSTRAINT fk_invitations_invitee_email  FOREIGN KEY (invitee_email)          REFERENCES users (email)                ON DELETE CASCADE,
+  CONSTRAINT fk_invitations_inviter_id  FOREIGN KEY (inviter_id)          REFERENCES users (id)                ON DELETE CASCADE,
+  CONSTRAINT fk_invitations_invitee_id  FOREIGN KEY (invitee_id)          REFERENCES users (id)                ON DELETE CASCADE,
   CONSTRAINT fk_invitations_status_code    FOREIGN KEY (invitation_status_id)   REFERENCES invitation_status_codes (id) ON DELETE RESTRICT,
   PRIMARY KEY (id)
 );
 
 CREATE INDEX idx_invitations_notebook_id   ON invitations (notebook_id);
-CREATE INDEX idx_invitations_inviter_email ON invitations (inviter_email);
-CREATE INDEX idx_invitations_invitee_email ON invitations (invitee_email);
+CREATE INDEX idx_invitations_inviter_id ON invitations (inviter_id);
+CREATE INDEX idx_invitations_invitee_id ON invitations (invitee_id);
 
 CREATE TABLE notebook_user_roles (
   id            BIGINT      GENERATED ALWAYS AS IDENTITY,
