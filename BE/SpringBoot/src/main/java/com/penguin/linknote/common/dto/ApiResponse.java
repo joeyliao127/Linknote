@@ -1,4 +1,4 @@
-package com.penguin.linknote.common;
+package com.penguin.linknote.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
