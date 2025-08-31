@@ -1,6 +1,6 @@
 package com.penguin.linknote.common.exception.validation;
 
-import com.penguin.linknote.common.ApiResponse;
+import com.penguin.linknote.common.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

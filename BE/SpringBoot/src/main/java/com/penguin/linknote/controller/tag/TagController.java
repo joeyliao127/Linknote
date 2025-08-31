@@ -1,6 +1,6 @@
 package com.penguin.linknote.controller.tag;
 
-import com.penguin.linknote.common.ApiResponse;
+import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.domain.tag.TagCommand;
 import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.service.TagService;
@@ -27,8 +27,8 @@ public class TagController {
 
     @GetMapping
     public ResponseEntity<List<TagDTO>> index(@RequestParam UUID noteId) {
-        List<TagDTO> tags = tagService.indexTags(userId, noteId);
-        return ResponseEntity.ok(tags);
+        List<TagDTO> tagDTOList = tagService.indexTags(userId, noteId);
+        return ResponseEntity.ok(tagDTOList);
     }
 
     @PostMapping

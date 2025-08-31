@@ -17,13 +17,11 @@ public class Invitation {
     @Id
     private UUID id;
 
-    //TODO: invitation email -> UserId
+    @Column(name = "inviter_id")
+    private UUID inviterId;
 
-    @Column(name = "inviter_email")
-    private String inviterEmail;
-
-    @Column(name = "invitee_email")
-    private String inviteeEmail;
+    @Column(name = "invitee_id")
+    private UUID inviteeId;
 
     @Column(name = "message")
     private String message;

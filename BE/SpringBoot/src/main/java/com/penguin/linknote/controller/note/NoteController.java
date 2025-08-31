@@ -1,6 +1,6 @@
 package com.penguin.linknote.controller.note;
 
-import com.penguin.linknote.common.ApiResponse;
+import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.domain.note.NoteCommand;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.service.NoteService;

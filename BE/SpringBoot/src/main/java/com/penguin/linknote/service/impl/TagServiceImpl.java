@@ -25,9 +25,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDTO> indexTags(UUID userId, UUID noteId) {
-        //TODO: 做分頁 ＆ 查詢 note_tags 表，問 AI 如何使用
-        List<Tag> tags = tagRepository.findByUserId(noteId);
-        return TagDTO.fromEntityList(tags);
+        List<Tag> tagList = tagRepository.findByUserId(noteId);
+        return TagDTO.fromEntityList(tagList);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDTO updateTag(UUID tagId, TagCommand tagCommand) {
-        Tag existingTag = tagRepository.findById(tagId).orElseThrow(()-> new EntityNotFoundException("Tag Not found. TagId:" + tagId));
+        Tag existingTag = tagRepository.findById(tagId).orElseThrow(() -> new EntityNotFoundException("Tag Not found. TagId:" + tagId));
 
         Tag tag = new Tag();
         tag.setId(existingTag.getId());

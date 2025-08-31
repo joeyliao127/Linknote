@@ -1,11 +1,15 @@
 package com.penguin.linknote.service.impl;
 
+import com.penguin.linknote.common.command.PageCommand;
+import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.common.service.PaginationService;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.entity.Notebook;
 import com.penguin.linknote.entity.QNotebook;
 import com.penguin.linknote.repository.NotebookRepository;
 import com.penguin.linknote.service.NotebookService;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,28 +25,30 @@ public class NotebookServiceImpl implements NotebookService {
 
     private final NotebookRepository notebookRepository;
     private final JPAQueryFactory jpaQueryFactory;
+    private final PaginationService paginationService;
 
     @Autowired
-    public NotebookServiceImpl (NotebookRepository notebookRepository, JPAQueryFactory jpaQueryFactory) {
+    public NotebookServiceImpl(NotebookRepository notebookRepository, JPAQueryFactory jpaQueryFactory, PaginationService paginationService) {
         this.notebookRepository = notebookRepository;
         this.jpaQueryFactory = jpaQueryFactory;
+        this.paginationService = paginationService;
     }
 
     @Override
-    public List<NotebookDTO> indexNotebooks(UUID userId, String title, Boolean active) {
+    public PageResponse<NotebookDTO> indexNotebooks(UUID userId, String title, Boolean active, PageCommand pageCommand) {
         QNotebook qNotebook = QNotebook.notebook;
 
-        JPAQuery<Notebook> notebookJPAQuery = jpaQueryFactory.selectFrom(qNotebook).where(
-                userId != null ? qNotebook.userId.eq(userId) : null,
-                title != null ? qNotebook.title.eq(title) : null,
-                active != null ? qNotebook.isActive.eq(active) : null
-        );
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        List<Notebook> notebooks = notebookJPAQuery.fetch();
+        if(userId != null) booleanBuilder.and(qNotebook.userId.eq(userId));
+        if(title != null) booleanBuilder.and(qNotebook.title.eq(title));
+        if(active != null) booleanBuilder.and(qNotebook.isActive.eq(active));
 
-        notebookRepository.findAll();
+        JPAQuery<Notebook> notebookJPAQuery = jpaQueryFactory
+                .selectFrom(qNotebook)
+                .where(booleanBuilder);
 
-        return NotebookDTO.fromEntityList(notebooks);
+        return paginationService.applyPagination(notebookJPAQuery, pageCommand, NotebookDTO::fromEntity);
     }
 
 
@@ -54,7 +60,7 @@ public class NotebookServiceImpl implements NotebookService {
     @Override
     public NotebookDTO createNotebook(NotebookCommand notebookCommand, UUID userId) {
         Notebook notebook = new Notebook();
-        notebook.setId(generateUUID());
+        notebook.setId(UUID.randomUUID());
         notebook.setTitle(notebookCommand.getTitle());
         notebook.setDescription(notebookCommand.getDescription());
         notebook.setIsActive(true);
@@ -62,12 +68,12 @@ public class NotebookServiceImpl implements NotebookService {
         notebook.setUpdatedAt(Instant.now());
         notebook.setUserId(userId);
 
-        return  NotebookDTO.fromEntity(notebookRepository.save(notebook));
+        return NotebookDTO.fromEntity(notebookRepository.save(notebook));
     }
 
     @Override
     public NotebookDTO updateNotebook(UUID notebookId, NotebookCommand notebookCommand) {
-        Notebook existingNotebook = notebookRepository.findById(notebookId).orElseThrow(()-> new EntityNotFoundException("Notebook not found"));
+        Notebook existingNotebook = notebookRepository.findById(notebookId).orElseThrow(() -> new EntityNotFoundException("Notebook not found"));
 
         Notebook notebook = new Notebook();
         notebook.setId(notebookId);
@@ -83,9 +89,5 @@ public class NotebookServiceImpl implements NotebookService {
     @Override
     public void deleteNotebook(UUID notebookId) {
         notebookRepository.deleteById(notebookId);
-    }
-
-    private UUID generateUUID() {
-        return UUID.randomUUID();
     }
 }

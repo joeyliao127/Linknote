@@ -5,19 +5,21 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Builder
 @Data
 public class InvitationDTO {
-    private String inviteeEmail;
-    private String inviterEmail;
+    private UUID inviteeId;
+    private UUID inviterId;
     private String message;
     private String status;
 
     public static InvitationDTO fromEntity(Invitation invitation) {
         return InvitationDTO.builder()
-                .inviteeEmail(invitation.getInviteeEmail())
-                .inviterEmail(invitation.getInviterEmail())
+                .inviteeId(invitation.getInviteeId())
+                .inviterId(invitation.getInviterId())
+                .inviterId(invitation.getInviterId())
                 .message(invitation.getMessage())
                 .build();
     }

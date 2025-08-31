@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
@@ -66,10 +66,6 @@ public class UserServiceImpl implements UserService {
         userDTO.setEnabled(newUser.getUserStatusId() == 1);
 
         return userDTO;
-    }
-
-    private UUID generateUUID() {
-        return UUID.randomUUID();
     }
 
     @Override

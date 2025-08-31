@@ -1,6 +1,6 @@
 package com.penguin.linknote.common.exception.user;
 
-import com.penguin.linknote.common.ApiResponse;
+import com.penguin.linknote.common.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
