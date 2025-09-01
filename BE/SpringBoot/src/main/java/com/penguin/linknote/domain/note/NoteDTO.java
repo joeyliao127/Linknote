@@ -1,16 +1,12 @@
 package com.penguin.linknote.domain.note;
 
-import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.entity.Note;
-import com.penguin.linknote.entity.Notebook;
-import com.querydsl.core.types.dsl.NumberTemplate;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Data
 @Builder

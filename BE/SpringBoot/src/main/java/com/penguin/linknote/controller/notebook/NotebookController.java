@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -45,8 +44,8 @@ public class NotebookController {
     }
 
     @GetMapping("/{notebookId}/notes")
-    public ResponseEntity<List<NoteDTO>> list(@PathVariable UUID notebookId) {
-        List<NoteDTO> noteList = noteService.indexNotesByNotebookId(notebookId);
+    public ResponseEntity<PageResponse<NoteDTO>> getNotes(@PathVariable UUID notebookId, PageCommand pageCommand) {
+        PageResponse<NoteDTO> noteList = noteService.indexNotesByNotebookId(notebookId, pageCommand);
         return ResponseEntity.ok(noteList);
     }
 

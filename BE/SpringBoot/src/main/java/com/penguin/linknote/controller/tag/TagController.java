@@ -1,6 +1,8 @@
 package com.penguin.linknote.controller.tag;
 
+import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
+import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.tag.TagCommand;
 import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.service.TagService;
@@ -8,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,8 +27,8 @@ public class TagController {
 
 
     @GetMapping
-    public ResponseEntity<List<TagDTO>> index(@RequestParam UUID noteId) {
-        List<TagDTO> tagDTOList = tagService.indexTags(userId, noteId);
+    public ResponseEntity<PageResponse<TagDTO>> index(@RequestParam UUID noteId, PageCommand pageCommand) {
+        PageResponse<TagDTO> tagDTOList = tagService.indexTags(userId, noteId, pageCommand);
         return ResponseEntity.ok(tagDTOList);
     }
 

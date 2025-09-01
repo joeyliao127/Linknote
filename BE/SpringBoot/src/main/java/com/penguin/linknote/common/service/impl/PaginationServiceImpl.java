@@ -31,7 +31,7 @@ public class PaginationServiceImpl implements PaginationService {
         Integer totalPage = calculateTotalPage(total, normalizeCommand.getPageSize());
 
         List<T> resultList = jpaQuery.limit(normalizeCommand.getPageSize())
-                .offset((long) (normalizeCommand.getPage() - 1) * normalizeCommand.getPageSize())
+                .offset((long) (normalizeCommand.getPage()) * normalizeCommand.getPageSize())
                 .fetch();
 
         PageResponse<R> pageResponse = new PageResponse<R>();
@@ -47,10 +47,12 @@ public class PaginationServiceImpl implements PaginationService {
         return (int) Math.ceil((double) total / pageSize);
     }
 
-    private PageCommand normalizePageCommand(PageCommand pageCommand) {
+    @Override
+    public PageCommand normalizePageCommand(PageCommand pageCommand) {
         if (pageCommand == null) pageCommand = new PageCommand();
 
-        if (pageCommand.getPage() == null) pageCommand.setPage(1);
+        if (pageCommand.getPage() == null || pageCommand.getPage() == 0) pageCommand.setPage(0);
+        else pageCommand.setPage(pageCommand.getPage() - 1);
 
         if (pageCommand.getPageSize() == null) pageCommand.setPageSize(defaultPageSize);
         else if (pageCommand.getPageSize() <= 0) pageCommand.setPageSize(defaultPageSize);

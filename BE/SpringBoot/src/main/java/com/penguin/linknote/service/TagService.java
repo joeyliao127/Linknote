@@ -1,14 +1,15 @@
 package com.penguin.linknote.service;
 
+import com.penguin.linknote.common.command.PageCommand;
+import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.tag.TagCommand;
 import com.penguin.linknote.domain.tag.TagDTO;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface TagService {
 
-    List<TagDTO> indexTags(UUID userId, UUID noteId);
+    PageResponse<TagDTO> indexTags(UUID userId, UUID noteId, PageCommand pageCommand);
     TagDTO createTag(UUID userId, TagCommand tagCommand);
     TagDTO updateTag(UUID tagId, TagCommand tagCommand);
     void deleteTag(UUID tagId);

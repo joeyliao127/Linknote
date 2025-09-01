@@ -1,5 +1,8 @@
 package com.penguin.linknote.service.impl;
 
+import com.penguin.linknote.common.command.PageCommand;
+import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.common.service.PaginationService;
 import com.penguin.linknote.domain.tag.TagCommand;
 import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.entity.Tag;
@@ -7,26 +10,33 @@ import com.penguin.linknote.repository.TagRepository;
 import com.penguin.linknote.service.TagService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
+    private final PaginationService paginationService;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository) {
+    public TagServiceImpl(TagRepository tagRepository, PaginationService paginationService) {
         this.tagRepository = tagRepository;
+        this.paginationService = paginationService;
     }
 
     @Override
-    public List<TagDTO> indexTags(UUID userId, UUID noteId) {
-        List<Tag> tagList = tagRepository.findByUserId(noteId);
-        return TagDTO.fromEntityList(tagList);
+    public PageResponse<TagDTO> indexTags(UUID userId, UUID noteId, PageCommand pageCommand) {
+        PageCommand normalPageCommand = paginationService.normalizePageCommand(pageCommand);
+        Pageable pageable = PageRequest.of(normalPageCommand.getPage(), normalPageCommand.getPageSize());
+        Page<Tag> tagList = tagRepository.findByUserId(noteId, pageable);
+
+        return  PageResponse.fromPage(tagList, TagDTO::fromEntity);
     }
 
     @Override

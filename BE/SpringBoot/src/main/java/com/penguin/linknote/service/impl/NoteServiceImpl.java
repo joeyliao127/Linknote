@@ -1,31 +1,44 @@
 package com.penguin.linknote.service.impl;
 
+import com.penguin.linknote.common.command.PageCommand;
+import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.exception.note.NoteNotFoundException;
+import com.penguin.linknote.common.service.PaginationService;
 import com.penguin.linknote.domain.note.NoteCommand;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.entity.Note;
 import com.penguin.linknote.repository.NoteRepository;
 import com.penguin.linknote.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteServiceImpl  implements NoteService {
 
     private final NoteRepository noteRepository;
+    private final PaginationService paginationService;
 
     @Autowired
-    public NoteServiceImpl(NoteRepository noteRepository) {
+    public NoteServiceImpl(NoteRepository noteRepository, PaginationService paginationService) {
         this.noteRepository = noteRepository;
+        this.paginationService = paginationService;
     }
 
     @Override
-    public List<NoteDTO> indexNotesByNotebookId(UUID notebookId) {
-        return noteRepository.findByNotebookId(notebookId);
+    public PageResponse<NoteDTO> indexNotesByNotebookId(UUID notebookId, PageCommand pageCommand) {
+        PageCommand normalizeCommand = paginationService.normalizePageCommand(pageCommand);
+        Pageable pageable = PageRequest.of(normalizeCommand.getPage(), normalizeCommand.getPageSize(), Sort.by("createdAt").descending());
+        Page<Note> notePage = noteRepository.findByNotebookId(notebookId, pageable);
+        return PageResponse.fromPage(notePage, NoteDTO::fromEntity);
     }
 
     @Override
