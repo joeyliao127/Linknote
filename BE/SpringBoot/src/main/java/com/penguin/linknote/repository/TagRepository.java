@@ -11,5 +11,6 @@ import java.util.UUID;
 
 public interface TagRepository extends JpaRepository<Tag, UUID>, QuerydslPredicateExecutor<Tag> {
     Page<Tag> findByUserId(UUID userId, Pageable pageable);
+    List<Tag> findByIdIn(List<UUID> ids);
 
 }

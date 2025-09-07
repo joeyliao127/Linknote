@@ -4,6 +4,7 @@ import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.note.NoteDTO;
+import com.penguin.linknote.domain.note.NoteFilter;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.service.NoteService;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -19,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/notebooks")
+@Validated
 public class NotebookController {
 
     private final NotebookService notebookService;
@@ -38,14 +41,16 @@ public class NotebookController {
             @RequestParam(required = false) Boolean active,
             PageCommand pageCommand)
     {
+        UUID userId = UUID.fromString("abf76d59-c7d5-42b4-ab9d-b542993f7496");
         // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
-        PageResponse<NotebookDTO> notebookDTOList = notebookService.indexNotebooks(null, title, active, pageCommand);
+        PageResponse<NotebookDTO> notebookDTOList = notebookService.indexNotebooks(userId, title, active, pageCommand);
         return ResponseEntity.ok(notebookDTOList);
     }
 
     @GetMapping("/{notebookId}/notes")
-    public ResponseEntity<PageResponse<NoteDTO>> getNotes(@PathVariable UUID notebookId, PageCommand pageCommand) {
-        PageResponse<NoteDTO> noteList = noteService.indexNotesByNotebookId(notebookId, pageCommand);
+    public ResponseEntity<PageResponse<NoteDTO>> getNotes(@ModelAttribute NoteFilter  noteFilter, @PathVariable UUID notebookId, PageCommand pageCommand) {
+        noteFilter.setNotebookId(notebookId);
+        PageResponse<NoteDTO> noteList = noteService.indexNotes(noteFilter, pageCommand);
         return ResponseEntity.ok(noteList);
     }
 

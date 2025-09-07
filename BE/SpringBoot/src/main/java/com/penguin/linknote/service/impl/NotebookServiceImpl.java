@@ -7,7 +7,9 @@ import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.entity.Notebook;
 import com.penguin.linknote.entity.QNotebook;
+import com.penguin.linknote.entity.User;
 import com.penguin.linknote.repository.NotebookRepository;
+import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.NotebookService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -23,12 +25,19 @@ import java.util.UUID;
 public class NotebookServiceImpl implements NotebookService {
 
     private final NotebookRepository notebookRepository;
+    private final UserRepository userRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final PaginationService paginationService;
 
     @Autowired
-    public NotebookServiceImpl(NotebookRepository notebookRepository, JPAQueryFactory jpaQueryFactory, PaginationService paginationService) {
+    public NotebookServiceImpl(
+            NotebookRepository notebookRepository,
+            UserRepository userRepository,
+            JPAQueryFactory jpaQueryFactory,
+            PaginationService paginationService)
+    {
         this.notebookRepository = notebookRepository;
+        this.userRepository = userRepository;
         this.jpaQueryFactory = jpaQueryFactory;
         this.paginationService = paginationService;
     }
@@ -39,7 +48,7 @@ public class NotebookServiceImpl implements NotebookService {
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if(userId != null) booleanBuilder.and(qNotebook.userId.eq(userId));
+        if(userId != null) booleanBuilder.and(qNotebook.user.id.eq(userId));
         if(title != null) booleanBuilder.and(qNotebook.title.eq(title));
         if(active != null) booleanBuilder.and(qNotebook.isActive.eq(active));
 
@@ -58,14 +67,15 @@ public class NotebookServiceImpl implements NotebookService {
 
     @Override
     public NotebookDTO createNotebook(NotebookCommand notebookCommand, UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         Notebook notebook = new Notebook();
         notebook.setId(UUID.randomUUID());
         notebook.setTitle(notebookCommand.getTitle());
         notebook.setDescription(notebookCommand.getDescription());
         notebook.setIsActive(true);
+        notebook.setUser(user);
         notebook.setCreatedAt(Instant.now());
         notebook.setUpdatedAt(Instant.now());
-        notebook.setUserId(userId);
 
         return NotebookDTO.fromEntity(notebookRepository.save(notebook));
     }
@@ -73,16 +83,13 @@ public class NotebookServiceImpl implements NotebookService {
     @Override
     public NotebookDTO updateNotebook(UUID notebookId, NotebookCommand notebookCommand) {
         Notebook existingNotebook = notebookRepository.findById(notebookId).orElseThrow(() -> new EntityNotFoundException("Notebook not found"));
+        existingNotebook.setId(notebookId);
+        existingNotebook.setTitle(notebookCommand.getTitle() == null ? existingNotebook.getTitle() : notebookCommand.getTitle());
+        existingNotebook.setDescription(notebookCommand.getDescription() == null ? existingNotebook.getDescription() : notebookCommand.getDescription());
+        existingNotebook.setIsActive(notebookCommand.getActive() == null ? existingNotebook.getIsActive() : notebookCommand.getActive());
+        existingNotebook.setUpdatedAt(Instant.now());
 
-        Notebook notebook = new Notebook();
-        notebook.setId(notebookId);
-        notebook.setTitle(notebookCommand.getTitle() == null ? existingNotebook.getTitle() : notebookCommand.getTitle());
-        notebook.setDescription(notebookCommand.getDescription() == null ? existingNotebook.getDescription() : notebookCommand.getDescription());
-        notebook.setIsActive(notebookCommand.getActive() == null ? existingNotebook.getIsActive() : notebookCommand.getActive());
-        notebook.setUserId(existingNotebook.getUserId());
-        notebook.setUpdatedAt(Instant.now());
-
-        return NotebookDTO.fromEntity(notebookRepository.save(notebook));
+        return NotebookDTO.fromEntity(notebookRepository.save(existingNotebook));
     }
 
     @Override

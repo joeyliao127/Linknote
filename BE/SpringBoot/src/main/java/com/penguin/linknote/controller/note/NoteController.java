@@ -3,6 +3,7 @@ package com.penguin.linknote.controller.note;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.domain.note.NoteCommand;
 import com.penguin.linknote.domain.note.NoteDTO;
+import com.penguin.linknote.domain.note.NoteTagCommand;
 import com.penguin.linknote.service.NoteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,12 @@ public class NoteController {
     public ResponseEntity<ApiResponse> delete(@PathVariable UUID noteId) {
         noteService.deleteNote(noteId);
         return ResponseEntity.ok(new ApiResponse(true, "delete note successfully"));
+    }
+
+    @PutMapping("/{noteId}/tags")
+    public ResponseEntity<ApiResponse> addTag(@PathVariable UUID noteId, @RequestBody @Valid NoteTagCommand command) {
+        noteService.addTagToNote(noteId, command.getTagIdList().stream().map(UUID::fromString).toList());
+        return ResponseEntity.ok(new ApiResponse(true, "Add tag successfully"));
     }
 
 }

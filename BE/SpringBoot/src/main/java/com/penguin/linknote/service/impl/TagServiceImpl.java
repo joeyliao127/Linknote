@@ -56,13 +56,12 @@ public class TagServiceImpl implements TagService {
     public TagDTO updateTag(UUID tagId, TagCommand tagCommand) {
         Tag existingTag = tagRepository.findById(tagId).orElseThrow(() -> new EntityNotFoundException("Tag Not found. TagId:" + tagId));
 
-        Tag tag = new Tag();
-        tag.setId(existingTag.getId());
-        tag.setUserId(existingTag.getUserId());
-        tag.setTitle(tagCommand.getTitle() == null ? existingTag.getTitle() : tagCommand.getTitle());
-        tag.setCreatedAt(existingTag.getCreatedAt());
-        tag.setUpdatedAt(Instant.now());
-        return TagDTO.fromEntity(tagRepository.save(tag));
+        existingTag.setId(existingTag.getId());
+        existingTag.setUserId(existingTag.getUserId());
+        existingTag.setTitle(tagCommand.getTitle() == null ? existingTag.getTitle() : tagCommand.getTitle());
+        existingTag.setCreatedAt(existingTag.getCreatedAt());
+        existingTag.setUpdatedAt(Instant.now());
+        return TagDTO.fromEntity(tagRepository.save(existingTag));
     }
 
     @Override

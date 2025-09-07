@@ -1,5 +1,6 @@
 package com.penguin.linknote.domain.note;
 
+import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.entity.Note;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class NoteDTO {
     private Boolean star;
     private Instant createdAt;
     private Instant updatedAt;
+    private List<TagDTO> tags;
 
     public static NoteDTO fromEntity(Note note) {
         return NoteDTO.builder()

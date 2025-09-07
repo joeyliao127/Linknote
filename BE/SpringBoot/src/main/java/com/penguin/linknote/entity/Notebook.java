@@ -1,10 +1,7 @@
 package com.penguin.linknote.entity;
 
 import com.penguin.linknote.domain.notebook.NotebookDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.Instant;
@@ -27,14 +24,19 @@ public class Notebook {
     @Column(name="is_active")
     private Boolean isActive;
 
-    @Column(name="user_id")
-    private UUID userId;
-
     @Column(name="created_at")
     private Instant createdAt;
 
     @Column(name="updated_at")
     private Instant updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public UUID getUserId() {
+        return user.getId();
+    }
 
     public Notebook() {
         this.id = UUID.randomUUID();
