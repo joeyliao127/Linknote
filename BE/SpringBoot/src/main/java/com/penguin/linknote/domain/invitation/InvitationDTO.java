@@ -10,16 +10,18 @@ import java.util.UUID;
 @Builder
 @Data
 public class InvitationDTO {
-    private UUID inviteeId;
-    private UUID inviterId;
+    private UUID id;
+    private String inviteeName;
+    private String inviteeEmail;
     private String message;
     private String status;
 
     public static InvitationDTO fromEntity(Invitation invitation) {
         return InvitationDTO.builder()
-                .inviteeId(invitation.getInviteeId())
-                .inviterId(invitation.getInviterId())
-                .inviterId(invitation.getInviterId())
+                .id(invitation.getId())
+                .inviteeEmail(invitation.getInviteeEmail())
+                .inviteeName(invitation.getInviteeName())
+                .status(invitation.getStatusTitle())
                 .message(invitation.getMessage())
                 .build();
     }

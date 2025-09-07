@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,11 +52,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserCommand userCommand) {
-        User existUser = userRepository.findByEmail(userCommand.getEmail());
+        Optional<User> existUser = userRepository.findByEmail(userCommand.getEmail());
 
-        if(existUser != null) {
-            throw new EmailAlreadyExistException("Email already exist");
-        }
+        if(existUser.isEmpty()) throw new EmailAlreadyExistException("Email already exist");
 
         // TODO: hash password with salt
         User user = new User();

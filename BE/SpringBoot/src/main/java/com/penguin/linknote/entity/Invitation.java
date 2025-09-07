@@ -1,9 +1,6 @@
 package com.penguin.linknote.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.Instant;
@@ -20,14 +17,16 @@ public class Invitation {
     @Column(name = "inviter_id")
     private UUID inviterId;
 
-    @Column(name = "invitee_id")
-    private UUID inviteeId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "invitee_id")
+    private User invitee;
 
     @Column(name = "message")
     private String message;
 
-    @Column(name = "invitation_status_id")
-    private Integer invitationStatusCode;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "invitation_status_id")
+    private InvitationStatusCode invitationStatusCode;
 
     @Column(name = "created_at")
     private Instant createdAt;
@@ -37,4 +36,16 @@ public class Invitation {
 
     @Column(name = "notebook_id")
     private UUID notebookId;
+
+    public String getStatusTitle() {
+        return invitationStatusCode.getTitle();
+    }
+
+    public String getInviteeName() {
+        return invitee.getUsername();
+    }
+
+    public String getInviteeEmail() {
+        return invitee.getEmail();
+    }
 }

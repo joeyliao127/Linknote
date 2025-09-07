@@ -1,6 +1,8 @@
 # Architecture & Convention 
 採用 MVC 架構，Model 使用 JPA + DSL 進行查詢。
 
+---
+
 ## Controller 
 - 驗證前端參數
 - GET Request 若帶有三個以上的 Query String，使用 @ModelAttribute 接收 Query String
@@ -8,6 +10,16 @@
 
 ### API Response
 - Error 統一交由 Exception Handler 處理，並統一回覆 `ApiResponse`。
+
+---
+
+## Service
+- Domain 相關 service，允許 DI 表中 FK 參考的 Repository，若沒有直接關係又得使用，DI 相關的 Service 在進行調用。
+
+example
+- 由於 notebooks table 有 userId 作為 FK，因此 NotebookService 允許 DB UserRepository
+
+---
 
 ## Model
 查詢方式選擇
