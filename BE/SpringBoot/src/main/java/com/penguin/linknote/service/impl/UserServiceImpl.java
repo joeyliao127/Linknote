@@ -1,6 +1,7 @@
 package com.penguin.linknote.service.impl;
 
 import com.penguin.linknote.common.exception.user.EmailAlreadyExistException;
+import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.domain.user.UserCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.entity.User;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,13 +30,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserByName(String userName) {
-        return null;
+    public UserDTO getUserByName(String username) {
+        List<User> userList = userRepository.findAllByUsername(username);
+        if (userList.isEmpty()) {
+            return null;
+        } else {
+            return UserDTO.fromEntity(userList.getFirst());
+        }
     }
 
     @Override
     public UserDTO getUserByEmail(String email) {
         return null;
+    }
+
+    @Override
+    public List<NotebookDTO> getNotebooksByUserId(UUID userId) {
+        return NotebookDTO.fromEntityList(userRepository.findAllById(userId));
     }
 
     @Override
@@ -56,16 +68,8 @@ public class UserServiceImpl implements UserService {
         user.setUpdatedAt(Instant.now());
 
         User newUser = userRepository.save(user);
-        UserDTO userDTO = new UserDTO();
 
-        userDTO.setId(newUser.getId());
-        userDTO.setUsername(newUser.getUsername());
-        userDTO.setEmail(newUser.getEmail());
-        userDTO.setCreatedAt(newUser.getCreatedAt());
-        userDTO.setUpdatedAt(newUser.getUpdatedAt());
-        userDTO.setEnabled(newUser.getUserStatusId() == 1);
-
-        return userDTO;
+        return UserDTO.fromEntity(newUser);
     }
 
     @Override
