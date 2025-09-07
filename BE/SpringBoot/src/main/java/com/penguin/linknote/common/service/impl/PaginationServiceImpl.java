@@ -37,7 +37,7 @@ public class PaginationServiceImpl implements PaginationService {
         PageResponse<R> pageResponse = new PageResponse<R>();
         pageResponse.setItems(resultList.stream().map(mapper).toList());
         pageResponse.setCount(resultList.size());
-        pageResponse.setCurrentPage(normalizeCommand.getPage());
+        pageResponse.setCurrentPage(normalizeCommand.getPage() + 1);
         pageResponse.setPageSize(normalizeCommand.getPageSize());
         pageResponse.setTotalPage(totalPage);
         return pageResponse;
