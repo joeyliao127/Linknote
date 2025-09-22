@@ -1,5 +1,6 @@
 package com.penguin.linknote.domain.invitation;
 
+import com.penguin.linknote.domain.invitation.state.enums.InvitationStateEnum;
 import com.penguin.linknote.entity.Invitation;
 import lombok.Builder;
 import lombok.Data;
@@ -14,14 +15,14 @@ public class InvitationDTO {
     private String inviteeName;
     private String inviteeEmail;
     private String message;
-    private String status;
+    private InvitationStateEnum status;
 
     public static InvitationDTO fromEntity(Invitation invitation) {
         return InvitationDTO.builder()
                 .id(invitation.getId())
                 .inviteeEmail(invitation.getInviteeEmail())
                 .inviteeName(invitation.getInviteeName())
-                .status(invitation.getStatusTitle())
+                .status(invitation.getStatus())
                 .message(invitation.getMessage())
                 .build();
     }

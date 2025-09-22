@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class InvitationCommand {
+public class InvitationCreateCommand {
 
     @NotBlank
     private String inviteeEmail;

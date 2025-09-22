@@ -8,6 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = "com.penguin.linknote.controller.invitation")
 public class InvitationExceptionHandler {
+
+    @ExceptionHandler(InvalidInvitationActionException.class)
+    public ResponseEntity<ApiResponse> handleInvalidInvitationActionException(InvalidInvitationActionException e) {
+        ApiResponse apiResponse = new ApiResponse(false, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception e) {
         ApiResponse apiResponse = new ApiResponse(false, e.getMessage());

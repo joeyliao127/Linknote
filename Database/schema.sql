@@ -137,7 +137,7 @@ CREATE TABLE invitation_status_codes (
   PRIMARY KEY(id)
 );
 
-INSERT INTO invitation_status_codes (title) VALUES ('pending'), ('accepted');
+INSERT INTO invitation_status_codes (title) VALUES ('pending'), ('accepted'), ('rejected'), ('resend');
 
 CREATE TABLE invitations (
   id                    UUID  NOT NULL,

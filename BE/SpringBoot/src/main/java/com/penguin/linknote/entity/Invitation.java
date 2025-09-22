@@ -1,5 +1,6 @@
 package com.penguin.linknote.entity;
 
+import com.penguin.linknote.domain.invitation.state.enums.InvitationStateEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -37,8 +38,8 @@ public class Invitation {
     @Column(name = "notebook_id")
     private UUID notebookId;
 
-    public String getStatusTitle() {
-        return invitationStatusCode.getTitle();
+    public InvitationStateEnum getStatus() {
+        return InvitationStateEnum.fromTitle(invitationStatusCode.getTitle());
     }
 
     public String getInviteeName() {
@@ -47,5 +48,9 @@ public class Invitation {
 
     public String getInviteeEmail() {
         return invitee.getEmail();
+    }
+
+    public void setStatus(InvitationStateEnum invitationStatusCode) {
+        this.invitationStatusCode.setTitle(invitationStatusCode.getTitle());
     }
 }

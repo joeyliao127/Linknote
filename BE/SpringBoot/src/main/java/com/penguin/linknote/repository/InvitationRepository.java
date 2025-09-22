@@ -13,4 +13,5 @@ public interface InvitationRepository extends JpaRepository<Invitation, UUID>, Q
     Page<Invitation> findByInviterId(UUID userId, Pageable pageable);
     Page<Invitation> findByInviteeId(UUID userId, Pageable pageable);
     Optional<Invitation> findByInviterIdAndInviteeId(UUID userId, UUID inviteeId);
+    Optional<Invitation> findByIdAndInviteeId(UUID id, UUID inviteeId);
 }

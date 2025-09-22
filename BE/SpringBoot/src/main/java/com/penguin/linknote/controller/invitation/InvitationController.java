@@ -3,13 +3,15 @@ package com.penguin.linknote.controller.invitation;
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
-import com.penguin.linknote.domain.invitation.InvitationCommand;
+import com.penguin.linknote.domain.invitation.InvitationCreateCommand;
 import com.penguin.linknote.domain.invitation.InvitationDTO;
+import com.penguin.linknote.domain.invitation.InvitationUpdateCommand;
 import com.penguin.linknote.service.InvitationService;
 import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -41,14 +43,14 @@ public class InvitationController {
     }
 
     @PostMapping
-    public ResponseEntity<InvitationDTO> createInvitation(@RequestBody @Valid  InvitationCommand invitationCommand) {
-        InvitationDTO invitationDTO = invitationService.createInvitation(userId, invitationCommand);
+    public ResponseEntity<InvitationDTO> createInvitation(@RequestBody @Valid InvitationCreateCommand createCommand) {
+        InvitationDTO invitationDTO = invitationService.createInvitation(userId, createCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 
     @PutMapping
-    public ResponseEntity<InvitationDTO> updateInvitation(UUID userId, InvitationCommand invitationCommand, ServletRequest servletRequest) {
-        InvitationDTO invitationDTO = invitationService.updateInvitation(userId, invitationCommand);
+    public ResponseEntity<InvitationDTO> updateInvitation(@RequestBody @Valid InvitationUpdateCommand updateCommand) {
+        InvitationDTO invitationDTO = invitationService.updateInvitation(this.userId, updateCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 
