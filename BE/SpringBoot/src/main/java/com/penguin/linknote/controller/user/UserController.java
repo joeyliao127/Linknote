@@ -1,8 +1,9 @@
 package com.penguin.linknote.controller.user;
 
 import com.penguin.linknote.domain.notebook.NotebookDTO;
-import com.penguin.linknote.domain.user.UserCommand;
+import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
+import com.penguin.linknote.domain.user.UserSignInCommand;
 import com.penguin.linknote.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,17 +36,22 @@ public class UserController {
     }
 
     @GetMapping("/notebooks")
-    public ResponseEntity<List<NotebookDTO>> getAllNotebooks() {
-        UUID userId = UUID.fromString("abf76d59-c7d5-42b4-ab9d-b542993f7496");
+    public ResponseEntity<List<NotebookDTO>> getAllNotebooks(@RequestParam(name = "Authorization") UUID userId) {
         return ResponseEntity.ok(userService.getNotebooksByUserId(userId));
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserCommand userCommand) {
-        UserDTO userDTO = userService.createUser(userCommand);
+    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserCreateCommand userCreateCommand) {
+        UserDTO userDTO = userService.createUser(userCreateCommand);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(URI.create("/api/" + path + "/" + userDTO.getId()))
                 .body(userDTO);
+    }
+
+    @PostMapping("/signIn")
+    public ResponseEntity<UserDTO> signIn(@RequestBody @Valid UserSignInCommand userCreateCommand) {
+        UserDTO userDTO = userService.verifyUser(userCreateCommand);
+        return ResponseEntity.ok(userDTO);
     }
 }

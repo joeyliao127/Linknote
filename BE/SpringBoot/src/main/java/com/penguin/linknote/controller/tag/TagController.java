@@ -17,23 +17,21 @@ import java.util.UUID;
 public class TagController {
 
     private final TagService tagService;
-    private final UUID userId;
 
     @Autowired
     public TagController(TagService tagService) {
         this.tagService = tagService;
-        userId = UUID.fromString("abf76d59-c7d5-42b4-ab9d-b542993f7496");
     }
 
 
     @GetMapping
-    public ResponseEntity<PageResponse<TagDTO>> index(@RequestParam UUID noteId, PageCommand pageCommand) {
+    public ResponseEntity<PageResponse<TagDTO>> index(@RequestParam UUID noteId, PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
         PageResponse<TagDTO> tagDTOList = tagService.indexTags(userId, noteId, pageCommand);
         return ResponseEntity.ok(tagDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<TagDTO> post(@RequestBody TagCommand tagCommand) {
+    public ResponseEntity<TagDTO> post(@RequestBody TagCommand tagCommand, @RequestHeader(name = "Authorization") UUID userId) {
         TagDTO tagDTO = tagService.createTag(userId, tagCommand);
         return ResponseEntity.ok(tagDTO);
     }

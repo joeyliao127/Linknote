@@ -1,9 +1,12 @@
 package com.penguin.linknote.service.impl;
 
+import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.common.exception.user.BadCredentialsException;
 import com.penguin.linknote.common.exception.user.EmailAlreadyExistException;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
-import com.penguin.linknote.domain.user.UserCommand;
+import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
+import com.penguin.linknote.domain.user.UserSignInCommand;
 import com.penguin.linknote.entity.User;
 import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.UserService;
@@ -51,17 +54,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserCommand userCommand) {
-        Optional<User> existUser = userRepository.findByEmail(userCommand.getEmail());
+    public UserDTO createUser(UserCreateCommand userCreateCommand) {
+        Optional<User> existUser = userRepository.findByEmail(userCreateCommand.getEmail());
 
         if(existUser.isEmpty()) throw new EmailAlreadyExistException("Email already exist");
 
         // TODO: hash password with salt
         User user = new User();
         user.setId(UUID.randomUUID());
-        user.setEmail(userCommand.getEmail());
-        user.setUsername(userCommand.getUsername());
-        user.setPassword(userCommand.getPassword());
+        user.setEmail(userCreateCommand.getEmail());
+        user.setUsername(userCreateCommand.getUsername());
+        user.setPassword(userCreateCommand.getPassword());
         user.setUserStatusId(1);
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
@@ -72,12 +75,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserCommand userCommand) {
+    public UserDTO updateUser(UserCreateCommand userCreateCommand) {
         return null;
     }
 
     @Override
     public UserDTO deleteUser(UUID userId) {
         return null;
+    }
+
+    @Override
+    public UserDTO verifyUser(UserSignInCommand command) {
+        Optional<User> existUser = userRepository.findByEmailAndPassword(command.getEmail(), command.getPassword());
+        if(existUser.isEmpty()) {
+            throw new BadCredentialsException("Email or password is incorrect");
+        }
+        return UserDTO.fromEntity(existUser.get());
     }
 }

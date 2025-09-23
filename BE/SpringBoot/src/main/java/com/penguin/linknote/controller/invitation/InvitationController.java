@@ -22,35 +22,32 @@ public class InvitationController {
 
     private final InvitationService invitationService;
 
-    private final UUID userId;
-
     @Autowired
     public InvitationController(InvitationService invitationService) {
         this.invitationService = invitationService;
-        userId = UUID.fromString("abf76d59-c7d5-42b4-ab9d-b542993f7496");
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<InvitationDTO>> indexInvitations(PageCommand pageCommand) {
+    public ResponseEntity<PageResponse<InvitationDTO>> indexInvitations(PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
         PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInviter(userId, pageCommand);
         return ResponseEntity.ok(invitationDTOList);
     }
 
     @GetMapping("/sent")
-    public ResponseEntity<PageResponse<InvitationDTO>> indexSentInvitations(PageCommand pageCommand) {
+    public ResponseEntity<PageResponse<InvitationDTO>> indexSentInvitations(PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
         PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInvitee(userId, pageCommand);
         return ResponseEntity.ok(invitationDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<InvitationDTO> createInvitation(@RequestBody @Valid InvitationCreateCommand createCommand) {
+    public ResponseEntity<InvitationDTO> createInvitation(@RequestBody @Valid InvitationCreateCommand createCommand, @RequestHeader(name = "Authorization") UUID userId) {
         InvitationDTO invitationDTO = invitationService.createInvitation(userId, createCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 
     @PutMapping
-    public ResponseEntity<InvitationDTO> updateInvitation(@RequestBody @Valid InvitationUpdateCommand updateCommand) {
-        InvitationDTO invitationDTO = invitationService.updateInvitation(this.userId, updateCommand);
+    public ResponseEntity<InvitationDTO> updateInvitation(@RequestBody @Valid InvitationUpdateCommand updateCommand, @RequestHeader(name = "Authorization") UUID userId) {
+        InvitationDTO invitationDTO = invitationService.updateInvitation(userId, updateCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 

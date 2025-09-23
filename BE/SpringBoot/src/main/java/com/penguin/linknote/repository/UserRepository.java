@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT nb FROM Notebook nb WHERE nb.user.id = :userId")
     List<Notebook> findAllById(UUID userId);
+
+    Optional<User> findByEmailAndPassword(String email, String password);
 }

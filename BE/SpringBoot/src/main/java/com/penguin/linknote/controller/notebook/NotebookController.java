@@ -39,9 +39,9 @@ public class NotebookController {
     public ResponseEntity<PageResponse<NotebookDTO>> index(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Boolean active,
+            @RequestHeader(name = "Authorization") UUID userId,
             PageCommand pageCommand)
     {
-        UUID userId = UUID.fromString("abf76d59-c7d5-42b4-ab9d-b542993f7496");
         // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
         PageResponse<NotebookDTO> notebookDTOList = notebookService.indexNotebooks(userId, title, active, pageCommand);
         return ResponseEntity.ok(notebookDTOList);
@@ -55,8 +55,7 @@ public class NotebookController {
     }
 
     @PostMapping
-    public ResponseEntity<NotebookDTO> create(@RequestBody @Valid NotebookCommand notebookCommand) {
-        UUID userId = UUID.fromString("abf76d59-c7d5-42b4-ab9d-b542993f7496");
+    public ResponseEntity<NotebookDTO> create(@RequestBody @Valid NotebookCommand notebookCommand, @RequestHeader(name = "Authorization") UUID userId) {
         NotebookDTO notebook = notebookService.createNotebook(notebookCommand, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
