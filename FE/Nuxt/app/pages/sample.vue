@@ -5,8 +5,20 @@
         <div class="space-x-4 flex flex-col gap-4">
             <h2 class="title text-2xl">Buttons</h2>
             <div class="flex gap-2">
-                <UButton class="bg-primary px-4 py-2 rounded hover:bg-primary/90">Primary</UButton>
-                <UButton class="bg-accent px-4 py-2 rounded hover:bg-accent/90">Accent</UButton>
+                <UButton
+                    class="bg-primary px-4 py-2 rounded hover:bg-primary/90">
+                    Primary
+                </UButton>
+                <UButton class="bg-accent px-4 py-2 rounded hover:bg-accent/90">
+                    Accent
+                </UButton>
+
+                <UFieldGroup>
+                    <UTooltip text="TODO">
+                        <UButton variant="outline" icon="uil-mail" />
+                    </UTooltip>
+                    <UButton variant="outline" icon="uil-github" />
+                </UFieldGroup>
             </div>
             <h3 class="title text-xl">Button with icon</h3>
             <div class="flex gap-2"></div>
@@ -65,11 +77,17 @@
 <script setup lang="ts">
 import { Bar } from "vue-chartjs";
 import { ref } from "vue";
-import FormSignTabs from "~/components/FormSignTabs.vue";
-import FormSignUp from "~/components/FormSignUp.vue";
 
 const chartData = ref({
-    labels: ["圖表一", "圖表二", "圖表三", "圖表四", "圖表五", "圖表六", "圖表七"],
+    labels: [
+        "圖表一",
+        "圖表二",
+        "圖表三",
+        "圖表四",
+        "圖表五",
+        "圖表六",
+        "圖表七",
+    ],
     datasets: [
         {
             label: "測試資料",

@@ -4,7 +4,11 @@ import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2025-05-15",
-    runtimeConfig: {},
+    runtimeConfig: {
+        public: {
+            API_URL: process.env.API_URL,
+        },
+    },
 
     css: ["~/assets/css/tailwind.css"],
 
@@ -14,7 +18,7 @@ export default defineNuxtConfig({
     },
 
     devtools: { enabled: true },
-    modules: ["@nuxtjs/i18n", "@nuxt/ui"],
+    modules: ["@nuxtjs/i18n", "@nuxt/ui", "@nuxt/icon", "nuxt-lucide-icons"],
 
     i18n: {
         defaultLocale: "zh",
@@ -45,5 +49,10 @@ export default defineNuxtConfig({
             // tailwind 原本就支援 primary, secondary，若要套用 color 到 UButton，可以在此設定
             colors: ["accent"],
         },
+    },
+
+    //icon設定
+    lucide: {
+        namePrefix: "lucide",
     },
 });

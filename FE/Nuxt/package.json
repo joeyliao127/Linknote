@@ -19,6 +19,7 @@
         "chart.js": "^4.5.0",
         "dayjs": "^1.11.13",
         "nuxt": "^4.0.2",
+        "nuxt-lucide-icons": "2.0.0",
         "tailwindcss": "^4.1.11",
         "vue": "^3.5.16",
         "vue-chartjs": "^5.3.2",
