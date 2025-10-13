@@ -13,10 +13,12 @@
     </UCard>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
 import FormSignIn from "~/components/FormSignIn.vue";
-import type { TabsItem } from "@nuxt/ui";
 import FormSignUp from "~/components/FormSignUp.vue";
+import type { TabsItem } from "@nuxt/ui";
+import type { Povider } from "~/types/User";
+
+const emits = defineEmits(["signIn", "signUp"]);
 
 const tabsForm: TabsItem[] = [
     {
@@ -28,6 +30,14 @@ const tabsForm: TabsItem[] = [
         slot: "signup" as const,
     },
 ];
+
+function handleSignIn(username: string, password: string, provider: Povider) {
+    emits("signIn");
+}
+
+function handleSignUp() {
+    emits("signUp");
+}
 </script>
 
 <style></style>

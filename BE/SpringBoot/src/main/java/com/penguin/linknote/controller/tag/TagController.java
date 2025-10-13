@@ -25,8 +25,8 @@ public class TagController {
 
 
     @GetMapping
-    public ResponseEntity<PageResponse<TagDTO>> index(@RequestParam UUID noteId, PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        PageResponse<TagDTO> tagDTOList = tagService.indexTags(userId, noteId, pageCommand);
+    public ResponseEntity<PageResponse<TagDTO>> index(PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
+        PageResponse<TagDTO> tagDTOList = tagService.indexTags(userId, pageCommand);
         return ResponseEntity.ok(tagDTOList);
     }
 

@@ -12,6 +12,11 @@ export default defineNuxtConfig({
 
     css: ["~/assets/css/tailwind.css"],
 
+    imports: {
+        // 讓 Nuxt scan 所有層級的 composable 都套用 auto import 功能
+        dirs: ["~/composables", "~/composables/**"],
+    },
+
     typescript: {
         strict: true,
         typeCheck: "build",

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface TagService {
 
-    PageResponse<TagDTO> indexTags(UUID userId, UUID noteId, PageCommand pageCommand);
+    PageResponse<TagDTO> indexTags(UUID userId, PageCommand pageCommand);
     TagDTO createTag(UUID userId, TagCommand tagCommand);
     TagDTO updateTag(UUID tagId, TagCommand tagCommand);
     void deleteTag(UUID tagId);

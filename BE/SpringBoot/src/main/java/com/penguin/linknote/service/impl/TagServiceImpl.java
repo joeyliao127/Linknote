@@ -31,10 +31,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public PageResponse<TagDTO> indexTags(UUID userId, UUID noteId, PageCommand pageCommand) {
+    public PageResponse<TagDTO> indexTags(UUID userId, PageCommand pageCommand) {
         PageCommand normalPageCommand = paginationService.normalizePageCommand(pageCommand);
         Pageable pageable = PageRequest.of(normalPageCommand.getPage(), normalPageCommand.getPageSize());
-        Page<Tag> tagList = tagRepository.findByUserId(noteId, pageable);
+        Page<Tag> tagList = tagRepository.findByUserId(userId, pageable);
 
         return  PageResponse.fromPage(tagList, TagDTO::fromEntity);
     }

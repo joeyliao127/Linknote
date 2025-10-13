@@ -1,15 +1,27 @@
 <template>
-    <UFormField :label="label" :required="required">
-        <UInput class="w-full" :trailing-icon="getIcon" :placeholder="placeholder" />
+    <UFormField :label="label" :name="name" :required="required">
+        <UInput
+            class="w-full"
+            :type="type"
+            :trailing-icon="getIcon"
+            :placeholder="placeholder" />
     </UFormField>
 </template>
 
 <script setup lang="ts">
-import type { pickLinkProps } from "@nuxt/ui/runtime/utils/link.js";
 import { computed } from "vue";
 
-const { label, required, icon, placeholder } = defineProps({
+const { label, name, type, required, icon, placeholder } = defineProps({
     label: {
+        type: String,
+        required: false,
+    },
+    name: {
+        type: String,
+        required: false,
+    },
+
+    type: {
         type: String,
         required: false,
     },
