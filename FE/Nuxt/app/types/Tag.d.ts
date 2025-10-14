@@ -3,9 +3,12 @@ export interface Tag {
     userId: string;
     title: string;
     createdAt: Date | string;
-    UpdateddAt: Date | string;
+    updatedAt: Date | string;
 }
 
-export type CreateTagDTO = Omit<Tag, "id" | "createdAt" | "updatedAt">;
+export type CreateTagDTO = Omit<
+    Tag,
+    "id" | "userId" | "createdAt" | "updatedAt"
+>;
 
-export type UpdateTagDTO = Omit<Tag, "createdAt" | "updatedAt">;
+export type UpdateTagDTO = Omit<Tag, "userId" | "createdAt" | "updatedAt">;

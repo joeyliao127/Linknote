@@ -4,17 +4,6 @@ import type { Tag, CreateTagDTO, UpdateTagDTO } from "~/types/Tag";
 
 const _useTag = () => {
     const runtimeConfig = useRuntimeConfig();
-    // const { isPending, isError, data, error } = useQuery({
-    //     queryKey: ["todos"],
-    //     queryFn: async () => {
-    //         const response = await fetch("/api/xxx");
-
-    //         return response.data as ApiResult<{
-    //             id: string;
-    //             name: string;
-    //         }>;
-    //     },
-    // });
 
     const indexTags = async (userId: string): Promise<Pagination<Tag>> => {
         const response: Pagination<Tag> = await $fetch(
@@ -32,7 +21,7 @@ const _useTag = () => {
 
     const createTag = async (userId: string, tag: CreateTagDTO) => {
         const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/Tags`,
+            `${runtimeConfig.public.API_URL}/tags`,
             {
                 method: "POST",
                 headers: {
@@ -47,7 +36,7 @@ const _useTag = () => {
 
     const updateTag = async (userId: string, tag: UpdateTagDTO) => {
         const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/Tags`,
+            `${runtimeConfig.public.API_URL}/tags/${tag.id}`,
             {
                 method: "PUT",
                 headers: {
@@ -62,14 +51,14 @@ const _useTag = () => {
 
     const deleteTag = async (userId: string, tagId: string) => {
         const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/Tags`,
+            `${runtimeConfig.public.API_URL}/tags`,
             {
                 method: "DELETE",
                 headers: {
                     Authorization: userId,
                 },
                 query: {
-                    TagId: tagId,
+                    tagId: tagId,
                 },
             }
         );

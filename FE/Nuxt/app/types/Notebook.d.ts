@@ -4,8 +4,8 @@ import type { Note } from "./note";
 export interface Notebook {
     id: string;
     title: string;
-    description: string | null | undefined;
-    active: boolean;
+    description?: string;
+    active?: boolean;
     createdAt: Date | string;
     updatedAt: Date | string;
 }

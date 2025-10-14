@@ -27,12 +27,18 @@
                         label="Name"
                         type="text"
                         class="mt-4" />
-
-                    <UButton
-                        class="w-full mt-4"
-                        @click="_deleteNotebook(item.id)">
-                        刪除
-                    </UButton>
+                    <div class="flex gap-x-2">
+                        <UButton
+                            class="w-full mt-4"
+                            @click="_updateNotebook(item.id, item.title)">
+                            更新
+                        </UButton>
+                        <UButton
+                            class="w-full mt-4"
+                            @click="_deleteNotebook(item.id)">
+                            刪除
+                        </UButton>
+                    </div>
                 </UCard>
             </template>
         </div>
@@ -63,16 +69,50 @@
         <USeparator>
             <h2 class="title text-2xl">Tags</h2>
         </USeparator>
-        <UButton @click="getTags">getTags</UButton>
+        <!-- <UButton @click="getTags">getTags</UButton> -->
 
         <div class="flex gap-2">
-            <template v-for="tag in tags">
-                <UBadge>
-                    {{ tag.title }}
-                </UBadge>
+            <template v-for="item in tags" :key="item.id">
+                <UCard class="flex justify-center">
+                    <nuxt-link :to="`/notebooks/${item.id}`" class="w-full">
+                        <h3 class="font-semibold text-xl">{{ item.title }}</h3>
+                    </nuxt-link>
+                    <UInput
+                        v-model="item.title"
+                        label="Name"
+                        type="text"
+                        class="mt-4" />
+                    <div class="flex gap-x-2">
+                        <UButton
+                            class="w-full mt-4"
+                            @click="_updateTag(item.id, item.title)">
+                            更新
+                        </UButton>
+                        <UButton
+                            class="w-full mt-4"
+                            @click="_deleteTag(item.id)">
+                            刪除
+                        </UButton>
+                    </div>
+                </UCard>
             </template>
         </div>
     </div>
+
+    <UCard class="w-100">
+        <UForm
+            :state="tagState"
+            :schema="tagSchema"
+            @submit="onTagSubmit"
+            class="space-y-4">
+            <h3 class="font-semibold">新增筆記本</h3>
+            <UFormField label="title" name="title" required>
+                <UInput v-model="tagState.title" type="text" class="w-full" />
+            </UFormField>
+
+            <UButton type="submit" class="w-full">Create</UButton>
+        </UForm>
+    </UCard>
 </template>
 <script setup lang="ts">
 import * as z from "zod";
@@ -80,9 +120,8 @@ import { useNotebook } from "~/composables/notebook/useNotebook";
 import { useTag } from "~/composables/tag/useTag";
 
 import type { FormSubmitEvent } from "@nuxt/ui";
-import type { Notebook } from "~/types/Notebook";
-import type { Note } from "~/types/Note";
-import type { Tag } from "~/types/Tag";
+import type { Notebook, UpdateNotebookDTO } from "~/types/Notebook";
+import type { Tag, UpdateTagDTO } from "~/types/Tag";
 import type { Pagination } from "~/types";
 import type { ApiError, ApiResult } from "~/types/common";
 
@@ -96,7 +135,6 @@ const toast = useToast();
 const userId = ref<string>("");
 const email = ref<string>("");
 const notebooks = ref<Notebook[]>([]);
-const notes = ref<Note[]>([]);
 const tags = ref<Tag[]>([]);
 
 const notebookId = ref<string>("");
@@ -111,6 +149,17 @@ type CreateNotebookSchema = z.output<typeof notebookSchema>;
 const notebookState = reactive<Partial<CreateNotebookSchema>>({
     title: "",
     description: "",
+});
+
+// tags
+const tagSchema = z.object({
+    title: z.string().nonempty("筆記本名稱不能為空值"),
+});
+
+type CreateTagSchema = z.output<typeof tagSchema>;
+
+const tagState = reactive<Partial<CreateTagSchema>>({
+    title: "",
 });
 
 async function getNotebooks() {
@@ -129,6 +178,28 @@ async function getNotebooks() {
     );
 
     notebooks.value = resNotebook.items;
+}
+
+async function _updateNotebook(
+    notebookId: string,
+    title: string,
+    active?: boolean,
+    description?: string
+) {
+    let notebook: UpdateNotebookDTO = {
+        title: title,
+    };
+    if (active !== undefined) notebook.active = active;
+    if (description !== undefined) notebook.description = description;
+    await updateNotebook(userId.value, notebookId, notebook);
+
+    toast.add({
+        title: "Info",
+        description: "Update notebook success!",
+        color: "primary",
+    });
+
+    getNotebooks();
 }
 
 async function _deleteNotebook(notebookId: string) {
@@ -161,6 +232,42 @@ async function getTags() {
     tags.value = res.items;
 }
 
+async function _updateTag(id: string, title: string) {
+    await updateTag(userId.value, { id: id, title: title });
+    toast.add({
+        title: "Info",
+        description: "Update tag success!",
+        color: "primary",
+    });
+
+    getNotebooks();
+    getTags();
+}
+
+async function _deleteTag(id: string) {
+    await deleteTag(userId.value, id);
+    toast.add({
+        title: "Info",
+        description: "Delete tag success!",
+        color: "primary",
+    });
+
+    getNotebooks();
+    getTags();
+}
+
+async function onTagSubmit(event: FormSubmitEvent<CreateTagSchema>) {
+    const { title } = event.data;
+    await createTag(userId.value, { title });
+    toast.add({
+        title: "Success",
+        description: "The form has been submitted.",
+        color: "primary",
+    });
+
+    await getNotebooks();
+    await getTags();
+}
 function clear() {
     localStorage.clear();
     navigateTo("/");
@@ -182,6 +289,7 @@ onMounted(async () => {
     }
 
     await getNotebooks();
+    await getTags();
 });
 </script>
 

@@ -9,18 +9,6 @@ import type {
 const _useNotebook = () => {
     const runtimeConfig = useRuntimeConfig();
 
-    // const { isPending, isError, data, error } = useQuery({
-    //     queryKey: ["todos"],
-    //     queryFn: async () => {
-    //         const response = await fetch("/api/xxx");
-
-    //         return response.data as ApiResult<{
-    //             id: string;
-    //             name: string;
-    //         }>;
-    //     },
-    // });
-
     const indexNotebook = async (
         userId: string
     ): Promise<Pagination<Notebook>> => {
@@ -57,10 +45,11 @@ const _useNotebook = () => {
 
     const updateNotebook = async (
         userId: string,
+        notebookId: string,
         notebook: UpdateNotebookDTO
     ) => {
         const response: Pagination<Notebook> = await $fetch(
-            `${runtimeConfig.public.API_URL}/notebooks`,
+            `${runtimeConfig.public.API_URL}/notebooks/${notebookId}`,
             {
                 method: "PUT",
                 headers: {
