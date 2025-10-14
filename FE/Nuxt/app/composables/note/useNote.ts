@@ -6,8 +6,8 @@ const _useNote = () => {
     const runtimeConfig = useRuntimeConfig();
 
     const indexNotes = async (
-        notebookId: string,
-        userId: string
+        userId: string,
+        notebookId: string
     ): Promise<Pagination<Note>> => {
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notebooks/${notebookId}/notes`,
@@ -16,28 +16,56 @@ const _useNote = () => {
                 headers: {
                     Authorization: userId,
                 },
-                query: {
-                    notebookId,
-                },
             }
         );
-
-        console.log(response);
 
         return response;
     };
 
-    const getNoteById = async () => {};
+    const createNote = async (userId: string, note: CreateNoteDTO) => {
+        const response: Pagination<Note> = await $fetch(
+            `${runtimeConfig.public.API_URL}/notes`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: userId,
+                },
+                body: note,
+            }
+        );
 
-    const createNote = async () => {};
+        return response;
+    };
 
-    const updateNote = async () => {};
+    const updateNote = async (userId: string, note: UpdateNoteDTO) => {
+        const response: Pagination<Note> = await $fetch(
+            `${runtimeConfig.public.API_URL}/notes/${note.id}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: userId,
+                },
+                body: note,
+            }
+        );
 
-    const deleteNote = async () => {};
+        return response;
+    };
+
+    const deleteNote = async (userId: string, noteId: string) => {
+        const response: Pagination<Note> = await $fetch(
+            `${runtimeConfig.public.API_URL}/notes/${noteId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: userId,
+                },
+            }
+        );
+    };
 
     return {
         indexNotes,
-        getNoteById,
         createNote,
         updateNote,
         deleteNote,

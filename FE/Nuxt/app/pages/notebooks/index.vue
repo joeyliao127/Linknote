@@ -268,6 +268,7 @@ async function onTagSubmit(event: FormSubmitEvent<CreateTagSchema>) {
     await getNotebooks();
     await getTags();
 }
+
 function clear() {
     localStorage.clear();
     navigateTo("/");
