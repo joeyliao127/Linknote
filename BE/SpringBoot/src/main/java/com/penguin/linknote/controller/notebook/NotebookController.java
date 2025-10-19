@@ -10,7 +10,6 @@ import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.service.NoteService;
 import com.penguin.linknote.service.NotebookService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +27,6 @@ public class NotebookController {
     private final NoteService noteService;
     private final String path;
 
-    @Autowired
     public NotebookController(NotebookService notebookService, NoteService noteService) {
         this.notebookService = notebookService;
         this.noteService = noteService;

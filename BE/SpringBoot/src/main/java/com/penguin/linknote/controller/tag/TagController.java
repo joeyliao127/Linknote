@@ -6,7 +6,6 @@ import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.tag.TagCommand;
 import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.service.TagService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,6 @@ public class TagController {
 
     private final TagService tagService;
 
-    @Autowired
     public TagController(TagService tagService) {
         this.tagService = tagService;
     }

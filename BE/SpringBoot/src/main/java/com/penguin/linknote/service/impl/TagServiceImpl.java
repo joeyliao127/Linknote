@@ -9,7 +9,6 @@ import com.penguin.linknote.entity.Tag;
 import com.penguin.linknote.repository.TagRepository;
 import com.penguin.linknote.service.TagService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final PaginationService paginationService;
 
-    @Autowired
     public TagServiceImpl(TagRepository tagRepository, PaginationService paginationService) {
         this.tagRepository = tagRepository;
         this.paginationService = paginationService;

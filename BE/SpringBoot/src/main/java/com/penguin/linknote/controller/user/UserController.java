@@ -6,7 +6,6 @@ import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.domain.user.UserSignInCommand;
 import com.penguin.linknote.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ public class UserController {
     private final UserService userService;
     private final String path;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
         this.path = "/users";

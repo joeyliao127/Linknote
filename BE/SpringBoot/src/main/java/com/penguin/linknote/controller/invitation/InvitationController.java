@@ -7,11 +7,8 @@ import com.penguin.linknote.domain.invitation.InvitationCreateCommand;
 import com.penguin.linknote.domain.invitation.InvitationDTO;
 import com.penguin.linknote.domain.invitation.InvitationUpdateCommand;
 import com.penguin.linknote.service.InvitationService;
-import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -22,7 +19,6 @@ public class InvitationController {
 
     private final InvitationService invitationService;
 
-    @Autowired
     public InvitationController(InvitationService invitationService) {
         this.invitationService = invitationService;
     }

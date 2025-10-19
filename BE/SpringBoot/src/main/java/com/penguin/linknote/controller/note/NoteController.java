@@ -6,7 +6,6 @@ import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteTagCommand;
 import com.penguin.linknote.service.NoteService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,6 @@ public class NoteController {
 
     private final NoteService noteService;
 
-    @Autowired
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
     }

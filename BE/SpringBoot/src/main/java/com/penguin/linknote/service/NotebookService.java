@@ -5,7 +5,6 @@ import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface NotebookService {

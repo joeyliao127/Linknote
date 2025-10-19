@@ -15,7 +15,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -29,7 +28,6 @@ public class NotebookServiceImpl implements NotebookService {
     private final JPAQueryFactory jpaQueryFactory;
     private final PaginationService paginationService;
 
-    @Autowired
     public NotebookServiceImpl(
             NotebookRepository notebookRepository,
             UserRepository userRepository,
