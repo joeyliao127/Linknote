@@ -195,30 +195,31 @@ CREATE TABLE notes (
 CREATE INDEX idx_notes_title ON notes (title);
 CREATE INDEX idx_notes_notebook_id ON notes (notebook_id);
 
+DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (
   id            UUID        NOT NULL,
   title         VARCHAR(50) NOT NULL,
   user_id       UUID        NOT NULL,
   created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_tags_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-  UNIQUE (id),
-  PRIMARY KEY (title, user_id)
+  PRIMARY KEY (id),
+  UNIQUE (title, user_id),
+  CONSTRAINT fk_tags_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_tags_title ON tags (title);
 CREATE INDEX idx_tags_user_id ON tags (user_id);
 
+DROP TABLE IF EXISTS note_tags;
 CREATE TABLE note_tags (
-  id            BIGINT      NOT NULL GENERATED ALWAYS AS IDENTITY,
   note_id       UUID        NOT NULL,
-  tag_id        UUID        NOT NULL,
+  tag_id        UUID        NOT NULL,       -- ✅ 參照 tags(id)
   created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_note_tags_note_id  FOREIGN KEY (note_id) REFERENCES notes (id) ON DELETE CASCADE,
-  CONSTRAINT fk_note_tags_tag_id   FOREIGN KEY (tag_id)  REFERENCES tags (id)  ON DELETE CASCADE,
-  UNIQUE (id),
-  PRIMARY KEY (tag_id, note_id)
+  PRIMARY KEY (note_id, tag_id),           -- ✅ 複合主鍵
+  CONSTRAINT fk_note_tags_note_id FOREIGN KEY (note_id) REFERENCES notes (id) ON DELETE CASCADE,
+  CONSTRAINT fk_note_tags_tag_id FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_note_tags_note_id ON note_tags (note_id);
+CREATE INDEX idx_note_tags_tag_id ON note_tags (tag_id);

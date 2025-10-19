@@ -2,11 +2,11 @@ package com.penguin.linknote.service.impl;
 
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
-import com.penguin.linknote.common.exception.note.NoteNotFoundException;
 import com.penguin.linknote.common.service.PaginationService;
 import com.penguin.linknote.domain.note.NoteCommand;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteFilter;
+import com.penguin.linknote.domain.note.exception.NoteNotFoundException;
 import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.entity.*;
 import com.penguin.linknote.repository.NoteRepository;
@@ -36,7 +36,6 @@ public class NoteServiceImpl implements NoteService {
     private final PaginationService paginationService;
     private final JPAQueryFactory jpaQueryFactory;
 
-    @Autowired
     public NoteServiceImpl(
             NoteRepository noteRepository,
             TagRepository tagRepository,
@@ -90,6 +89,7 @@ public class NoteServiceImpl implements NoteService {
                 .join(qNote).on(qNoteTag.note.id.eq(qNote.id))
                 .join(qTag).on(qNoteTag.tag.id.eq(qTag.id))
                 .where(qNoteTag.note.id.in(noteIds))
+                .orderBy(qNote.title.asc())
                 .fetch();
 
         Map<UUID, List<TagDTO>> noteTags = results.stream()
@@ -151,25 +151,48 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public void addTagToNote(UUID noteId, List<UUID> tagIdList) {
-        Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException("Note not found."));
-        List<Tag> tagList = tagRepository.findByIdIn(tagIdList);
-
-        List<NoteTag> noteTagList = tagList.stream().map(
-                tag -> {
+        // 1. 查詢 Note（如果不存在會拋出異常）
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new NoteNotFoundException("Note not found."));
+        
+        // 2. 刪除現有的所有 tags（批次刪除）
+        noteTagsRepository.deleteByNoteId(noteId);
+        
+        // 3. 批次查詢所有要新增的 tags
+        List<Tag> tagList = tagRepository.findAllById(tagIdList);
+        
+        // 驗證：確保所有 tagId 都存在
+        if (tagList.size() != tagIdList.size()) {
+            throw new IllegalArgumentException("Some tag IDs do not exist");
+        }
+        
+        // 4. 建立新的 NoteTag 關聯
+        List<NoteTag> noteTagList = tagList.stream()
+                .map(tag -> {
                     NoteTag noteTag = new NoteTag();
+                    
+                    // ✅ 關鍵：先設定複合主鍵
+                    NoteTagId noteTagId = new NoteTagId(noteId, tag.getId());
+                    noteTag.setId(noteTagId);
+                    
+                    // 再設定關聯
                     noteTag.setNote(note);
                     noteTag.setTag(tag);
+                    
+                    // 時間戳會由 @PrePersist 自動設定，但也可以手動設定
                     noteTag.setCreatedAt(Instant.now());
                     noteTag.setUpdatedAt(Instant.now());
+                    
                     return noteTag;
-                }
-        ).toList();
-
+                })
+                .toList();
+        
+        // 5. 批次儲存
         noteTagsRepository.saveAll(noteTagList);
-
+        
+        // 6. 更新 Note 的時間戳
         note.setUpdatedAt(Instant.now());
         noteRepository.save(note);
     }
-
 
 }

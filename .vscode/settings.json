@@ -1,0 +1,17 @@
+{
+    "chatgpt.openOnStartup": false,
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.saveActions.organizeImports": true,
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Linknote",
+            "database": "linknote",
+            "username": "root"
+        }
+    ]
+}

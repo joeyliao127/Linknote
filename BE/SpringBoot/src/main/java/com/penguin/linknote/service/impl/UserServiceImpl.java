@@ -1,12 +1,11 @@
 package com.penguin.linknote.service.impl;
 
-import com.penguin.linknote.common.dto.PageResponse;
-import com.penguin.linknote.common.exception.user.BadCredentialsException;
-import com.penguin.linknote.common.exception.user.EmailAlreadyExistException;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.domain.user.UserSignInCommand;
+import com.penguin.linknote.domain.user.exception.BadCredentialsException;
+import com.penguin.linknote.domain.user.exception.EmailAlreadyExistException;
 import com.penguin.linknote.entity.User;
 import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.UserService;

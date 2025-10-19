@@ -1,4 +1,4 @@
-package com.penguin.linknote.common.exception.invitation;
+package com.penguin.linknote.domain.invitation.exception;
 
 public class InvalidInvitationStateException extends RuntimeException {
     public InvalidInvitationStateException(String message) {

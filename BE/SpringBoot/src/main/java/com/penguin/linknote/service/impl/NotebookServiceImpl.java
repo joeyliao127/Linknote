@@ -54,7 +54,8 @@ public class NotebookServiceImpl implements NotebookService {
 
         JPAQuery<Notebook> notebookJPAQuery = jpaQueryFactory
                 .selectFrom(qNotebook)
-                .where(booleanBuilder);
+                .where(booleanBuilder)
+                .orderBy(qNotebook.title.asc());
 
         return paginationService.applyPagination(notebookJPAQuery, pageCommand, NotebookDTO::fromEntity);
     }

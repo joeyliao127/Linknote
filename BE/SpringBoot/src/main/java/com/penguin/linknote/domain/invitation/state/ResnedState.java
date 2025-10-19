@@ -1,6 +1,6 @@
 package com.penguin.linknote.domain.invitation.state;
 
-import com.penguin.linknote.common.exception.invitation.InvalidInvitationStateException;
+import com.penguin.linknote.domain.invitation.exception.InvalidInvitationStateException;
 import com.penguin.linknote.domain.invitation.state.enums.InvitationStateEnum;
 import com.penguin.linknote.entity.Invitation;
 

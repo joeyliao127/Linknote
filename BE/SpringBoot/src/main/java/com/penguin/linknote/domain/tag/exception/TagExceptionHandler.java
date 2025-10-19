@@ -1,4 +1,4 @@
-package com.penguin.linknote.common.exception.tag;
+package com.penguin.linknote.domain.tag.exception;
 
 import com.penguin.linknote.common.dto.ApiResponse;
 import org.springframework.http.HttpStatus;

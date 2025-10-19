@@ -1,4 +1,4 @@
-package com.penguin.linknote.common.exception.note;
+package com.penguin.linknote.domain.note.exception;
 
 public class NoteNotFoundException extends RuntimeException {
     public NoteNotFoundException() {
