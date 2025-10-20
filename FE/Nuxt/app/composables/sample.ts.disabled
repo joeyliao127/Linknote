@@ -1,0 +1,80 @@
+import { useRuntimeConfig } from "#imports";
+import type { Pagination } from "~/types";
+import type {
+    !{upper},
+    Create!{upper}DTO,
+    Update!{upper}DTO,
+} from "~/types/!{upper}";
+
+const _use!{upper} = () => {
+    const runtimeConfig = useRuntimeConfig();
+    const baseURL = `${runtimeConfig.public.API_URL}/!{lower}s`;
+
+    const index!{upper} = async (
+        userId: string
+    ): Promise<Pagination<!{upper}>> => {
+        const response: Pagination<!{upper}> = await $fetch(baseURL, {
+            method: "GET",
+            headers: {
+                Authorization: userId,
+            },
+        });
+
+        return response;
+    };
+
+    const create!{upper} = async (
+        userId: string,
+        !{lower}: Create!{upper}DTO
+    ) => {
+        const response: Pagination<!{upper}> = await $fetch(baseURL, {
+            method: "POST",
+            headers: {
+                Authorization: userId,
+            },
+            body: !{lower},
+        });
+
+        return response;
+    };
+
+    const update!{upper} = async (
+        userId: string,
+        !{lower}Id: string,
+        !{lower}: Update!{upper}DTO
+    ) => {
+        const response: Pagination<!{upper}> = await $fetch(
+            `${baseURL}/${!{lower}Id}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: userId,
+                },
+                body: !{lower},
+            }
+        );
+
+        return response;
+    };
+
+    const delete!{upper} = async (userId: string, !{lower}Id: string) => {
+        const response: Pagination<!{upper}> = await $fetch(
+            `${baseURL}/${!{lower}Id}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: userId,
+                },
+            }
+        );
+    };
+
+    return {
+        index!{upper},
+        create!{upper},
+        update!{upper},
+        delete!{upper},
+    };
+};
+
+export const use!{upper} = _use!{upper};
