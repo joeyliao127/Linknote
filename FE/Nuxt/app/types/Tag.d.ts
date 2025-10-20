@@ -1,7 +1,9 @@
+import type { SelectItem } from "@nuxt/ui";
 export interface Tag {
     id: string;
     userId: string;
     title: string;
+    selections?: SelectItem;
     createdAt: Date | string;
     updatedAt: Date | string;
 }

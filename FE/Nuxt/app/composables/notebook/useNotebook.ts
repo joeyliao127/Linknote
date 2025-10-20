@@ -8,19 +8,17 @@ import type {
 
 const _useNotebook = () => {
     const runtimeConfig = useRuntimeConfig();
+    const baseURL = `${runtimeConfig.public.API_URL}/notebooks`;
 
     const indexNotebook = async (
         userId: string
     ): Promise<Pagination<Notebook>> => {
-        const response: Pagination<Notebook> = await $fetch(
-            `${runtimeConfig.public.API_URL}/notebooks`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: userId,
-                },
-            }
-        );
+        const response: Pagination<Notebook> = await $fetch(baseURL, {
+            method: "GET",
+            headers: {
+                Authorization: userId,
+            },
+        });
 
         return response;
     };
@@ -29,16 +27,13 @@ const _useNotebook = () => {
         userId: string,
         notebook: CreateNotebookDTO
     ) => {
-        const response: Pagination<Notebook> = await $fetch(
-            `${runtimeConfig.public.API_URL}/notebooks`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: userId,
-                },
-                body: notebook,
-            }
-        );
+        const response: Pagination<Notebook> = await $fetch(baseURL, {
+            method: "POST",
+            headers: {
+                Authorization: userId,
+            },
+            body: notebook,
+        });
 
         return response;
     };
@@ -49,7 +44,7 @@ const _useNotebook = () => {
         notebook: UpdateNotebookDTO
     ) => {
         const response: Pagination<Notebook> = await $fetch(
-            `${runtimeConfig.public.API_URL}/notebooks/${notebookId}`,
+            `${baseURL}/${notebookId}`,
             {
                 method: "PUT",
                 headers: {
@@ -64,7 +59,7 @@ const _useNotebook = () => {
 
     const deleteNotebook = async (userId: string, notebookId: string) => {
         const response: Pagination<Notebook> = await $fetch(
-            `${runtimeConfig.public.API_URL}/notebooks/${notebookId}`,
+            `${baseURL}/${notebookId}`,
             {
                 method: "DELETE",
                 headers: {

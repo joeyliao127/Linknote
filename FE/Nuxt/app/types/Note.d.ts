@@ -11,11 +11,16 @@ export interface Note {
     createdAt: Date | string;
     updatedAt: Date | string;
     tags: Tag[];
+    // for v-model (USelect)
+    tagIdList: string[];
 }
 
 export type CreateNoteDTO = Omit<
     Note,
-    "id" | "createdAt" | "updatedAt" | "tags"
+    "id" | "createdAt" | "updatedAt" | "tags" | "tagIdList"
 >;
 
-export type UpdateNoteDTO = Omit<Note, "updatedAt" | "createdAt" | "tags">;
+export type UpdateNoteDTO = Omit<
+    Note,
+    "updatedAt" | "createdAt" | "tags" | "tagIdList"
+>;

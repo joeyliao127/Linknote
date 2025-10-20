@@ -1,6 +1,6 @@
 import type { Pagination } from ".";
-import type { Note } from "./note";
 
+// TODO: add fileds
 export interface Notebook {
     id: string;
     title: string;
@@ -10,11 +10,13 @@ export interface Notebook {
     updatedAt: Date | string;
 }
 
+// TODO: omit fileds
 export type CreateNotebookDTO = Omit<
     Notebook,
     "id" | "active" | "createdAt" | "updatedAt"
 >;
 
+// TODO: omit fileds
 export type UpdateNotebookDTO = Omit<
     Notebook,
     "id" | "createdAt" | "updatedAt"

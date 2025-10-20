@@ -1,11 +1,15 @@
 import { useRuntimeConfig } from "#imports";
+import { toSelection } from "../utils/useFormat";
 import type { Pagination } from "~/types";
 import type { Tag, CreateTagDTO, UpdateTagDTO } from "~/types/Tag";
+import type { SelectItem } from "@nuxt/ui";
 
 const _useTag = () => {
     const runtimeConfig = useRuntimeConfig();
 
-    const indexTags = async (userId: string): Promise<Pagination<Tag>> => {
+    const indexTags = async (
+        userId: string
+    ): Promise<Pagination<SelectItem>> => {
         const response: Pagination<Tag> = await $fetch(
             `${runtimeConfig.public.API_URL}/tags`,
             {
@@ -16,7 +20,10 @@ const _useTag = () => {
             }
         );
 
-        return response;
+        const tags: Pagination<SelectItem> = response;
+        tags.items = toSelection(response.items, "title", "id");
+
+        return tags;
     };
 
     const createTag = async (userId: string, tag: CreateTagDTO) => {

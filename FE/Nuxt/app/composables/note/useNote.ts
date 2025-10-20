@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from "#imports";
 import type { Pagination } from "~/types";
 import type { Note, CreateNoteDTO, UpdateNoteDTO } from "~/types/Note";
+import { toSelection } from "../utils/useFormat";
 
 const _useNote = () => {
     const runtimeConfig = useRuntimeConfig();
@@ -18,7 +19,12 @@ const _useNote = () => {
                 },
             }
         );
-
+        const items: Note[] = [];
+        for (let note of response.items) {
+            note.tagIdList = note.tags.map((item) => item.id);
+            items.push(note);
+        }
+        response.items = items;
         return response;
     };
 
@@ -64,11 +70,31 @@ const _useNote = () => {
         );
     };
 
+    const updateTags = async (
+        userId: string,
+        noteId: string,
+        tagIdList: string[]
+    ) => {
+        const response: Pagination<Note> = await $fetch(
+            `${runtimeConfig.public.API_URL}/notes/${noteId}/tags`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: userId,
+                },
+                body: {
+                    tagIdList,
+                },
+            }
+        );
+    };
+
     return {
         indexNotes,
         createNote,
         updateNote,
         deleteNote,
+        updateTags,
     };
 };
 

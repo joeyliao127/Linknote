@@ -46,7 +46,14 @@
                                 class="w-full" />
                         </UFormField>
 
-                        <p>tags: {{ concatNotesTitle(value.tags) }}</p>
+                        <div class="flex">
+                            <USelect
+                                v-model="value.tagIdList"
+                                :items="tags"
+                                multiple
+                                class="w-full" />
+                            <UButton @click="addTag(value)">儲存</UButton>
+                        </div>
 
                         <div class="flex justify-between">
                             <UButton type="submit">更新</UButton>
@@ -100,18 +107,21 @@ import { navigateTo, useRoute } from "#imports";
 import { useToast } from "#imports";
 import { useNote } from "~/composables/note/useNote";
 
-import type { FormSubmitEvent } from "@nuxt/ui";
+import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
 import type { Note } from "~/types/Note";
 import type { Tag } from "~/types/Tag";
+import { useTag } from "~/composables/tag/useTag";
 
 const route = useRoute();
 const toast = useToast();
+const { indexNotes, createNote, updateNote, deleteNote, updateTags } =
+    useNote();
+const { indexTags } = useTag();
 
+const notes = ref<Note[]>([]);
+const tags = ref<SelectItem[]>([]);
 const noteId = ref<string>("");
 const userId = ref<string>("");
-
-const { indexNotes, createNote, updateNote, deleteNote } = useNote();
-const notes = ref<Note[]>([]);
 
 const createNoteSchema = z.object({
     title: z.string().nonempty("筆記本名稱不能為空值"),
@@ -135,11 +145,12 @@ const updateNoteSechema = z.object({
     content: z.string(),
     keypoint: z.string(),
     star: z.boolean(),
+    tags: z.array(z.string()),
 });
 
 type UpdateNoteSchema = z.output<typeof updateNoteSechema>;
 
-const concatNotesTitle = (tags: Tag[]) => {
+const concatNotesTitle = (tags: Tag[]): string => {
     return tags.map((tag) => tag.title).join(",");
 };
 
@@ -203,12 +214,22 @@ async function onUpdateNoteSubmit(event: FormSubmitEvent<UpdateNoteSchema>) {
     await getNotes();
 }
 
+async function addTag(note: Note) {
+    console.log(note.tagIdList);
+    await updateTags(userId.value, note.id, note.tagIdList);
+    toast.add({
+        title: "Success",
+        description: "The form has been submitted.",
+        color: "primary",
+    });
+}
+
 onMounted(async () => {
     const id = route.params.id as string;
     if (!id) navigateTo("/notes");
     const _userId = localStorage.getItem("userId") as string;
     if (!_userId) navigateTo("/");
-
+    tags.value = (await indexTags(_userId)).items;
     userId.value = _userId;
     noteId.value = id;
 
