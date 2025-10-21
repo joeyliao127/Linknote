@@ -1,22 +1,15 @@
-Feat:
+feat:
 
 # commit log 請遵造以下格式，並注意冒號後面有一個空格
-# 
-# <type>: <subject> {必要}
-# 
-# <body> {非必要}
-# 
-# <footer> {非必要}
 # 
 # 範例
 # feat: implementation login api function
 #
-# finished login module and integration with server login api
+# finished login module and integration with server login api (body 非必要)
 #
-# Closes OR-xxxx 
+# Closes #xxxx (footer 非必要)
 
 # <type>
-# 請遵守下列標籤
 # feat: 新功能
 # fix: Bug修復
 # chore: 調整專案設定或自動化腳本
