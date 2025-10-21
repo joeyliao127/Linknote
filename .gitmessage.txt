@@ -19,16 +19,17 @@ Feat:
 # 請遵守下列標籤
 # feat: 新功能
 # fix: Bug修復
+# chore: 調整專案設定或自動化腳本
+# style: 代碼格式改變、整理程式碼，或者移除未使用檔案或import
+# refactor: 功能重構
+# 3rd: 增加第三方
 # setup: 新增或修改設定檔
 # docs: 文檔改變
-# style: 代碼格式改變
-# refactor: 功能重構
 # perf: 性能優化
 # test: 增加測試代碼
 # build: 改變build工具
 # ci: 與ci相關的設定
 # add: 增加一些跟功能無關的檔案
-# 3rd: 增加第三方
 # 
 # <Subject>
 # 用來簡要描述影響本次變動，概述即可
