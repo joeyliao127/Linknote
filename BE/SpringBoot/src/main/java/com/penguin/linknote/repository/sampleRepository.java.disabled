@@ -1,0 +1,13 @@
+package com.penguin.linknote.repository;
+
+import com.penguin.linknote.entity.!{upper};
+
+// TODO: 更改 Jpa ID 類別
+public interface !{upper}Repository extends JpaRepository<!{upper}, UUID> {
+
+    // TODO: Sample code
+    // Page<Invitation> findByInviterId(UUID userId, Pageable pageable);
+    // Page<Invitation> findByInviteeId(UUID userId, Pageable pageable);
+    // Optional<Invitation> findByInviterIdAndInviteeId(UUID userId, UUID inviteeId);
+    // Optional<Invitation> findByIdAndInviteeId(UUID id, UUID inviteeId);
+}

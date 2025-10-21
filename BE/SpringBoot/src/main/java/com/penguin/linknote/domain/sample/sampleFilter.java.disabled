@@ -1,0 +1,11 @@
+package com.penguin.linknote.domain.!{lower};
+
+import lombok.Data;
+
+import java.util.List;
+import java.util.UUID;
+
+@Data
+public class !{upper}Filter {
+  //TODO: add filter fields
+}

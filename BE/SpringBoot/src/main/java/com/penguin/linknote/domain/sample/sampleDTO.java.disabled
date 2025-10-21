@@ -1,0 +1,31 @@
+package com.penguin.linknote.domain.!{lower};
+
+import com.penguin.linknote.entity.!{upper};
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+@Data
+@Builder
+public class !{upper} {
+	//TODO: 修改 fields
+    private UUID id;
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    //TODO: 修改 fromEntity methods
+    public static !{upper}DTO fromEntity(!{upper} !{lower}) {
+        return !{upper}DTO.builder()
+                .id(!{lower}.getId())
+                .createdAt(!{lower}.getCreatedAt())
+                .updatedAt(!{lower}.getUpdatedAt())
+                .build();
+    }
+
+    public static List<!{upper}DTO> fromEntityList(List<!{upper}> !{lower}List) {
+        return !{lower}List.stream().map(!{upper}DTO::fromEntity).toList();
+    }
+}
