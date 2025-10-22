@@ -1,6 +1,11 @@
 package com.penguin.linknote.repository;
 
 import com.penguin.linknote.entity.!{upper};
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
 
 // TODO: 更改 Jpa ID 類別
 public interface !{upper}Repository extends JpaRepository<!{upper}, UUID> {

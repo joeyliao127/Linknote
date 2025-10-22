@@ -7,19 +7,16 @@ import com.penguin.linknote.domain.!{lower}.!{upper}UpdateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}DTO;
 import com.penguin.linknote.domain.!{lower}.!{upper}Filter;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface !{upper}Service {
     // TODO: 支援 star, tag, order by desc 等 filters
-    PageResponse<!{upper}DTO> index!{upper}s(!{upper}Filter filter, PageCommand pageCommand);
+    PageResponse<!{upper}DTO> index(!{upper}Filter filter, PageCommand pageCommand);
 
-    !{upper}DTO get!{upper}ById(UUID !{lower}Id);
+    !{upper}DTO create(!{upper}CreateCommand !{lower}CreateCommand);
 
-    !{upper}DTO create!{upper}(!{upper}CreateCommand !{lower}CreateCommand);
+    !{upper}DTO update(UUID !{lower}Id, !{upper}UpdateCommand !{lower}UpdateCommand);
 
-    !{upper}DTO update!{upper}(UUID !{lower}Id, !{upper}UpdateCommand !{lower}UpdateCommand);
-
-    void delete!{upper}(UUID !{lower}Id);
+    void delete(UUID !{lower}Id);
 
 }

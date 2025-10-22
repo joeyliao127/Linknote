@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.domain.!{lower}.!{upper}Filter;
 import com.penguin.linknote.domain.!{lower}.!{upper}CreateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}UpdateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}DTO;
@@ -49,26 +50,17 @@ public class !{upper}Controller {
             // @RequestParam(required = false) String title,
             // @RequestParam(required = false) Boolean active,
             // @RequestHeader(name = "Authorization") UUID userId,
+            @ModelAttribute !{upper}Filter !{lower}Filter,
             PageCommand pageCommand)
     {
         // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
-        PageResponse<!{upper}DTO> !{lower}DTOList = !{lower}Service.index!{upper}s(userId, title, active, pageCommand);
+        PageResponse<!{upper}DTO> !{lower}DTOList = !{lower}Service.index(!{lower}Filter, pageCommand);
         return ResponseEntity.ok(!{lower}DTOList);
     }
 
-    //TODO: 修改子類別路徑
-    @GetMapping("/{!{lower}Id}/notes")
-    // TODO: customize filter params
-    // @ModelAttribute 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
-    public ResponseEntity<PageResponse<NoteDTO>> get(@ModelAttribute !{upper}Filter  noteFilter, @PathVariable UUID !{lower}Id, PageCommand pageCommand) {
-        noteFilter.set!{upper}Id(!{lower}Id);
-        PageResponse<NoteDTO> !{lower}List = !{lower}Service.index!{lower}s(!{lower}Filter, pageCommand);
-        return ResponseEntity.ok(noteList);
-    }
-
     @PostMapping
-    public ResponseEntity<!{upper}DTO> create(@RequestBody @Valid !{upper}CreateCommand !{lower}CreateCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        !{upper}DTO !{lower} = !{lower}Service.create!{upper}(!{lower}CreateCommand, userId);
+    public ResponseEntity<!{upper}DTO> create(@RequestBody @Valid !{upper}CreateCommand !{lower}CreateCommand) {
+        !{upper}DTO !{lower} = !{lower}Service.create(!{lower}CreateCommand);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(URI.create("/api/" + this.path + "/" + !{lower}.getId()))
@@ -77,14 +69,14 @@ public class !{upper}Controller {
 
     @PutMapping("/{!{lower}Id}")
     public ResponseEntity<!{upper}DTO> update(@PathVariable UUID !{lower}Id, @RequestBody @Valid !{upper}UpdateCommand !{lower}UpdateCommand) {
-        !{upper}DTO !{lower}DTO = !{lower}Service.update!{upper}(!{lower}Id, !{lower}UpdateCommand);
+        !{upper}DTO !{lower}DTO = !{lower}Service.update(!{lower}Id, !{lower}UpdateCommand);
 
         return ResponseEntity.ok(!{lower}DTO);
     }
 
     @DeleteMapping("/{!{lower}Id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable UUID !{lower}Id) {
-        !{lower}Service.delete!{upper}(!{lower}Id);
+        !{lower}Service.delete(!{lower}Id);
         return ResponseEntity.ok(new ApiResponse(true, "Delete !{lower} successfully!"));
     }
 }

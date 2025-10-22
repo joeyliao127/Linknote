@@ -3,12 +3,13 @@ package com.penguin.linknote.service.impl;
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.service.PaginationService;
-import com.penguin.linknote.domain.!{lower}.!{upper}Command;
+import com.penguin.linknote.domain.!{lower}.!{upper}CreateCommand;
+import com.penguin.linknote.domain.!{lower}.!{upper}UpdateCommand;
+import com.penguin.linknote.domain.!{lower}.!{upper}Filter;
 import com.penguin.linknote.domain.!{lower}.!{upper}DTO;
 import com.penguin.linknote.entity.!{upper};
 import com.penguin.linknote.entity.Q!{upper};
 import com.penguin.linknote.repository.!{upper}Repository;
-import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.!{upper}Service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -37,30 +38,26 @@ public class !{upper}ServiceImpl implements !{upper}Service {
     }
 
     @Override
-    public PageResponse<!{upper}DTO> index!{upper}s(String title, Boolean active, PageCommand pageCommand) {
+    public PageResponse<!{upper}DTO> index(!{upper}Filter filter, PageCommand pageCommand) {
         Q!{upper} q!{upper} = Q!{upper}.!{lower};
 
+        // TODO: 完成 q 物件查詢
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if(title != null) booleanBuilder.and(q!{upper}.title.eq(title));
-        if(active != null) booleanBuilder.and(q!{upper}.isActive.eq(active));
+        // if(title != null) booleanBuilder.and(q!{upper}.title.eq(title));
+        // if(active != null) booleanBuilder.and(q!{upper}.isActive.eq(active));
 
         JPAQuery<!{upper}> !{lower}JPAQuery = jpaQueryFactory
-                .selectFrom(q!{upper})
-                .where(booleanBuilder)
-                .orderBy(q!{upper}.title.asc());
+               .selectFrom(q!{upper})
+               .where(booleanBuilder)
+               .orderBy(q!{upper}.updatedAt.asc());
 
         return paginationService.applyPagination(!{lower}JPAQuery, pageCommand, !{upper}DTO::fromEntity);
     }
-
-
-    @Override
-    public !{upper}DTO get!{upper}ById(UUID !{lower}Id) {
-        return null;
-    }
+    
 
     @Override
-    public !{upper}DTO create!{upper}(!{upper}Command !{lower}Command) {
+    public !{upper}DTO create(!{upper}CreateCommand !{lower}Command) {
         !{upper} !{lower} = new !{upper}();
         !{lower}.setId(UUID.randomUUID());
         !{lower}.setCreatedAt(Instant.now());
@@ -70,7 +67,7 @@ public class !{upper}ServiceImpl implements !{upper}Service {
     }
 
     @Override
-    public !{upper}DTO update!{upper}(UUID !{lower}Id, !{upper}Command !{lower}Command) {
+    public !{upper}DTO update(UUID !{lower}Id, !{upper}UpdateCommand !{lower}Command) {
         !{upper} existing!{upper} = !{lower}Repository.findById(!{lower}Id).orElseThrow(() -> new EntityNotFoundException("!{upper} not found"));
         existing!{upper}.setId(!{lower}Id);
         existing!{upper}.setUpdatedAt(Instant.now());
@@ -79,7 +76,7 @@ public class !{upper}ServiceImpl implements !{upper}Service {
     }
 
     @Override
-    public void delete!{upper}(UUID !{lower}Id) {
+    public void delete(UUID !{lower}Id) {
         !{lower}Repository.deleteById(!{lower}Id);
     }
 }

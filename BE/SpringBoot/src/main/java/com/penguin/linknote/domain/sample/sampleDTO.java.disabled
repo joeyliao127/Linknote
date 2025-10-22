@@ -2,15 +2,18 @@ package com.penguin.linknote.domain.!{lower};
 
 import com.penguin.linknote.entity.!{upper};
 import lombok.Builder;
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
-public class !{upper} {
+public class !{upper}DTO {
 	//TODO: 修改 fields
     private UUID id;
     private Instant createdAt;
