@@ -1,5 +1,12 @@
 package com.penguin.linknote.service.impl;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
@@ -9,12 +16,6 @@ import com.penguin.linknote.domain.user.exception.EmailAlreadyExistException;
 import com.penguin.linknote.entity.User;
 import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.UserService;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserCreateCommand userCreateCommand) {
+    public UserDTO create(UserCreateCommand userCreateCommand) {
         Optional<User> existUser = userRepository.findByEmail(userCreateCommand.getEmail());
 
         if(existUser.isEmpty()) throw new EmailAlreadyExistException("Email already exist");

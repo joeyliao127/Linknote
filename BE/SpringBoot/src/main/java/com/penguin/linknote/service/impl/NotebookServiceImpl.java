@@ -1,5 +1,10 @@
 package com.penguin.linknote.service.impl;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.service.PaginationService;
@@ -14,11 +19,8 @@ import com.penguin.linknote.service.NotebookService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.UUID;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class NotebookServiceImpl implements NotebookService {
@@ -41,7 +43,7 @@ public class NotebookServiceImpl implements NotebookService {
     }
 
     @Override
-    public PageResponse<NotebookDTO> indexNotebooks(UUID userId, String title, Boolean active, PageCommand pageCommand) {
+    public PageResponse<NotebookDTO> index(UUID userId, String title, Boolean active, PageCommand pageCommand) {
         QNotebook qNotebook = QNotebook.notebook;
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
@@ -65,7 +67,7 @@ public class NotebookServiceImpl implements NotebookService {
     }
 
     @Override
-    public NotebookDTO createNotebook(NotebookCommand notebookCommand, UUID userId) {
+    public NotebookDTO create(NotebookCommand notebookCommand, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         Notebook notebook = new Notebook();
         notebook.setId(UUID.randomUUID());
@@ -80,7 +82,7 @@ public class NotebookServiceImpl implements NotebookService {
     }
 
     @Override
-    public NotebookDTO updateNotebook(UUID notebookId, NotebookCommand notebookCommand) {
+    public NotebookDTO update(UUID notebookId, NotebookCommand notebookCommand) {
         Notebook existingNotebook = notebookRepository.findById(notebookId).orElseThrow(() -> new EntityNotFoundException("Notebook not found"));
         existingNotebook.setId(notebookId);
         existingNotebook.setTitle(notebookCommand.getTitle() == null ? existingNotebook.getTitle() : notebookCommand.getTitle());
@@ -92,7 +94,7 @@ public class NotebookServiceImpl implements NotebookService {
     }
 
     @Override
-    public void deleteNotebook(UUID notebookId) {
+    public void delete(UUID notebookId) {
         notebookRepository.deleteById(notebookId);
     }
 }

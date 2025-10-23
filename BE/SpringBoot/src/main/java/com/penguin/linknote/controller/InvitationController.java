@@ -45,20 +45,20 @@ public class InvitationController {
     }
 
     @PostMapping
-    public ResponseEntity<InvitationDTO> createInvitation(@RequestBody @Valid InvitationCreateCommand createCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        InvitationDTO invitationDTO = invitationService.createInvitation(userId, createCommand);
+    public ResponseEntity<InvitationDTO> create(@RequestBody @Valid InvitationCreateCommand createCommand, @RequestHeader(name = "Authorization") UUID userId) {
+        InvitationDTO invitationDTO = invitationService.create(userId, createCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 
     @PutMapping
-    public ResponseEntity<InvitationDTO> updateInvitation(@RequestBody @Valid InvitationUpdateCommand updateCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        InvitationDTO invitationDTO = invitationService.updateInvitation(userId, updateCommand);
+    public ResponseEntity<InvitationDTO> update(@RequestBody @Valid InvitationUpdateCommand updateCommand, @RequestHeader(name = "Authorization") UUID userId) {
+        InvitationDTO invitationDTO = invitationService.update(userId, updateCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse> deleteInvitation(UUID invitationId) {
-        invitationService.deleteInvitation(invitationId);
+    public ResponseEntity<ApiResponse> delete(UUID invitationId) {
+        invitationService.delete(invitationId);
         return ResponseEntity.ok(new ApiResponse(true, "Delete invitation successfully!"));
     }
 

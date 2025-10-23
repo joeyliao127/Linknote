@@ -46,8 +46,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserCreateCommand userCreateCommand) {
-        UserDTO userDTO = userService.createUser(userCreateCommand);
+    public ResponseEntity<UserDTO> create(@RequestBody @Valid UserCreateCommand userCreateCommand) {
+        UserDTO userDTO = userService.create(userCreateCommand);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(URI.create("/api/" + path + "/" + userDTO.getId()))

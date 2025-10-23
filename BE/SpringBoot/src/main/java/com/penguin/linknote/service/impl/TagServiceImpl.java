@@ -1,5 +1,13 @@
 package com.penguin.linknote.service.impl;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.service.PaginationService;
@@ -8,14 +16,8 @@ import com.penguin.linknote.domain.tag.TagDTO;
 import com.penguin.linknote.entity.Tag;
 import com.penguin.linknote.repository.TagRepository;
 import com.penguin.linknote.service.TagService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.UUID;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -29,7 +31,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public PageResponse<TagDTO> indexTags(UUID userId, PageCommand pageCommand) {
+    public PageResponse<TagDTO> index(UUID userId, PageCommand pageCommand) {
         PageCommand normalPageCommand = paginationService.normalizePageCommand(pageCommand);
         Pageable pageable = PageRequest.of(normalPageCommand.getPage(), normalPageCommand.getPageSize());
         Page<Tag> tagList = tagRepository.findByUserId(userId, pageable);
@@ -38,7 +40,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDTO createTag(UUID userId, TagCommand tagCommand) {
+    public TagDTO create(UUID userId, TagCommand tagCommand) {
         Tag tag = new Tag();
 
         tag.setId(UUID.randomUUID());
@@ -51,7 +53,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDTO updateTag(UUID tagId, TagCommand tagCommand) {
+    public TagDTO update(UUID tagId, TagCommand tagCommand) {
         Tag existingTag = tagRepository.findById(tagId).orElseThrow(() -> new EntityNotFoundException("Tag Not found. TagId:" + tagId));
 
         existingTag.setId(existingTag.getId());

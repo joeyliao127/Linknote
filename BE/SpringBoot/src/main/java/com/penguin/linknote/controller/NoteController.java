@@ -31,26 +31,26 @@ public class NoteController {
     }
 
     @GetMapping("/{noteId}")
-    public ResponseEntity<NoteDTO> getNote(@PathVariable UUID noteId) {
-        NoteDTO noteDTO = noteService.getNoteById(noteId);
+    public ResponseEntity<NoteDTO> get(@PathVariable UUID noteId) {
+        NoteDTO noteDTO = noteService.get(noteId);
         return ResponseEntity.ok(noteDTO);
     }
 
     @PostMapping
     public ResponseEntity<NoteDTO> create(@RequestBody @Valid NoteCommand noteCommand) {
-        NoteDTO noteDTO = noteService.createNote(noteCommand);
+        NoteDTO noteDTO = noteService.create(noteCommand);
         return ResponseEntity.ok(noteDTO);
     }
 
     @PutMapping("/{noteId}")
     public ResponseEntity<NoteDTO> update(@PathVariable UUID noteId, @RequestBody @Valid NoteCommand noteCommand) {
-        NoteDTO noteDTO = noteService.updateNote(noteId, noteCommand);
+        NoteDTO noteDTO = noteService.update(noteId, noteCommand);
         return ResponseEntity.ok(noteDTO);
     }
 
     @DeleteMapping("{noteId}")
     public ResponseEntity<ApiResponse> delete(@PathVariable UUID noteId) {
-        noteService.deleteNote(noteId);
+        noteService.delete(noteId);
         return ResponseEntity.ok(new ApiResponse(true, "delete note successfully"));
     }
 

@@ -34,18 +34,18 @@ public class TagController {
 
     @GetMapping
     public ResponseEntity<PageResponse<TagDTO>> index(PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        PageResponse<TagDTO> tagDTOList = tagService.indexTags(userId, pageCommand);
+        PageResponse<TagDTO> tagDTOList = tagService.index(userId, pageCommand);
         return ResponseEntity.ok(tagDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<TagDTO> post(@RequestBody TagCommand tagCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        TagDTO tagDTO = tagService.createTag(userId, tagCommand);
+    public ResponseEntity<TagDTO> create(@RequestBody TagCommand tagCommand, @RequestHeader(name = "Authorization") UUID userId) {
+        TagDTO tagDTO = tagService.create(userId, tagCommand);
         return ResponseEntity.ok(tagDTO);
     }
     @PutMapping("/{tagId}")
     public ResponseEntity<TagDTO> update(@PathVariable String tagId,  @RequestBody TagCommand tagCommand) {
-        TagDTO tagDTO = tagService.updateTag(UUID.fromString(tagId), tagCommand);
+        TagDTO tagDTO = tagService.update(UUID.fromString(tagId), tagCommand);
         return ResponseEntity.ok(tagDTO);
     }
 

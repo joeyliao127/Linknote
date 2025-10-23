@@ -1,5 +1,15 @@
 package com.penguin.linknote.service.impl;
 
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.service.PaginationService;
@@ -8,23 +18,23 @@ import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteFilter;
 import com.penguin.linknote.domain.note.exception.NoteNotFoundException;
 import com.penguin.linknote.domain.tag.TagDTO;
-import com.penguin.linknote.entity.*;
+import com.penguin.linknote.entity.Note;
+import com.penguin.linknote.entity.NoteTag;
+import com.penguin.linknote.entity.NoteTagId;
+import com.penguin.linknote.entity.QNote;
+import com.penguin.linknote.entity.QNoteTag;
+import com.penguin.linknote.entity.QTag;
+import com.penguin.linknote.entity.Tag;
 import com.penguin.linknote.repository.NoteRepository;
 import com.penguin.linknote.repository.NoteTagsRepository;
 import com.penguin.linknote.repository.TagRepository;
 import com.penguin.linknote.service.NoteService;
 import com.querydsl.core.BooleanBuilder;
-
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import jakarta.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class NoteServiceImpl implements NoteService {
@@ -108,13 +118,13 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteDTO getNoteById(UUID noteId) {
+    public NoteDTO get(UUID noteId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException("Note note found."));
         return NoteDTO.fromEntity(note);
     }
 
     @Override
-    public NoteDTO createNote(NoteCommand noteCommand) {
+    public NoteDTO create(NoteCommand noteCommand) {
         Note note = new Note();
         note.setId(UUID.randomUUID());
         note.setNotebookId(UUID.fromString(noteCommand.getNotebookId()));
@@ -129,7 +139,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteDTO updateNote(UUID noteId, NoteCommand noteCommand) {
+    public NoteDTO update(UUID noteId, NoteCommand noteCommand) {
         Note exsitNote = noteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException("Note note found."));
 
         exsitNote.setId(noteId);
@@ -143,7 +153,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public void deleteNote(UUID noteId) {
+    public void delete(UUID noteId) {
         noteRepository.deleteById(noteId);
     }
 

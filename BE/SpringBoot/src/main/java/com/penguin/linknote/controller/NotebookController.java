@@ -53,12 +53,12 @@ public class NotebookController {
             PageCommand pageCommand)
     {
         // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
-        PageResponse<NotebookDTO> notebookDTOList = notebookService.indexNotebooks(userId, title, active, pageCommand);
+        PageResponse<NotebookDTO> notebookDTOList = notebookService.index(userId, title, active, pageCommand);
         return ResponseEntity.ok(notebookDTOList);
     }
 
     @GetMapping("/{notebookId}/notes")
-    public ResponseEntity<PageResponse<NoteDTO>> getNotes(@ModelAttribute NoteFilter  noteFilter, @PathVariable UUID notebookId, PageCommand pageCommand) {
+    public ResponseEntity<PageResponse<NoteDTO>> get(@ModelAttribute NoteFilter  noteFilter, @PathVariable UUID notebookId, PageCommand pageCommand) {
         noteFilter.setNotebookId(notebookId);
         PageResponse<NoteDTO> noteList = noteService.indexNotes(noteFilter, pageCommand);
         return ResponseEntity.ok(noteList);
@@ -66,7 +66,7 @@ public class NotebookController {
 
     @PostMapping
     public ResponseEntity<NotebookDTO> create(@RequestBody @Valid NotebookCommand notebookCommand, @RequestHeader(name = "Authorization") UUID userId) {
-        NotebookDTO notebook = notebookService.createNotebook(notebookCommand, userId);
+        NotebookDTO notebook = notebookService.create(notebookCommand, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(URI.create("/api/" + this.path + "/" + notebook.getId()))
@@ -75,14 +75,14 @@ public class NotebookController {
 
     @PutMapping("/{notebookId}")
     public ResponseEntity<NotebookDTO> update(@PathVariable UUID notebookId, @RequestBody @Valid NotebookCommand notebookCommand) {
-        NotebookDTO notebookDTO = notebookService.updateNotebook(notebookId, notebookCommand);
+        NotebookDTO notebookDTO = notebookService.update(notebookId, notebookCommand);
 
         return ResponseEntity.ok(notebookDTO);
     }
 
     @DeleteMapping("/{notebookId}")
     public ResponseEntity<ApiResponse> delete(@PathVariable UUID notebookId) {
-        notebookService.deleteNotebook(notebookId);
+        notebookService.delete(notebookId);
         return ResponseEntity.ok(new ApiResponse(true, "Delete notebook successfully!"));
     }
 }

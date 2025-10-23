@@ -1,5 +1,14 @@
 package com.penguin.linknote.service.impl;
 
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.service.PaginationService;
@@ -15,15 +24,8 @@ import com.penguin.linknote.repository.InvitationRepository;
 import com.penguin.linknote.repository.InvitationStatusRepository;
 import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.InvitationService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class InvitationServiceImpl implements InvitationService {
@@ -63,7 +65,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public InvitationDTO createInvitation(UUID inviteeId, InvitationCreateCommand createCommand) {
+    public InvitationDTO create(UUID inviteeId, InvitationCreateCommand createCommand) {
         Optional<User> invitee = userRepository.findByEmail(createCommand.getInviteeEmail());
         if(invitee.isEmpty()) throw new IllegalArgumentException("Email not found");
 
@@ -87,7 +89,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public InvitationDTO updateInvitation(UUID inviteeId, InvitationUpdateCommand updateCommand) {
+    public InvitationDTO update(UUID inviteeId, InvitationUpdateCommand updateCommand) {
 
         Invitation invitation = invitationRepository.findByIdAndInviteeId(updateCommand.getInvitationId(), inviteeId).orElseThrow(()-> new EntityNotFoundException("Invitation not found"));
         Invitation updatedInvitation = null;
@@ -111,7 +113,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public void deleteInvitation(UUID invitationId) {
+    public void delete(UUID invitationId) {
         invitationRepository.deleteById(invitationId);
     }
 }
