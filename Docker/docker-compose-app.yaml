@@ -15,6 +15,7 @@ services:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - BACKEND_PORT=${BACKEND_PORT}
             - PROJECT_NAME=${PROJECT_NAME}
+            - JWT_SECRET=${JWT_SECRET}
         volumes:
             - ../BE/SpringBoot/target:/app
         networks:
