@@ -10,20 +10,10 @@ DROP TABLE IF EXISTS notebooks CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
+DROP TABLE IF EXISTS user_roles CASCADE;
 DROP TABLE IF EXISTS access_policies CASCADE;
 DROP TABLE IF EXISTS operations CASCADE;
 DROP TABLE IF EXISTS resources CASCADE;
-
-CREATE TABLE access_policies (
-  id            INT           GENERATED ALWAYS AS IDENTITY,
-  title         VARCHAR(50)   NOT NULL,
-  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (title),
-  PRIMARY KEY (id)
-);
-
-INSERT INTO access_policies (title) VALUES ('ALLOW'), ('DENY');
 
 CREATE TABLE operations (
   id            INT          GENERATED ALWAYS AS IDENTITY,
@@ -63,31 +53,48 @@ CREATE TABLE role_permissions (
   role_id           INT       NOT NULL,
   resource_id       INT       NOT NULL,
   operation_id      INT       NOT NULL,
-  access_policy_id  INT       NOT NULL,
   created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_role_permission_role_id           FOREIGN KEY (role_id)           REFERENCES roles (id),
-  CONSTRAINT fk_role_permission_access_policy_id  FOREIGN KEY (access_policy_id)  REFERENCES access_policies (id),
   CONSTRAINT fk_role_permission_resource_id       FOREIGN KEY (resource_id)       REFERENCES resources (id),
   CONSTRAINT fk_role_permission_operation_id      FOREIGN KEY (operation_id)      REFERENCES operations (id),
   PRIMARY KEY (id)
 );
 
-CREATE INDEX idx_role_permission_access_policy ON role_permissions (access_policy_id);
 CREATE INDEX idx_role_permission_resource      ON role_permissions (resource_id);
 CREATE INDEX idx_role_permission_role          ON role_permissions (role_id);
 
-INSERT INTO role_permissions (role_id, resource_id, operation_id, access_policy_id) VALUES
-(1,1,1,1),(1,1,2,1),(1,1,3,1),(1,1,4,1),(1,2,1,1),(1,2,2,1),(1,2,3,1),(1,2,4,1),
-(1,3,1,1),(1,3,2,1),(1,3,3,1),(1,3,4,1),(1,4,1,1),(1,4,2,1),(1,4,3,1),(1,4,4,1),
-(1,5,1,1),(1,5,2,1),(1,5,3,1),(1,5,4,1),(2,1,1,2),(2,1,2,1),(2,1,3,2),(2,1,4,2),
-(2,2,1,1),(2,2,2,1),(2,2,3,1),(2,2,4,1),(2,3,1,1),(2,3,2,1),(2,3,3,1),(2,3,4,1),
-(2,4,1,2),(2,4,2,1),(2,4,3,2),(2,4,4,2),(2,5,1,2),(2,5,2,2),(2,5,3,2),(2,5,4,2),
-(3,1,1,2),(3,1,2,2),(3,1,3,2),(3,1,4,2),(3,2,1,2),(3,2,2,2),(3,2,3,2),(3,2,4,2),
-(3,3,1,2),(3,3,2,2),(3,3,3,2),(3,3,4,2),(3,4,1,2),(3,4,2,2),(3,4,3,2),(3,4,4,2),
-(3,5,1,2),(3,5,2,2),(3,5,3,1),(3,5,4,2),(4,1,1,2),(4,1,2,2),(4,1,3,2),(4,1,4,2),
-(4,2,1,2),(4,2,2,2),(4,2,3,2),(4,2,4,2),(4,3,1,2),(4,3,2,2),(4,3,3,2),(4,3,4,2),
-(4,4,1,2),(4,4,2,2),(4,4,3,2),(4,4,4,2),(4,5,1,2),(4,5,2,2),(4,5,3,2),(4,5,4,2);
+INSERT INTO role_permissions (role_id, resource_id, operation_id) VALUES
+(1,1,1),(1,1,2),(1,1,3),(1,1,4),(1,2,1),(1,2,2),(1,2,3),(1,2,4),
+(1,3,1),(1,3,2),(1,3,3),(1,3,4),(1,4,1),(1,4,2),(1,4,3),(1,4,4),
+(1,5,1),(1,5,2),(1,5,3),(1,5,4),(2,1,1),(2,1,2),(2,1,3),(2,1,4),
+(2,2,1),(2,2,2),(2,2,3),(2,2,4),(2,3,1),(2,3,2),(2,3,3),(2,3,4),
+(2,4,1),(2,4,2),(2,4,3),(2,4,4),(2,5,1),(2,5,2),(2,5,3),(2,5,4),
+(3,1,1),(3,1,2),(3,1,3),(3,1,4),(3,2,1),(3,2,2),(3,2,3),(3,2,4),
+(3,3,1),(3,3,2),(3,3,3),(3,3,4),(3,4,1),(3,4,2),(3,4,3),(3,4,4),
+(3,5,1),(3,5,2),(3,5,3),(3,5,4),(4,1,1),(4,1,2),(4,1,3),(4,1,4),
+(4,2,1),(4,2,2),(4,2,3),(4,2,4),(4,3,1),(4,3,2),(4,3,3),(4,3,4),
+(4,4,1),(4,4,2),(4,4,3),(4,4,4),(4,5,1),(4,5,2),(4,5,3),(4,5,4);
+
+
+CREATE TABLE resource_acl (
+  id                           BIGINT       GENERATED ALWAYS AS IDENTITY,
+  user_id                      UUID         NOT NULL,
+  role_id                      INT          NOT NULL,
+  resource_id                  INT          NOT NULL,
+  resource_instance_id         UUID         NOT NULL,
+
+  created_at     TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE (user_id, resource_id, resource_instance_id),
+
+  CONSTRAINT fk_acl_role_id FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_acl_resource_id FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_acl_user_resource ON resource_acl (user_id, resource_id, resource_instance_id);
+
 
 CREATE TABLE user_status_codes(
   id            INT           GENERATED ALWAYS AS IDENTITY,
@@ -110,9 +117,19 @@ CREATE TABLE users (
   CONSTRAINT fk_user_status_id FOREIGN KEY (user_status_id) REFERENCES user_status_codes (id),
   UNIQUE (email),
   PRIMARY KEY (id)
-);
+)
 
 CREATE INDEX idx_users_email ON Users (email);
+
+CREATE TABLE user_roles (
+  role_id       INT           NOT NULL,
+  user_id       UUID          NOT NULL,
+  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_user_role_id  FOREIGN KEY (user_id) REFERENCES users (id),
+  CONSTRAINT fk_role_user_id  FOREIGN KEY (role_id) REFERENCES roles (id),
+  PRIMARY KEY (role_id, user_id)
+);
 
 CREATE TABLE notebooks (
   id            UUID          NOT NULL,
