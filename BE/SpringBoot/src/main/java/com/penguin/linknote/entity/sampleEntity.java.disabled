@@ -18,6 +18,8 @@ import lombok.Setter;
 public class !{upper} {
 
     // TODO: 修正
+    // auto increment annotation 
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private UUID id;
 
