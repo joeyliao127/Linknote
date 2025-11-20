@@ -19,7 +19,7 @@ public class JWTProvider {
 
 	private final SecretKey key;
 
-	// 自動讀取 IoC 裡面的 SecretKey Class，在 WebSecurity Config 中有設定
+	// 自動讀取 IoC 裡面的 SecretKey Class，在 JWTConfig Config 中有設定
 	public JWTProvider(SecretKey key) {
 		this.key = key;
 	}

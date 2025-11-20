@@ -2,20 +2,41 @@ package com.penguin.linknote.domain.auth.filter;
 
 import java.io.IOException;
 
-import jakarta.servlet.Filter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.penguin.linknote.domain.auth.AuthFacade;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-public class JWTAuthenticationFilter implements Filter{
+@Component
+public class JWTAuthenticationFilter extends OncePerRequestFilter{
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		// TODO Auto-generated method stub
-				chain.doFilter(request, response);
+	private final AuthFacade authFacade;
 
+	public JWTAuthenticationFilter(AuthFacade authFacade) {
+		this.authFacade = authFacade;	
 	}
 	
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
+
+		String token = extractToken(request);
+
+		if (token != null && authFacade.verify(token)) {
+			var auth = authFacade.createAuthentication(token);
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		}
+
+		chain.doFilter(request, response);
+	}
+
+	private String extractToken(HttpServletRequest request) {
+		return request.getHeader("Authorization").substring(7);
+	}
 }

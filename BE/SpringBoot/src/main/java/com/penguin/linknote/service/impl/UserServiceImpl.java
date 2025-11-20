@@ -90,4 +90,10 @@ public class UserServiceImpl implements UserService {
         }
         return UserDTO.fromEntity(existUser.get());
     }
+
+    @Override
+    public boolean existsById(UUID userId) {
+        Optional<User> user = userRepository.findById(userId);
+        return user.isEmpty();
+    }
 }

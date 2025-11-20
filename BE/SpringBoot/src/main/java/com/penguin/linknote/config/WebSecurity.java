@@ -1,8 +1,5 @@
 package com.penguin.linknote.config;
 
-import javax.crypto.SecretKey;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,23 +10,23 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import com.penguin.linknote.domain.auth.filter.JWTAuthenticationFilter;
+import com.penguin.linknote.domain.rbac.RBACAuthorizationManager;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurity {
 
-	@Value("${jwt.secret.key}")
-	private String key;
+	private final JWTAuthenticationFilter jwtFilter;
+	private final RBACAuthorizationManager rbacManager;
 
-	@Bean
-    public SecretKey jwtSecretKey() {
-        // 從環境變量讀取,轉換成 SecretKey
-        byte[] keyBytes = Decoders.BASE64.decode(key);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+	public WebSecurity(JWTAuthenticationFilter jwtFilter, RBACAuthorizationManager rbacManager) {
+		this.jwtFilter = jwtFilter;
+		this.rbacManager = rbacManager;
+	}
+
 
 	@Bean
 	public InMemoryUserDetailsManager generateInMemoryUsers() {
@@ -52,18 +49,17 @@ public class WebSecurity {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception{
+	public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
 		return http
 				.csrf(csrf -> csrf.disable())
 				.httpBasic(Customizer.withDefaults())
 				.formLogin(Customizer.withDefaults())
+				.addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
 				.authorizeHttpRequests(req -> req
 					.requestMatchers("/api/users/token").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/users/signIn").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/users/signUp").permitAll()
-					.anyRequest().authenticated())
-				//TODO: JWTFilter
-				// .addFilterBefore(new JWTAuthenticationFilter(), BasicAuthenticationFilter.class)
+					.anyRequest().access(rbacManager))
 				.build();
 	}
 

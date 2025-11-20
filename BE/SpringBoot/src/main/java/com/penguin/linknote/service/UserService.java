@@ -17,4 +17,5 @@ public interface UserService {
     UserDTO updateUser(UserCreateCommand userCreateCommand);
     UserDTO deleteUser(UUID userId);
     UserDTO verifyUser(UserSignInCommand userSignInCommand);
+    boolean existsById(UUID userId);
 }
