@@ -1,10 +1,11 @@
 package com.penguin.linknote.domain.user.exception;
 
-import com.penguin.linknote.common.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.penguin.linknote.common.dto.ApiResponse;
 
 @RestControllerAdvice(basePackages = "com.penguin.linknote.controller.user")
 public class UserExceptionHandler {

@@ -55,7 +55,8 @@ public class UserServiceImpl implements UserService {
     public UserDTO create(UserCreateCommand userCreateCommand) {
         Optional<User> existUser = userRepository.findByEmail(userCreateCommand.getEmail());
 
-        if(existUser.isEmpty()) throw new EmailAlreadyExistException("Email already exist");
+        boolean emailExists = existUser.isPresent();
+        if(emailExists) throw new EmailAlreadyExistException("Email already exist");
 
         // TODO: hash password with salt
         User user = new User();
