@@ -21,7 +21,8 @@ public class AuthFacade {
 
 	public boolean verify(String token) {
 		var claim = provider.parseToken(token);
-		return userService.existsById(claim.getUserId());
+		boolean flag_existed = userService.existsById(claim.getUserId());
+		return flag_existed;
 	}
 
 	public Authentication createAuthentication(String token) {

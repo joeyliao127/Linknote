@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,10 +50,11 @@ public class NotebookController {
     public ResponseEntity<PageResponse<NotebookDTO>> index(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Boolean active,
-            @RequestHeader(name = "Authorization") UUID userId,
+            Authentication authorization,
             PageCommand pageCommand)
     {
         // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
+        UUID userId = (UUID) authorization.getPrincipal();
         PageResponse<NotebookDTO> notebookDTOList = notebookService.index(userId, title, active, pageCommand);
         return ResponseEntity.ok(notebookDTOList);
     }

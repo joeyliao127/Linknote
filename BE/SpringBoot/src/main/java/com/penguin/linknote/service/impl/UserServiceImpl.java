@@ -94,6 +94,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsById(UUID userId) {
         Optional<User> user = userRepository.findById(userId);
-        return user.isEmpty();
+        return !user.isEmpty();
     }
 }
