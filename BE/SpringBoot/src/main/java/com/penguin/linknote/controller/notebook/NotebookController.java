@@ -1,4 +1,4 @@
-package com.penguin.linknote.controller;
+package com.penguin.linknote.controller.notebook;
 
 import java.net.URI;
 import java.util.UUID;

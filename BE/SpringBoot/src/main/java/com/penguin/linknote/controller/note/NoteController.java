@@ -1,4 +1,4 @@
-package com.penguin.linknote.controller;
+package com.penguin.linknote.controller.note;
 
 import java.util.UUID;
 

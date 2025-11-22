@@ -1,8 +1,6 @@
-package com.penguin.linknote.controller;
+package com.penguin.linknote.controller.user;
 
 import java.net.URI;
-import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.penguin.linknote.domain.auth.AuthClaim;
-import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.domain.user.UserSignInCommand;
@@ -43,11 +40,6 @@ public class UserController {
         UserDTO userDTOList = userService.getUserByName(username);
         return ResponseEntity.ok(userDTOList);
 
-    }
-
-    @GetMapping("/notebooks")
-    public ResponseEntity<List<NotebookDTO>> getAllNotebooks(@RequestHeader(name = "Authorization") UUID userId) {
-        return ResponseEntity.ok(userService.getNotebooksByUserId(userId));
     }
 
     @PostMapping("/signUp")
