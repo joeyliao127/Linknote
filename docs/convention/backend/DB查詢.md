@@ -12,7 +12,10 @@
 
 使用 JPA 進行簡單查詢、INSERT、UPDATE、DELETE 等操作，不透過 JPA 維護 table relation，table relation 還是要看 ERD 為主
 
-目的：快速執行簡單的 sql 查詢，並且簡化 create, update, delete 等 function
+目的：
+
+-   快速執行簡單的 sql 查詢，並且簡化 create, update, delete 等 function
+-   支援 QDSL 用於快速建立 sql 字串
 
 限制：JOIN 操作一率交給 NativeSQL，JPA 不維護 relation
 
