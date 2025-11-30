@@ -120,10 +120,10 @@ import { useNotebook } from "~/composables/notebook/useNotebook";
 import { useTag } from "~/composables/tag/useTag";
 
 import type { FormSubmitEvent } from "@nuxt/ui";
-import type { Notebook, UpdateNotebookDTO } from "~/types/Notebook";
-import type { Tag, UpdateTagDTO } from "~/types/Tag";
-import type { Pagination } from "~/types";
-import type { ApiError, ApiResult } from "~/types/common";
+import type { Notebook, UpdateNotebookDTO } from "~~/types/Notebook";
+import type { Tag, UpdateTagDTO } from "~~/types/Tag";
+import type { Pagination } from "~~/types";
+import type { ApiError, ApiResult } from "~~/types/common";
 
 const { indexNotebook, createNotebook, updateNotebook, deleteNotebook } =
     useNotebook();

@@ -108,8 +108,8 @@ import { useToast } from "#imports";
 import { useNote } from "~/composables/note/useNote";
 
 import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
-import type { Note } from "~/types/Note";
-import type { Tag } from "~/types/Tag";
+import type { Note } from "~~/types/Note";
+import type { Tag } from "~~/types/Tag";
 import { useTag } from "~/composables/tag/useTag";
 
 const route = useRoute();

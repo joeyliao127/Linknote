@@ -16,7 +16,7 @@
 import FormSignIn from "~/components/FormSignIn.vue";
 import FormSignUp from "~/components/FormSignUp.vue";
 import type { TabsItem } from "@nuxt/ui";
-import type { Povider } from "~/types/User";
+import type { Povider } from "~~/types/User";
 
 const emits = defineEmits(["signIn", "signUp"]);
 

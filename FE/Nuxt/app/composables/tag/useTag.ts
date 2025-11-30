@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from "#imports";
 import { toSelection } from "../utils/useFormat";
-import type { Pagination } from "~/types";
-import type { Tag, CreateTagDTO, UpdateTagDTO } from "~/types/Tag";
+import type { Pagination } from "~~/types";
+import type { Tag, CreateTagDTO, UpdateTagDTO } from "~~/types/Tag";
 import type { SelectItem } from "@nuxt/ui";
 
 const _useTag = () => {

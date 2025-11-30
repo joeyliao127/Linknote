@@ -1,10 +1,10 @@
 import { useRuntimeConfig } from "#imports";
-import type { Pagination } from "~/types";
+import type { Pagination } from "~~/types";
 import type {
     Notebook,
     CreateNotebookDTO,
     UpdateNotebookDTO,
-} from "~/types/Notebook";
+} from "~~/types/Notebook";
 
 const _useNotebook = () => {
     const runtimeConfig = useRuntimeConfig();

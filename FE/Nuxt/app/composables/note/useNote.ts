@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from "#imports";
-import type { Pagination } from "~/types";
-import type { Note, CreateNoteDTO, UpdateNoteDTO } from "~/types/Note";
+import type { Pagination } from "~~/types";
+import type { Note, CreateNoteDTO, UpdateNoteDTO } from "~~/types/Note";
 import { toSelection } from "../utils/useFormat";
 
 const _useNote = () => {

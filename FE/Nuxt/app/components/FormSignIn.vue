@@ -58,7 +58,7 @@
 import * as z from "zod";
 import { ref } from "vue";
 import { ValidationMessages } from "#imports";
-import type { Povider } from "~/types/User";
+import type { Povider } from "~~/types/User";
 
 const emtis = defineEmits(["sign-in"]);
 

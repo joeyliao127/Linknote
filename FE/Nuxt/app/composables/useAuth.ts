@@ -1,5 +1,5 @@
 import { useAppConfig, useRuntimeConfig, useState } from "#imports";
-import type { User } from "~/types/User";
+import type { User } from "~~/types/User";
 
 export const useAuth = () => {
     const appConfig = useAppConfig();
