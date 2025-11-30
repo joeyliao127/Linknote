@@ -1,11 +1,15 @@
 package com.penguin.linknote.entity;
 
-import com.penguin.linknote.domain.notebook.NotebookDTO;
-import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
+
+import com.penguin.linknote.domain.notebook.NotebookDTO;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name="notebooks")
@@ -29,14 +33,6 @@ public class Notebook {
 
     @Column(name="updated_at")
     private Instant updatedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    public UUID getUserId() {
-        return user.getId();
-    }
 
     public Notebook() {
         this.id = UUID.randomUUID();

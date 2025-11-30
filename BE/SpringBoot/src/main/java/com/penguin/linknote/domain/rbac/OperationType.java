@@ -1,5 +1,7 @@
 package com.penguin.linknote.domain.rbac;
 
+import java.util.Map;
+
 public enum OperationType {
 	CREATE,
 	DELETE,
@@ -15,7 +17,13 @@ public enum OperationType {
 	}
 
 	public static OperationType fromHttpMethod(String method) {
-		return OperationType.from((method));
+		Map<String, String> methodToOperation = Map.of(
+			"POST", "CREATE",
+			"GET", "READ",
+			"PUT", "UPDATE",
+			"DELETE", "DELETE"
+		);
+		return OperationType.from(methodToOperation.get(method.toUpperCase()));
 	}
 }
 

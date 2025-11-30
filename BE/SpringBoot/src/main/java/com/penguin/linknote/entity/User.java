@@ -1,11 +1,13 @@
 package com.penguin.linknote.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name="users")
@@ -32,9 +34,6 @@ public class User {
 
     @Column(name="updated_at")
     private Instant updatedAt;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Notebook> notebooks;
 
     public User() {}
 

@@ -59,6 +59,8 @@ public class WebSecurity {
 					.requestMatchers("/api/users/token").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/users/signIn").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/users/signUp").permitAll()
+					.requestMatchers("/api/notebooks").permitAll()
+					.requestMatchers("/api/notes").permitAll()
 					.requestMatchers("/api/notebooks/**").access(rbacManager)
 					.requestMatchers("/api/notes/**").access(rbacManager)
 					.anyRequest().authenticated())

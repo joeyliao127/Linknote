@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.penguin.linknote.domain.notebook.NotebookDTO;
 import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.domain.user.UserSignInCommand;
@@ -44,11 +43,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserByEmail(String email) {
         return null;
-    }
-
-    @Override
-    public List<NotebookDTO> getNotebooksByUserId(UUID userId) {
-        return NotebookDTO.fromEntityList(userRepository.findAllById(userId));
     }
 
     @Override

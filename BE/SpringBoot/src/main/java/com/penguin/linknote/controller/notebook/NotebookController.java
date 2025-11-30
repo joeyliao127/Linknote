@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,11 +49,11 @@ public class NotebookController {
     public ResponseEntity<PageResponse<NotebookDTO>> index(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Boolean active,
-            Authentication authorization,
+            Authentication authentication,
             PageCommand pageCommand)
     {
         // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
-        UUID userId = (UUID) authorization.getPrincipal();
+        UUID userId = (UUID) authentication.getPrincipal();
         PageResponse<NotebookDTO> notebookDTOList = notebookService.index(userId, title, active, pageCommand);
         return ResponseEntity.ok(notebookDTOList);
     }
@@ -67,7 +66,8 @@ public class NotebookController {
     }
 
     @PostMapping
-    public ResponseEntity<NotebookDTO> create(@RequestBody @Valid NotebookCommand notebookCommand, @RequestHeader(name = "Authorization") UUID userId) {
+    public ResponseEntity<NotebookDTO> create(@RequestBody @Valid NotebookCommand notebookCommand, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         NotebookDTO notebook = notebookService.create(notebookCommand, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)

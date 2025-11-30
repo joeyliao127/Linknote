@@ -10,12 +10,15 @@ import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.common.service.PaginationService;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
+import com.penguin.linknote.domain.rbac.ResourceType;
+import com.penguin.linknote.domain.rbac.RoleType;
 import com.penguin.linknote.entity.Notebook;
 import com.penguin.linknote.entity.QNotebook;
 import com.penguin.linknote.entity.User;
 import com.penguin.linknote.repository.NotebookRepository;
 import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.NotebookService;
+import com.penguin.linknote.service.PermissionService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,15 +32,18 @@ public class NotebookServiceImpl implements NotebookService {
     private final UserRepository userRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final PaginationService paginationService;
+    private final PermissionService permissionService;
 
     public NotebookServiceImpl(
             NotebookRepository notebookRepository,
             UserRepository userRepository,
+            PermissionService permissionService,
             JPAQueryFactory jpaQueryFactory,
             PaginationService paginationService)
     {
         this.notebookRepository = notebookRepository;
         this.userRepository = userRepository;
+        this.permissionService = permissionService;
         this.jpaQueryFactory = jpaQueryFactory;
         this.paginationService = paginationService;
     }
@@ -45,10 +51,9 @@ public class NotebookServiceImpl implements NotebookService {
     @Override
     public PageResponse<NotebookDTO> index(UUID userId, String title, Boolean active, PageCommand pageCommand) {
         QNotebook qNotebook = QNotebook.notebook;
-
+        //TODO: 根據 userId 篩選有權限的 Notebook
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
-        if(userId != null) booleanBuilder.and(qNotebook.user.id.eq(userId));
         if(title != null) booleanBuilder.and(qNotebook.title.eq(title));
         if(active != null) booleanBuilder.and(qNotebook.isActive.eq(active));
 
@@ -74,11 +79,11 @@ public class NotebookServiceImpl implements NotebookService {
         notebook.setTitle(notebookCommand.getTitle());
         notebook.setDescription(notebookCommand.getDescription());
         notebook.setIsActive(true);
-        notebook.setUser(user);
         notebook.setCreatedAt(Instant.now());
         notebook.setUpdatedAt(Instant.now());
-
-        return NotebookDTO.fromEntity(notebookRepository.save(notebook));
+        Notebook savedNotebook = notebookRepository.save(notebook);
+        permissionService.addResourceRolePermission(userId, savedNotebook.getId(), RoleType.ROLE_OWNER, ResourceType.NOTEBOOK);
+        return NotebookDTO.fromEntity(savedNotebook);
     }
 
     @Override
