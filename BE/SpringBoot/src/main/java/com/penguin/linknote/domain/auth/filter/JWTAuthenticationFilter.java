@@ -59,9 +59,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && authFacade.verify(token)) {
             Authentication authentication = authFacade.createAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(request, response);
         }
 
-        chain.doFilter(request, response);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("""
+            {
+                "result": false,
+                "message": "Unauthorized: Invalid or missing token"
+            }
+        """);
+        response.getWriter().flush();
+
     }
 
     // 判斷是否為免驗證路徑
