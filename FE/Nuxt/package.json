@@ -32,6 +32,7 @@
     "devDependencies": {
         "@nuxt/devtools": "^2.5.0",
         "@nuxtjs/i18n": "^9.5.5",
+        "@sidebase/nuxt-auth": "^1.1.1",
         "@tailwindcss/typography": "^0.5.16",
         "openapi-typescript": "^6.7.6",
         "typescript": "^5.8.3",

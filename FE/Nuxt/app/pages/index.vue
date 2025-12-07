@@ -12,6 +12,9 @@
                 </UTabs>
             </div>
         </UCard>
+        <p v-if="authError" class="mt-4 text-red-500 text-sm">
+            {{ authError }}
+        </p>
     </div>
 </template>
 
@@ -21,42 +24,53 @@ import { navigateTo, useAuth } from "#imports";
 import FormSignIn from "~/components/FormSignIn.vue";
 import FormSignUp from "~/components/FormSignUp.vue";
 import type { TabsItem } from "@nuxt/ui";
-import type { Povider } from "~~/types/User";
-import type { User } from "~~/types/User";
 
-const { signIn, signUp } = useAuth();
+const { signIn } = useAuth();
 
 const isLoading = ref<boolean>(false);
-const user = ref<User>();
+const authError = ref<string | null>(null);
 
 const tabsForm: TabsItem[] = [
-    {
-        label: "SignIn",
-        slot: "signin" as const,
-    },
-    {
-        label: "SignUp",
-        slot: "signup" as const,
-    },
+    { label: "SignIn", slot: "signin" as const },
+    { label: "SignUp", slot: "signup" as const },
 ];
 
-async function handleSignIn(
-    email: string,
-    password: string,
-    provider: Povider
-) {
+async function handleSignIn(email: string, password: string) {
     isLoading.value = true;
-    const resUser = await signIn(email, password);
-    user.value = resUser;
+    authError.value = null;
+
+    const result = await signIn({
+        email,
+        password,
+        redirect: false,
+    });
+
+    if (result?.error) {
+        authError.value = result.error;
+        isLoading.value = false;
+        return;
+    }
+
     isLoading.value = false;
-    console.log(user.value);
-    navigateTo("/notebooks");
+    await navigateTo("/notebooks");
 }
 
 async function handleSignUp(email: string, username: string, password: string) {
     isLoading.value = true;
-    const resUser = await signUp(email, username, password);
-    user.value = resUser;
-    isLoading.value = false;
+    authError.value = null;
+
+    try {
+        await $fetch("/api/auth/signUp", {
+            method: "POST",
+            body: { email, password, username },
+        });
+
+        await handleSignIn(email, password);
+    } catch (error: any) {
+        authError.value =
+            error?.data?.message || error?.message || "註冊失敗，請稍後再試";
+    } finally {
+        isLoading.value = false;
+    }
 }
 </script>

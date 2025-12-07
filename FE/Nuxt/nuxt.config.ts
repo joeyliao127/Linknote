@@ -5,8 +5,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
     compatibilityDate: "2025-05-15",
     runtimeConfig: {
+        authSecret: process.env.AUTH_SECRET || "dev-auth-secret",
+        authApiBase: process.env.AUTH_API_BASE || process.env.API_URL,
         public: {
             API_URL: process.env.API_URL,
+            AUTH_API_BASE: process.env.AUTH_API_BASE || process.env.API_URL,
         },
     },
 
@@ -23,8 +26,25 @@ export default defineNuxtConfig({
     },
 
     devtools: { enabled: true },
-    modules: ["@nuxtjs/i18n", "@nuxt/ui", "@nuxt/icon", "nuxt-lucide-icons"],
+    modules: [
+        "@nuxtjs/i18n",
+        "@nuxt/ui",
+        "@nuxt/icon",
+        "nuxt-lucide-icons",
+        "@sidebase/nuxt-auth",
+    ],
 
+    auth: {
+        provider: {
+            type: "local",
+            endpoints: {
+                signIn: { path: "/signIn", method: "post" },
+                signOut: { path: "/signOut", method: "post" },
+                signUp: { path: "/signUp", method: "post" },
+                getSession: { path: "/session", method: "get" },
+            },
+        },
+    },
     i18n: {
         defaultLocale: "zh",
         locales: [
@@ -59,5 +79,13 @@ export default defineNuxtConfig({
     //icon設定
     lucide: {
         namePrefix: "lucide",
+    },
+
+    alias: {},
+
+    nitro: {
+        externals: {
+            inline: ["next-auth"],
+        },
     },
 });
