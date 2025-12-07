@@ -1,7 +1,7 @@
 package com.penguin.linknote.domain.auth.filter;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +21,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final AuthFacade authFacade;
 
     // ❶ 不需要 JWT 驗證的路徑（公開 API）
-    private static final Set<String> EXCLUDED_PATHS = Set.of(
+    private static final List<String> EXCLUDED_PREFIXES = List.of(
+        "/swagger-ui",
+        "/swagger-ui.html",
+        "/v3/api-docs",
+        "/api/v3/api-docs",
         "/api/users/signIn",
         "/api/users/signUp",
         "/api/users/token"
@@ -60,6 +64,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = authFacade.createAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
+            return;
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -76,7 +81,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     // 判斷是否為免驗證路徑
     private boolean isExcludedPath(String path) {
-        return EXCLUDED_PATHS.contains(path);
+        return EXCLUDED_PREFIXES.stream().anyMatch(path::startsWith);
     }
 
     // 安全地提取 token，不會 NPE，不會 substring 錯誤

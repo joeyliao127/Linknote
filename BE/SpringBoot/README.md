@@ -78,3 +78,15 @@ public PageResponse<TagDTO> indexTags(UUID userId, UUID noteId, PageCommand page
     return PageResponse.fromPage(tagList, TagDTO::fromEntity);
 }
 ```
+
+---
+
+## OpenAPI / Swagger UI
+
+- 產生方式：使用 `springdoc-openapi-starter-webmvc-ui` 自動掃描 `/api/**` Controller（透過 `WebConfig` 統一前綴）。
+- 存取路徑（啟動後）：
+  - Swagger UI：`/swagger-ui/index.html`
+  - OpenAPI JSON：`/api/v3/api-docs`
+  - OpenAPI YAML：`/api/v3/api-docs.yaml`
+- 安全性：`/swagger-ui/**` 與 `/api/v3/api-docs/**` 已在 `WebSecurity` 放行，其餘路徑仍受 JWT + RBAC 控制。
+- 說明：保留 `linknote-openapi.yaml` 作為設計參考，實際文件以 SpringDoc runtime 產生為主。

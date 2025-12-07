@@ -10,6 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix("/api", c -> c.isAnnotationPresent(RestController.class));
+        // 只對專案自己的 REST Controller 加上 /api 前綴，避免污染 springdoc 內建的 OpenAPI endpoint
+        configurer.addPathPrefix("/api",
+            c -> c.isAnnotationPresent(RestController.class)
+                 && !c.getPackageName().startsWith("org.springdoc"));
     }
 }

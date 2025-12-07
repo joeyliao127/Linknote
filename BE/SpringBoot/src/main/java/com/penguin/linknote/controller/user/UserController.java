@@ -1,6 +1,7 @@
 package com.penguin.linknote.controller.user;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,10 +53,10 @@ public class UserController {
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<String> signIn(@RequestBody @Valid UserSignInCommand userCreateCommand) {
+    public ResponseEntity<Map<String, Object>> signIn(@RequestBody @Valid UserSignInCommand userCreateCommand) {
         UserDTO userDTO = userService.verifyUser(userCreateCommand);
         String token = jwtService.generateToken(userDTO.getId());
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(Map.of("token", token, "userId", userDTO.getId()));
     }
 
     @GetMapping("/token")

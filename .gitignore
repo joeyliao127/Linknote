@@ -39,6 +39,7 @@ node_modules/
 .pnpm-store/
 pnpm-lock.yaml
 node-compile-cache
+api.d.ts
 
 ### MACOS
 **/.DS_Store

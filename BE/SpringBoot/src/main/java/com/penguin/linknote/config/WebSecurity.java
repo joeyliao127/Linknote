@@ -56,6 +56,11 @@ public class WebSecurity {
 				.formLogin(Customizer.withDefaults())
 				.addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
 				.authorizeHttpRequests(req -> req
+					.requestMatchers("/swagger-ui/**").permitAll()
+					.requestMatchers("/swagger-ui.html").permitAll()
+					.requestMatchers("/swagger-ui").permitAll()
+					.requestMatchers("/api/v3/api-docs/**").permitAll()
+					.requestMatchers("/v3/api-docs/**").permitAll()
 					.requestMatchers("/api/users/token").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/users/signIn").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/users/signUp").permitAll()
