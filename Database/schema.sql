@@ -1,3 +1,7 @@
+-- Convention 說明
+-- 1. Table name, column name 使用 snake 命名
+-- 2. Table name 使用負數形式命名，避免與保留字衝突，如 order, group
+
 -- Drop tables if they exist (in reverse dependency order)
 DROP TABLE IF EXISTS notebook_user_roles CASCADE;
 DROP TABLE IF EXISTS note_tags CASCADE;
