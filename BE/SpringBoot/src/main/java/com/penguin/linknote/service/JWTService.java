@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.penguin.linknote.domain.auth.AuthClaim;
 
 public interface JWTService {
-	String generateToken(UUID userId);
+	String generateToken(UUID userId, String email, String username);
 
 	Boolean verifyToken(String token);
 

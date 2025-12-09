@@ -34,8 +34,8 @@ public class JWTServiceImpl implements JWTService {
 	}
 
 	@Override
-	public String generateToken(UUID userId) {
-		return jwtProvider.generateToken(userId);
+	public String generateToken(UUID userId, String email, String username) {
+		return jwtProvider.generateToken(userId, email, username);
 	}
 
 

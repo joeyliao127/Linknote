@@ -24,7 +24,7 @@ public class JWTProvider {
 		this.key = key;
 	}
 
-	public String generateToken(UUID userId) {
+	public String generateToken(UUID userId, String email, String username) {
 
 		AuthClaim claim = new AuthClaim();
 		claim.setUserId(userId);
@@ -37,6 +37,8 @@ public class JWTProvider {
 				.add("alg", "HS256")
 				.and()
 			.claim("userId", userId)
+			.claim("email", email)
+			.claim("username", username)
 			.expiration(Date.from(expiredDate))
 			.issuedAt(Date.from(now))
 			.signWith(key)
@@ -49,7 +51,11 @@ public class JWTProvider {
 
 		AuthClaim authClaim = new AuthClaim();
 		String userId = jws.getPayload().get("userId", String.class);
+		String email = jws.getPayload().get("email", String.class);
+		String username = jws.getPayload().get("username", String.class);
 		authClaim.setUserId(UUID.fromString(userId));
+		authClaim.setEmail(email);
+		authClaim.setUsername(username);
 
 		return authClaim;
 	}

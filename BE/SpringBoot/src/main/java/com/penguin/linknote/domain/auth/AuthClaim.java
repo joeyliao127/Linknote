@@ -9,4 +9,6 @@ import lombok.Setter;
 @Setter
 public class AuthClaim {
 	private UUID userId;
+	private String email;
+	private String username;
 }

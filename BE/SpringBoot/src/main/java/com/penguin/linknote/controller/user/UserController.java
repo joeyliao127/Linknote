@@ -55,7 +55,7 @@ public class UserController {
     @PostMapping("/signIn")
     public ResponseEntity<Map<String, Object>> signIn(@RequestBody @Valid UserSignInCommand userCreateCommand) {
         UserDTO userDTO = userService.verifyUser(userCreateCommand);
-        String token = jwtService.generateToken(userDTO.getId());
+        String token = jwtService.generateToken(userDTO.getId(), userDTO.getEmail(), userDTO.getUsername());
         return ResponseEntity.ok(Map.of("token", token, "userId", userDTO.getId()));
     }
 
