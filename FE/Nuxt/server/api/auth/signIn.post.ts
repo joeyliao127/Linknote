@@ -19,21 +19,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const runtimeConfig = useRuntimeConfig();
-    const authApiBase =
-        runtimeConfig.authApiBase ||
-        runtimeConfig.public.AUTH_API_BASE ||
-        runtimeConfig.public.API_URL;
+    const apiBase = runtimeConfig.AUTH_API;
 
-    if (!authApiBase) {
-        throw createError({
-            statusCode: 500,
-            statusMessage: "未設定後端 API base（AUTH_API_BASE 或 API_URL）",
-        });
-    }
-
-    const apiBase = authApiBase.replace(/\/$/, "");
     try {
-        const res = await $fetch<{ token?: string; userId?: string }>(
+        const response = await $fetch<{ token?: string; userId?: string }>(
             `${apiBase}/users/signIn`,
             {
                 method: "POST",
@@ -41,7 +30,7 @@ export default defineEventHandler(async (event) => {
             }
         );
 
-        if (!res?.token || !res?.userId) {
+        if (!response?.token || !response?.userId) {
             throw createError({
                 statusCode: 502,
                 statusMessage: "後端登入回應不完整",
@@ -49,12 +38,16 @@ export default defineEventHandler(async (event) => {
         }
 
         const session = {
-            token: res.token,
+            token: response.token,
             user: {
-                userId: res.userId,
+                userId: response.userId,
                 email,
             },
         };
+        const sessionId = crypto.randomUUID();
+
+        // TODO: 改成用 Redis 或其他方式儲存 session，實現 Serverless Session
+        global.sessionStorage.setItem(sessionId, JSON.stringify(session));
 
         setCookie(event, SESSION_COOKIE, JSON.stringify(session), {
             httpOnly: true,

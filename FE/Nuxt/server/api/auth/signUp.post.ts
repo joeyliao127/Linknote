@@ -19,25 +19,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const runtimeConfig = useRuntimeConfig();
-    const rawBase =
-        runtimeConfig.authApiBase ||
-        runtimeConfig.public.AUTH_API_BASE ||
-        runtimeConfig.public.API_URL;
-
-    const authApiBase = rawBase?.startsWith("http")
-        ? rawBase
-        : `http://${rawBase || "springboot"}:${
-              process.env.BACKEND_PORT || 8080
-          }/api`;
-
-    if (!authApiBase) {
-        throw createError({
-            statusCode: 500,
-            statusMessage: "未設定後端 API base（AUTH_API_BASE 或 API_URL）",
-        });
-    }
-
-    const apiBase = authApiBase.replace(/\/$/, "");
+    const apiBase = runtimeConfig.public.AUTH_API_BASE;
 
     try {
         await $fetch(`${apiBase}/users/signUp`, {
@@ -47,8 +29,7 @@ export default defineEventHandler(async (event) => {
 
         return { result: true, message: "註冊成功" };
     } catch (error: any) {
-        const statusCode =
-            error?.response?.status || error?.statusCode || 500;
+        const statusCode = error?.response?.status || error?.statusCode || 500;
         const statusMessage =
             error?.data?.message || error?.message || "註冊失敗，請稍後再試";
 

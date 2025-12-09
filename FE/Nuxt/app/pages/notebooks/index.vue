@@ -125,6 +125,7 @@ import type { Tag, UpdateTagDTO } from "~~/types/Tag";
 import type { Pagination } from "~~/types";
 import type { ApiError, ApiResult } from "~~/types/common";
 
+const auth = useAuth();
 const { indexNotebook, createNotebook, updateNotebook, deleteNotebook } =
     useNotebook();
 
@@ -275,7 +276,7 @@ function clear() {
 }
 
 onMounted(async () => {
-    const _userId = localStorage.getItem("userId");
+    const _userId = auth.data.value.user.userId;
 
     if (!_userId) {
         clear();

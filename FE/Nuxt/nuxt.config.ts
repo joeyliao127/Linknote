@@ -5,11 +5,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
     compatibilityDate: "2025-05-15",
     runtimeConfig: {
-        authSecret: process.env.AUTH_SECRET || "dev-auth-secret",
-        authApiBase: process.env.AUTH_API_BASE || process.env.API_URL,
+        // 兩個 BE API Server
+        AUTH_API: process.env.AUTH_API_BASE,
+        RESOURCE_API: process.env.RESOURCE_API_BASE,
         public: {
             API_URL: process.env.API_URL,
-            AUTH_API_BASE: process.env.AUTH_API_BASE || process.env.API_URL,
         },
     },
 
@@ -34,6 +34,11 @@ export default defineNuxtConfig({
         "@sidebase/nuxt-auth",
     ],
 
+    /**
+     * Nuxt-Auth local backedn 文件：https://auth.sidebase.io/guide/local/quick-start
+     * 1. type 設定 local
+     * 2. endpoints 設定對應的 API 路徑，需要在 server/api/auth/ 下實作對應的 API，透過 Nuxt server 呼叫 Spring Boot API
+     */
     auth: {
         provider: {
             type: "local",

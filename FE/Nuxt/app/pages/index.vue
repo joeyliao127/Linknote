@@ -39,11 +39,16 @@ async function handleSignIn(email: string, password: string) {
     isLoading.value = true;
     authError.value = null;
 
-    const result = await signIn({
-        email,
-        password,
-        redirect: false,
-    });
+    const result = await signIn(
+        {
+            email,
+            password,
+            redirect: false,
+        },
+        {
+            callbackUrl: "/notebooks",
+        }
+    );
 
     if (result?.error) {
         authError.value = result.error;
@@ -51,8 +56,9 @@ async function handleSignIn(email: string, password: string) {
         return;
     }
 
-    isLoading.value = false;
-    await navigateTo("/notebooks");
+    // isLoading.value = false;
+    // console.log("------");
+    // await navigateTo("/notebooks");
 }
 
 async function handleSignUp(email: string, username: string, password: string) {
