@@ -10,6 +10,7 @@ export default defineNuxtConfig({
         RESOURCE_API: process.env.RESOURCE_API_BASE,
         public: {
             API_URL: process.env.API_URL,
+            SESSION_COOKIE: "ln_auth_session",
         },
     },
 

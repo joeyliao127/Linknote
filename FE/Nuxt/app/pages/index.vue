@@ -56,9 +56,8 @@ async function handleSignIn(email: string, password: string) {
         return;
     }
 
-    // isLoading.value = false;
-    // console.log("------");
-    // await navigateTo("/notebooks");
+    isLoading.value = false;
+    await navigateTo("/notebooks");
 }
 
 async function handleSignUp(email: string, username: string, password: string) {

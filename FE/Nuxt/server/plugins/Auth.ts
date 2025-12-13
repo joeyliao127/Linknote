@@ -25,7 +25,5 @@ export default defineNitroPlugin((nitroApp) => {
                 return storage.size;
             },
         };
-        console.log("Initialized global.sessionStorage");
-        console.log(global.sessionStorage);
     }
 });

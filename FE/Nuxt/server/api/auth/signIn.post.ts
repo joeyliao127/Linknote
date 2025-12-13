@@ -1,8 +1,10 @@
 import { defineEventHandler, readBody, createError, setCookie } from "h3";
 
+//TODO: 抽到 runtimeConfig，middleware 也要用
 const SESSION_COOKIE = "ln_auth_session";
 
 export default defineEventHandler(async (event) => {
+    const config = useRuntimeConfig();
     const body = await readBody<{
         email?: string;
         password?: string;
@@ -49,7 +51,7 @@ export default defineEventHandler(async (event) => {
         // TODO: 改成用 Redis 或其他方式儲存 session，實現 Serverless Session
         global.sessionStorage.setItem(sessionId, JSON.stringify(session));
 
-        setCookie(event, SESSION_COOKIE, JSON.stringify(session), {
+        setCookie(event, config.public.SESSION_COOKIE, sessionId, {
             httpOnly: true,
             sameSite: "lax",
             path: "/",
@@ -57,7 +59,7 @@ export default defineEventHandler(async (event) => {
             maxAge: 60 * 60 * 24 * 7, // 7 天
         });
 
-        return session;
+        return session.user.userId;
     } catch (error: any) {
         if (error?.statusCode) {
             throw error;
