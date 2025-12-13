@@ -1,3 +1,5 @@
+import { useApiError } from "../composables/useThrowApiError";
+import { ErrorCode, ErrorCodes } from "../error/ErrorCode";
 // server/middleware/session.ts
 export default defineEventHandler((event) => {
     const config = useRuntimeConfig();
@@ -5,17 +7,13 @@ export default defineEventHandler((event) => {
     const sessionId = getCookie(event, config.public.SESSION_COOKIE);
 
     if (!sessionId) {
-        // 無 session（例如：登入前的 API）
-        event.context.session = null;
-        createError({
-            statusCode: 401,
-        });
-        return;
+        // 無 session（例如：登入前的 API
+        useApiError(ErrorCodes.UNAUTHORIZED);
     }
 
     // 2. 從 global.sessionStorage 取得 session
 
-    const sessionRaw = global.sessionStorage.getItem(sessionId);
+    const sessionRaw = global.sessionStorage.getItem(sessionId as string);
 
     if (!sessionRaw) {
         event.context.session = null;
@@ -33,6 +31,5 @@ export default defineEventHandler((event) => {
     } catch (err) {
         console.error("❌ session JSON parse error:", err);
         event.context.session = null;
-        // createError()
     }
 });
