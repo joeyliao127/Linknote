@@ -6,19 +6,12 @@ import type { SelectItem } from "@nuxt/ui";
 
 const _useTag = () => {
     const runtimeConfig = useRuntimeConfig();
+    const baseURL = `${runtimeConfig.public.API_URL}/tags`;
 
-    const indexTags = async (
-        userId: string
-    ): Promise<Pagination<SelectItem>> => {
-        const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/tags`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: userId,
-                },
-            }
-        );
+    const indexTags = async (): Promise<Pagination<SelectItem>> => {
+        const response: Pagination<Tag> = await $fetch(baseURL, {
+            method: "GET",
+        });
 
         const tags: Pagination<SelectItem> = response;
         tags.items = toSelection(response.items, "title", "id");
@@ -26,49 +19,28 @@ const _useTag = () => {
         return tags;
     };
 
-    const createTag = async (userId: string, tag: CreateTagDTO) => {
-        const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/tags`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: userId,
-                },
-                body: tag,
-            }
-        );
+    const createTag = async (tag: CreateTagDTO) => {
+        const response: Pagination<Tag> = await $fetch(baseURL, {
+            method: "POST",
+            body: tag,
+        });
 
         return response;
     };
 
-    const updateTag = async (userId: string, tag: UpdateTagDTO) => {
-        const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/tags/${tag.id}`,
-            {
-                method: "PUT",
-                headers: {
-                    Authorization: userId,
-                },
-                body: tag,
-            }
-        );
+    const updateTag = async (tag: UpdateTagDTO) => {
+        const response: Pagination<Tag> = await $fetch(`${baseURL}/${tag.id}`, {
+            method: "PUT",
+            body: tag,
+        });
 
         return response;
     };
 
-    const deleteTag = async (userId: string, tagId: string) => {
-        const response: Pagination<Tag> = await $fetch(
-            `${runtimeConfig.public.API_URL}/tags`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: userId,
-                },
-                query: {
-                    tagId: tagId,
-                },
-            }
-        );
+    const deleteTag = async (tagId: string) => {
+        const response: Pagination<Tag> = await $fetch(`${baseURL}/${tagId}`, {
+            method: "DELETE",
+        });
     };
 
     return {

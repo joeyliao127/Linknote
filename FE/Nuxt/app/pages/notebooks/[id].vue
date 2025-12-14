@@ -120,7 +120,7 @@ const { indexTags } = useTag();
 
 const notes = ref<Note[]>([]);
 const tags = ref<SelectItem[]>([]);
-const noteId = ref<string>("");
+const notebookId = ref<string>("");
 const userId = ref<string>("");
 
 const createNoteSchema = z.object({
@@ -155,7 +155,7 @@ const concatNotesTitle = (tags: Tag[]): string => {
 };
 
 async function getNotes() {
-    const res = await indexNotes(userId.value, noteId.value);
+    const res = await indexNotes(userId.value, notebookId.value);
     notes.value = res.items;
 }
 
@@ -226,12 +226,8 @@ async function addTag(note: Note) {
 
 onMounted(async () => {
     const id = route.params.id as string;
-    if (!id) navigateTo("/notes");
-    const _userId = localStorage.getItem("userId") as string;
-    if (!_userId) navigateTo("/");
-    tags.value = (await indexTags(_userId)).items;
-    userId.value = _userId;
-    noteId.value = id;
+    tags.value = (await indexTags()).items;
+    notebookId.value = id;
 
     getNotes();
 });
