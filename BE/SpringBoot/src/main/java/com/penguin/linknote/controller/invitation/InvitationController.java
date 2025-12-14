@@ -3,12 +3,12 @@ package com.penguin.linknote.controller.invitation;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,25 +33,29 @@ public class InvitationController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<InvitationDTO>> indexInvitations(PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
+    public ResponseEntity<PageResponse<InvitationDTO>> indexInvitations(PageCommand pageCommand, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInviter(userId, pageCommand);
         return ResponseEntity.ok(invitationDTOList);
     }
 
     @GetMapping("/sent")
-    public ResponseEntity<PageResponse<InvitationDTO>> indexSentInvitations(PageCommand pageCommand, @RequestHeader(name = "Authorization") UUID userId) {
+    public ResponseEntity<PageResponse<InvitationDTO>> indexSentInvitations(PageCommand pageCommand, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInvitee(userId, pageCommand);
         return ResponseEntity.ok(invitationDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<InvitationDTO> create(@RequestBody @Valid InvitationCreateCommand createCommand, @RequestHeader(name = "Authorization") UUID userId) {
+    public ResponseEntity<InvitationDTO> create(@RequestBody @Valid InvitationCreateCommand createCommand, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         InvitationDTO invitationDTO = invitationService.create(userId, createCommand);
         return ResponseEntity.ok(invitationDTO);
     }
 
     @PutMapping
-    public ResponseEntity<InvitationDTO> update(@RequestBody @Valid InvitationUpdateCommand updateCommand, @RequestHeader(name = "Authorization") UUID userId) {
+    public ResponseEntity<InvitationDTO> update(@RequestBody @Valid InvitationUpdateCommand updateCommand, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         InvitationDTO invitationDTO = invitationService.update(userId, updateCommand);
         return ResponseEntity.ok(invitationDTO);
     }
