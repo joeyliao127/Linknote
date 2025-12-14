@@ -36,46 +36,28 @@ const _use!{upper} = () => {
     const runtimeConfig = useRuntimeConfig();
     const baseURL = \`\${runtimeConfig.public.API_URL}/!{lower}s\`;
 
-    const index!{upper} = async (
-        userId: string
-    ): Promise<Pagination<!{upper}>> => {
+    const index!{upper} = async (): Promise<Pagination<!{upper}>> => {
         const response: Pagination<!{upper}> = await $fetch(baseURL, {
-            method: "GET",
-            headers: {
-                Authorization: userId,
-            },
+            method: "GET"
         });
 
         return response;
     };
 
-    const create!{upper} = async (
-        userId: string,
-        !{lower}: Create!{upper}DTO
-    ) => {
+    const create!{upper} = async (!{lower}: Create!{upper}DTO) => {
         const response: Pagination<!{upper}> = await $fetch(baseURL, {
             method: "POST",
-            headers: {
-                Authorization: userId,
-            },
             body: !{lower},
         });
 
         return response;
     };
 
-    const update!{upper} = async (
-        userId: string,
-        !{lower}Id: string,
-        !{lower}: Update!{upper}DTO
-    ) => {
+    const update!{upper} = async (!{lower}Id: string, !{lower}: Update!{upper}DTO) => {
         const response: Pagination<!{upper}> = await $fetch(
             \`\${baseURL}/\${!{lower}Id}\`,
             {
                 method: "PUT",
-                headers: {
-                    Authorization: userId,
-                },
                 body: !{lower},
             }
         );
@@ -83,12 +65,9 @@ const _use!{upper} = () => {
         return response;
     };
 
-    const delete!{upper} = async (userId: string, !{lower}Id: string) => {
+    const delete!{upper} = async (!{lower}Id: string) => {
         await $fetch(\`\${baseURL}/\${!{lower}Id}\`, {
-            method: "DELETE",
-            headers: {
-                Authorization: userId,
-            },
+            method: "DELETE"
         });
     };
 

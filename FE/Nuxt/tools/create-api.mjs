@@ -39,30 +39,35 @@ function methodCheckboxPrompt() {
  */
 function createApiFile(resourceName, method) {
     const folder = path.join("../server/api", resourceName);
+    const IdFolder = path.join("../server/api", resourceName, "[id]");
     if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+    if (!fs.existsSync(IdFolder)) fs.mkdirSync(IdFolder, { recursive: true });
 
     let fileName = null;
+    let filePath = null;
 
     switch (method) {
         case "GET":
         case "POST":
             fileName = `index.${method.toLowerCase()}.ts`;
+            filePath = path.join(folder, fileName);
             break;
 
         case "PUT":
         case "DELETE":
             fileName = `[id].${method.toLowerCase()}.ts`;
+            filePath = path.join(folder, "[id]", fileName);
             break;
 
         case "CATCH_ALL":
             fileName = `[...${resourceName}].ts`;
+            filePath = path.join(folder, fileName);
             break;
 
         default:
             break;
     }
 
-    const filePath = path.join(folder, fileName);
     let template = null;
 
     // CRUD 模板
