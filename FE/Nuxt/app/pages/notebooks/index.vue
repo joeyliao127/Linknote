@@ -116,8 +116,8 @@
 </template>
 <script setup lang="ts">
 import * as z from "zod";
-import { useNotebook } from "~/composables/notebook/useNotebook";
-import { useTag } from "~/composables/tag/useTag";
+import { useNotebook } from "~/composables/model/useNotebook";
+import { useTag } from "~/composables/model/useTag";
 
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { Notebook, UpdateNotebookDTO } from "~~/types/Notebook";
@@ -174,9 +174,7 @@ async function getNotebooks() {
         return;
     }
 
-    const resNotebook: Pagination<Notebook> | ApiError = await indexNotebook(
-        userId.value
-    );
+    const resNotebook: Pagination<Notebook> | ApiError = await indexNotebook();
 
     notebooks.value = resNotebook.items;
 }
@@ -276,20 +274,6 @@ function clear() {
 }
 
 onMounted(async () => {
-    const _userId = auth.data.value.user.userId;
-
-    if (!_userId) {
-        clear();
-        navigateTo("/");
-        return;
-    }
-
-    userId.value = _userId;
-
-    if (!userId.value) {
-        navigateTo("/");
-    }
-
     await getNotebooks();
     await getTags();
 });

@@ -105,12 +105,12 @@ import * as z from "zod";
 import { computed, onMounted, ref } from "vue";
 import { navigateTo, useRoute } from "#imports";
 import { useToast } from "#imports";
-import { useNote } from "~/composables/note/useNote";
+import { useNote } from "~/composables/model/useNote";
 
 import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
 import type { Note } from "~~/types/Note";
 import type { Tag } from "~~/types/Tag";
-import { useTag } from "~/composables/tag/useTag";
+import { useTag } from "~/composables/model/useTag";
 
 const route = useRoute();
 const toast = useToast();
