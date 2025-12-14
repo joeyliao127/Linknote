@@ -1,4 +1,4 @@
-import { useApiError } from "../composables/useThrowApiError";
+import { useThrowApiError } from "../composables/useThrowApiError";
 import { ErrorCode, ErrorCodes } from "../error/ErrorCode";
 // server/middleware/session.ts
 export default defineEventHandler((event) => {
@@ -8,7 +8,7 @@ export default defineEventHandler((event) => {
 
     if (!sessionId) {
         // 無 session（例如：登入前的 API
-        useApiError(ErrorCodes.UNAUTHORIZED);
+        useThrowApiError(ErrorCodes.UNAUTHORIZED);
     }
 
     // 2. 從 global.sessionStorage 取得 session
