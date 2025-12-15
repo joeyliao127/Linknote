@@ -55,7 +55,7 @@ function createApiFile(resourceName, method) {
 
         case "PUT":
         case "DELETE":
-            fileName = `[id].${method.toLowerCase()}.ts`;
+            fileName = `index.${method.toLowerCase()}.ts`;
             filePath = path.join(folder, "[id]", fileName);
             break;
 
@@ -70,6 +70,13 @@ function createApiFile(resourceName, method) {
 
     let template = null;
 
+    const pathMap = {
+        GET: `\`\$\{config.RESOURCE_API\}/${resourceName}\``,
+        POST: `\`\$\{config.RESOURCE_API\}/${resourceName}\``,
+        PUT: `\`\$\{config.RESOURCE_API\}/${resourceName}/\$\{event.context.params?.id\}\``,
+        DELETE: `\`\$\{config.RESOURCE_API\}/${resourceName}/\$\{event.context.params?.id\}\``,
+    };
+
     // CRUD 模板
     const template_crud = `
 export default defineEventHandler(async (event) => {
@@ -82,7 +89,7 @@ export default defineEventHandler(async (event) => {
 
     // TODO(Forward): 這裡自動 forward 到 BE，可依照架構調整 path
     const config = useRuntimeConfig();
-    return await $fetch(\`\${config.RESOURCE_API}/${resourceName}\`, {
+    return await $fetch(${pathMap[method]}, {
         method: "${method === "CATCH_ALL" ? "GET/POST/PUT/DELETE" : method}",
         headers: {
             Authorization: \`Bearer \${session?.token}\`,
