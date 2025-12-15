@@ -215,7 +215,6 @@ async function onUpdateNoteSubmit(event: FormSubmitEvent<UpdateNoteSchema>) {
 }
 
 async function addTag(note: Note) {
-    console.log(note.tagIdList);
     await updateTags(userId.value, note.id, note.tagIdList);
     toast.add({
         title: "Success",

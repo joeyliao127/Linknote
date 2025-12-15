@@ -227,7 +227,6 @@ async function onNotebookSubmit(event: FormSubmitEvent<CreateNotebookSchema>) {
 
 async function getTags() {
     const res = await indexTags(userId.value);
-    console.log(res);
     tags.value = res.items;
 }
 
