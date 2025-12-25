@@ -47,9 +47,7 @@ export default defineEventHandler(async (event) => {
             },
         };
         const sessionId = crypto.randomUUID();
-
-        // TODO: 改成用 Redis 或其他方式儲存 session，實現 Serverless Session
-        global.sessionStorage.setItem(sessionId, JSON.stringify(session));
+        await useStorage("redis").setItem(sessionId, JSON.stringify(session));
 
         setCookie(event, config.public.SESSION_COOKIE, sessionId, {
             httpOnly: true,

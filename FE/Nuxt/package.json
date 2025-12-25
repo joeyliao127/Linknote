@@ -19,6 +19,7 @@
         "@tailwindcss/vite": "^4.1.11",
         "chart.js": "^4.5.0",
         "dayjs": "^1.11.13",
+        "ioredis": "^5.8.2",
         "nuxt": "^4.0.2",
         "nuxt-lucide-icons": "2.0.0",
         "tailwindcss": "^4.1.11",

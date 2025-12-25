@@ -1,6 +1,9 @@
 import { defineNuxtConfig } from "nuxt/config";
 import tailwindcss from "@tailwindcss/vite";
 
+const redisPort = Number.parseInt(process.env.REDIS_PORT || "6379", 10) || 6379;
+const redisDb = Number.parseInt(process.env.REDIS_DB || "0", 10) || 0;
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2025-05-15",
@@ -92,6 +95,14 @@ export default defineNuxtConfig({
     nitro: {
         externals: {
             inline: ["next-auth"],
+        },
+        storage: {
+            redis: {
+                driver: "redis",
+                host: "redis",
+                port: redisPort,
+                db: 0, // Defaults to 0
+            },
         },
     },
 });

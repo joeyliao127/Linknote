@@ -32,6 +32,11 @@ services:
             - API_URL=${API_URL}
             - AUTH_API_BASE=${AUTH_API_BASE}
             - RESOURCE_API_BASE=${RESOURCE_API_BASE}
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PORT=${REDIS_PORT}
+            - REDIS_USERNAME=${REDIS_USERNAME}
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+            - REDIS_DB=${REDIS_DB}
         volumes:
             - ../FE/Nuxt:/app
             # 匿名 volume，在本機的/var/lib/docker/volumes/<隨機字串>/_data中

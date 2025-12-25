@@ -1,7 +1,7 @@
 import { useThrowApiError } from "../composables/useThrowApiError";
 import { ErrorCode, ErrorCodes } from "../error/ErrorCode";
-// server/middleware/session.ts
-export default defineEventHandler((event) => {
+
+export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
 
     const sessionId = getCookie(event, config.public.SESSION_COOKIE);
@@ -11,25 +11,18 @@ export default defineEventHandler((event) => {
         useThrowApiError(ErrorCodes.UNAUTHORIZED);
     }
 
-    // 2. 從 global.sessionStorage 取得 session
-
-    const sessionRaw = global.sessionStorage.getItem(sessionId as string);
-
-    if (!sessionRaw) {
-        event.context.session = null;
-        return;
-    }
-
-    // 3. 解析 JSON（需要 try-catch 避免意外格式）
     try {
-        const session = JSON.parse(sessionRaw);
-
+        const session = await useStorage("redis").getItem(sessionId as string);
+        if (!session) {
+            event.context.session = null;
+            return;
+        }
         event.context.session = session;
 
         // Debug（可移除）
         // console.log("BFF session loaded:", session);
     } catch (err) {
-        console.error("❌ session JSON parse error:", err);
+        console.error("❌ get session error:", err);
         event.context.session = null;
     }
 });
