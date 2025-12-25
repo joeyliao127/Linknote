@@ -28,6 +28,10 @@ services:
             dockerfile: Dockerfile
         ports:
             - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+        environment:
+            - API_URL=${API_URL}
+            - AUTH_API_BASE=${AUTH_API_BASE}
+            - RESOURCE_API_BASE=${RESOURCE_API_BASE}
         volumes:
             - ../FE/Nuxt:/app
             # 匿名 volume，在本機的/var/lib/docker/volumes/<隨機字串>/_data中
