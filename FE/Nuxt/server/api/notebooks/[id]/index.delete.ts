@@ -3,11 +3,14 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
 
     const config = useRuntimeConfig();
-    return await $fetch(`${config.RESOURCE_API}/notebooks`, {
-        method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${session?.token}`,
-        },
-        query,
-    });
+    return await $fetch(
+        `${config.RESOURCE_API}/notebooks/${event.context.params?.id}`,
+        {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${session?.token}`,
+            },
+            query,
+        }
+    );
 });

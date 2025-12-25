@@ -70,18 +70,11 @@ const _useNote = () => {
         );
     };
 
-    const updateTags = async (
-        userId: string,
-        noteId: string,
-        tagIdList: string[]
-    ) => {
+    const addTags = async (noteId: string, tagIdList: string[]) => {
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notes/${noteId}/tags`,
             {
                 method: "PUT",
-                headers: {
-                    Authorization: userId,
-                },
                 body: {
                     tagIdList,
                 },
@@ -94,7 +87,7 @@ const _useNote = () => {
         createNote,
         updateNote,
         deleteNote,
-        updateTags,
+        addTags,
     };
 };
 

@@ -9,18 +9,18 @@
         </nuxt-link>
 
         <div class="grid grid-cols-3 gap-4">
-            <template v-for="value in notes">
+            <template v-for="note in notes">
                 <UCard>
                     <UForm
-                        :state="value"
+                        :state="note"
                         :schema="updateNoteSechema"
                         @submit="onUpdateNoteSubmit"
                         class="space-y-2">
                         <div class="flex flex-col">
-                            <USwitch v-model="value.star" class="self-end" />
+                            <USwitch v-model="note.star" class="self-end" />
                             <UFormField label="id" name="id">
                                 <UInput
-                                    v-model="value.id"
+                                    v-model="note.id"
                                     type="text"
                                     disabled
                                     class="w-full mt-4" />
@@ -29,35 +29,40 @@
 
                         <UFormField label="title" name="title">
                             <UInput
-                                v-model="value.title"
+                                v-model="note.title"
                                 type="text"
                                 class="w-full" />
                         </UFormField>
                         <UFormField label="keypoint" name="keypoint">
                             <UInput
-                                v-model="value.keypoint"
+                                v-model="note.keypoint"
                                 type="text"
                                 class="w-full" />
                         </UFormField>
                         <UFormField label="content" name="content">
                             <UInput
-                                v-model="value.content"
+                                v-model="note.content"
                                 type="text"
                                 class="w-full" />
                         </UFormField>
 
                         <div class="flex">
                             <USelect
-                                v-model="value.tagIdList"
-                                :items="tags"
+                                v-model="note.tagIdList"
+                                :items="tagSelection"
                                 multiple
                                 class="w-full" />
-                            <UButton @click="addTag(value)">儲存</UButton>
+                            <UButton
+                                @click.prevent="
+                                    _addTags(note.id, note.tagIdList)
+                                ">
+                                儲存
+                            </UButton>
                         </div>
 
                         <div class="flex justify-between">
                             <UButton type="submit">更新</UButton>
-                            <UButton @click="_deleteNote(value.id)">
+                            <UButton @click.prevent="_deleteNote(note.id)">
                                 刪除
                             </UButton>
                         </div>
@@ -111,11 +116,11 @@ import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
 import type { Note } from "~~/types/Note";
 import type { Tag } from "~~/types/Tag";
 import { useTag } from "~/composables/model/useTag";
+import { toSelection } from "~/composables/utils/useFormat";
 
 const route = useRoute();
 const toast = useToast();
-const { indexNotes, createNote, updateNote, deleteNote, updateTags } =
-    useNote();
+const { indexNotes, createNote, updateNote, deleteNote, addTags } = useNote();
 const { indexTags } = useTag();
 
 const notes = ref<Note[]>([]);
@@ -145,7 +150,6 @@ const updateNoteSechema = z.object({
     content: z.string(),
     keypoint: z.string(),
     star: z.boolean(),
-    tags: z.array(z.string()),
 });
 
 type UpdateNoteSchema = z.output<typeof updateNoteSechema>;
@@ -153,6 +157,10 @@ type UpdateNoteSchema = z.output<typeof updateNoteSechema>;
 const concatNotesTitle = (tags: Tag[]): string => {
     return tags.map((tag) => tag.title).join(",");
 };
+
+const tagSelection = computed(() => {
+    return toSelection(tags.value, "title", "id");
+});
 
 async function getNotes() {
     const res = await indexNotes(userId.value, notebookId.value);
@@ -214,8 +222,8 @@ async function onUpdateNoteSubmit(event: FormSubmitEvent<UpdateNoteSchema>) {
     await getNotes();
 }
 
-async function addTag(note: Note) {
-    await updateTags(userId.value, note.id, note.tagIdList);
+async function _addTags(id: string, tagIdList: string[]) {
+    await addTags(id, tagIdList);
     toast.add({
         title: "Success",
         description: "The form has been submitted.",

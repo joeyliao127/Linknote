@@ -1,16 +1,16 @@
 export default defineEventHandler(async (event) => {
     const session = event.context.session;
-    const body = await readBody(event);
-    console.log("PUT id:", event.context.params?.id);
+    const query = getQuery(event);
+
     const config = useRuntimeConfig();
     return await $fetch(
-        `${config.RESOURCE_API}/notebooks/${event.context.params?.id}`,
+        `${config.RESOURCE_API}/tags/${event.context.params?.id}`,
         {
-            method: "PUT",
+            method: "DELETE",
             headers: {
                 Authorization: `Bearer ${session?.token}`,
             },
-            body,
+            query,
         }
     );
 });

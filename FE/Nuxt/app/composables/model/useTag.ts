@@ -14,7 +14,6 @@ const _useTag = () => {
         });
 
         const tags: Pagination<SelectItem> = response;
-        tags.items = toSelection(response.items, "title", "id");
 
         return tags;
     };

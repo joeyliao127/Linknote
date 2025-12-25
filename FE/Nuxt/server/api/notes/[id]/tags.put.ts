@@ -1,10 +1,10 @@
 export default defineEventHandler(async (event) => {
     const session = event.context.session;
     const body = await readBody(event);
-    console.log("PUT id:", event.context.params?.id);
+
     const config = useRuntimeConfig();
     return await $fetch(
-        `${config.RESOURCE_API}/notebooks/${event.context.params?.id}`,
+        `${config.RESOURCE_API}/notes/${event.context.params?.id}/tags`,
         {
             method: "PUT",
             headers: {

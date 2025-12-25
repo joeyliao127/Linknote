@@ -105,7 +105,7 @@
             :schema="tagSchema"
             @submit="onTagSubmit"
             class="space-y-4">
-            <h3 class="font-semibold">新增筆記本</h3>
+            <h3 class="font-semibold">新增Tag</h3>
             <UFormField label="title" name="title" required>
                 <UInput v-model="tagState.title" type="text" class="w-full" />
             </UFormField>
@@ -226,12 +226,12 @@ async function onNotebookSubmit(event: FormSubmitEvent<CreateNotebookSchema>) {
 }
 
 async function getTags() {
-    const res = await indexTags(userId.value);
+    const res = await indexTags();
     tags.value = res.items;
 }
 
 async function _updateTag(id: string, title: string) {
-    await updateTag(userId.value, { id: id, title: title });
+    await updateTag({ id: id, title: title });
     toast.add({
         title: "Info",
         description: "Update tag success!",
@@ -243,7 +243,7 @@ async function _updateTag(id: string, title: string) {
 }
 
 async function _deleteTag(id: string) {
-    await deleteTag(userId.value, id);
+    await deleteTag(id);
     toast.add({
         title: "Info",
         description: "Delete tag success!",
@@ -256,7 +256,7 @@ async function _deleteTag(id: string) {
 
 async function onTagSubmit(event: FormSubmitEvent<CreateTagSchema>) {
     const { title } = event.data;
-    await createTag(userId.value, { title });
+    await createTag({ title });
     toast.add({
         title: "Success",
         description: "The form has been submitted.",
