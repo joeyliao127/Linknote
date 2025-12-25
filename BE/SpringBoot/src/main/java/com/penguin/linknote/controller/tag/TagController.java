@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.penguin.linknote.common.command.PageCommand;
@@ -51,8 +50,8 @@ public class TagController {
         return ResponseEntity.ok(tagDTO);
     }
 
-    @DeleteMapping
-    public ResponseEntity<ApiResponse> delete(@RequestParam String tagId) {
+    @DeleteMapping("/{tagId}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable String tagId) {
         tagService.deleteTag(UUID.fromString(tagId));
         return ResponseEntity.ok(new ApiResponse(true, "Delete tag successfully!"));
     }
