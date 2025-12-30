@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
             maxAge: 60 * 60 * 24 * 7, // 7 天
         });
 
-        return session.user.userId;
+        return session;
     } catch (error: any) {
         if (error?.statusCode) {
             throw error;
