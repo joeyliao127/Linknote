@@ -115,6 +115,8 @@
     </UCard>
 </template>
 <script setup lang="ts">
+definePageMeta({ layout: "dashboard" });
+
 import * as z from "zod";
 import { useNotebook } from "~/composables/model/useNotebook";
 import { useTag } from "~/composables/model/useTag";
