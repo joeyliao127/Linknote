@@ -269,7 +269,7 @@ async function onTagSubmit(event: FormSubmitEvent<CreateTagSchema>) {
 
 function clear() {
     localStorage.clear();
-    navigateTo("/");
+    navigateTo("/signIn");
 }
 
 onMounted(async () => {

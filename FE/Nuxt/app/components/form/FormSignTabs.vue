@@ -13,8 +13,8 @@
     </UCard>
 </template>
 <script setup lang="ts">
-import FormSignIn from "~/components/FormSignIn.vue";
-import FormSignUp from "~/components/FormSignUp.vue";
+import FormSignIn from "~/components/form/FormSignIn.vue";
+import FormSignUp from "~/components/form/FormSignUp.vue";
 import type { TabsItem } from "@nuxt/ui";
 import type { Povider } from "~~/types/User";
 
