@@ -20,7 +20,7 @@ Consequences • 初期學習曲線較高 • 系統具有更高彈性，適合�
 
 ⸻
 
-ADR-002 — Adopt Nuxt 3 as Frontend Framework
+ADR-002 — Adopt Nuxt 4 as Frontend Framework
 
 Context
 
@@ -28,7 +28,7 @@ Context
 
 Decision
 
-選擇 Nuxt 3 作為前端框架。
+選擇 Nuxt 4 作為前端框架。
 
 Rationale • Server routes (BFF) 天然支援 • 組件化 + Composition API 適合 MVVM 架構 • 支援 API proxy、runtime config、middleware
 
