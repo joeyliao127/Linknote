@@ -42,24 +42,6 @@
         <UCarousel></UCarousel>
 
         <USeparator>
-            <h2 class="title text-2xl">Card</h2>
-        </USeparator>
-
-        <div class="w-100 p-2">
-            <CardContainer>
-                <template #card>
-                    <NoteCard
-                        v-for="value in noteItems"
-                        class="w-100"
-                        :id="value.id"
-                        :title="`筆記${value.title}`"
-                        :tags="value.tags"
-                        :starred="value.starred" />
-                </template>
-            </CardContainer>
-        </div>
-
-        <USeparator>
             <h2 class="title text-2xl">筆記 Star Item</h2>
         </USeparator>
 
@@ -199,7 +181,6 @@ import { Bar } from "vue-chartjs";
 import { computed, reactive, ref } from "vue";
 import { useToast } from "#imports";
 import StarItem from "~/components/ui/StarItem.vue";
-import CardContainer from "~/components/ui/CardContainer.vue";
 import NoteCard from "~/components/ui/NoteCard.vue";
 import DashboardShell from "~/components/dashboard/DashboardShell.vue";
 import Sidebar from "~/components/dashboard/Sidebar.vue";
