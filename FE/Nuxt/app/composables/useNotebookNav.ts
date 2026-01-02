@@ -1,5 +1,4 @@
-import { ref } from "vue";
-import { useToast } from "#imports";
+import { useToast, useState } from "#imports";
 import { useNotebook } from "~/composables/model/useNotebook";
 import type { Notebook } from "~~/types/Notebook";
 
@@ -15,9 +14,10 @@ export const useNotebookNav = () => {
     const { indexNotebook } = useNotebook();
     const toast = useToast();
 
-    const items = ref<NotebookNavItem[]>([]);
-    const loading = ref(false);
-    const error = ref<string | null>(null);
+    const items = useState<NotebookNavItem[]>("notebook-nav-items", () => []);
+    const loading = useState<boolean>("notebook-nav-loading", () => false);
+    const error = useState<string | null>("notebook-nav-error", () => null);
+    const initialized = useState<boolean>("notebook-nav-initialized", () => false);
 
     const mapNotebook = (notebook: Notebook): NotebookNavItem => ({
         id: notebook.id,
@@ -27,14 +27,16 @@ export const useNotebookNav = () => {
         collab: (notebook as any).collab ?? false,
     });
 
-    const fetchNotebooks = async () => {
+    const fetchNotebooks = async (force = false) => {
         if (loading.value) return;
+        if (initialized.value && !force) return;
         loading.value = true;
         error.value = null;
 
         try {
             const res = await indexNotebook();
             items.value = (res.items || []).map(mapNotebook);
+            initialized.value = true;
         } catch (err: any) {
             error.value = err?.data?.message || err?.message || "取得筆記本失敗";
             toast.add({

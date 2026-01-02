@@ -1,283 +1,235 @@
 <template>
-    <div class="p-4 space-y-4">
-        <h1>Notebooks</h1>
-        <p>userId: {{ userId }}</p>
-        <p>email: {{ email }}</p>
-        <div class="flex gap-x-2">
-            <nuxt-link to="/">
-                <UButton>Home</UButton>
-            </nuxt-link>
+    <DashboardShell>
+        <template #sidebar>
+            <Sidebar
+                :notebooks="navItems"
+                :co-notebooks="[]"
+                :loading="navLoading"
+                :current-id="navItems[0]?.id"
+                :settings-sections="settingsSections"
+                @load-more="fetchNav"
+                @create="goCreate"
+                @go-notebooks="goNotebooks"
+                @go-co-notebooks="goCoNotebooks" />
+        </template>
 
-            <UButton @:click="clear">Clear</UButton>
-        </div>
-
-        <USeparator>
-            <h2 class="title text-2xl">Notebooks</h2>
-        </USeparator>
-        <p>notebookId: {{ notebookId }}</p>
-
-        <div class="grid grid-cols-6 gap-4">
-            <template v-for="item in notebooks" :key="item.id">
-                <UCard class="flex justify-center">
-                    <nuxt-link :to="`/notebooks/${item.id}`" class="w-full">
-                        <h3 class="font-semibold text-xl">{{ item.title }}</h3>
-                    </nuxt-link>
+        <template #header>
+            <div
+                class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+                <div class="shrink-0">
+                    <p class="text-sm text-slate-400">筆記本</p>
+                    <h1 class="text-2xl font-semibold">所有筆記本</h1>
+                </div>
+                <div
+                    class="flex justify-end items-center gap-2 flex-0 min-w-[280px] lg:min-w-[420px]">
                     <UInput
-                        v-model="item.title"
-                        label="Name"
-                        type="text"
-                        class="mt-4" />
-                    <div class="flex gap-x-2">
-                        <UButton
-                            class="w-full mt-4"
-                            @click="_updateNotebook(item.id, item.title)">
-                            更新
-                        </UButton>
-                        <UButton
-                            class="w-full mt-4"
-                            @click="_deleteNotebook(item.id)">
-                            刪除
-                        </UButton>
+                        v-model="keyword"
+                        icon="i-lucide-search"
+                        placeholder="搜尋筆記本"
+                        class="w-60"
+                        @keyup.enter="handleSearch" />
+                    <UButton
+                        class="w-24"
+                        icon="i-lucide-plus"
+                        color="accent"
+                        @click="goCreate">
+                        新增
+                    </UButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-4">
+            <UCard class="bg-slate-900/60 border-slate-800">
+                <template #header>
+                    <div class="flex items-center justify-between">
+                        <p class="font-semibold">筆記本列表</p>
+                        <p class="text-sm text-slate-400">
+                            共 {{ totalCount }} 本
+                        </p>
                     </div>
-                </UCard>
-            </template>
-        </div>
-        <UCard class="w-100">
-            <UForm
-                :state="notebookState"
-                :schema="notebookSchema"
-                @submit="onNotebookSubmit"
-                class="space-y-4">
-                <h3 class="font-semibold">新增筆記本</h3>
-                <UFormField label="title" name="title" required>
-                    <UInput
-                        v-model="notebookState.title"
-                        type="text"
-                        class="w-full" />
-                </UFormField>
-                <UFormField label="description" name="description">
-                    <UInput
-                        v-model="notebookState.description"
-                        type="text"
-                        class="w-full" />
-                </UFormField>
+                </template>
 
-                <UButton type="submit" class="w-full">Create</UButton>
-            </UForm>
-        </UCard>
+                <div
+                    ref="scrollContainer"
+                    class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 max-h-[640px] overflow-y-auto pr-1 pb-2">
+                    <template v-for="item in notebooks" :key="item.id">
+                        <NotebookCard
+                            :id="item.id"
+                            :title="item.title"
+                            :description="item.description"
+                            :note-count="item.noteCount"
+                            :updated-at="item.updatedAt"
+                            :collab="item.collab"
+                            :deletable="true"
+                            @open="openNotebook(item.id)"
+                            @delete="deleteNotebookItem(item.id)" />
+                    </template>
 
-        <USeparator>
-            <h2 class="title text-2xl">Tags</h2>
-        </USeparator>
-        <!-- <UButton @click="getTags">getTags</UButton> -->
-
-        <div class="flex gap-2">
-            <template v-for="item in tags" :key="item.id">
-                <UCard class="flex justify-center">
-                    <nuxt-link :to="`/notebooks/${item.id}`" class="w-full">
-                        <h3 class="font-semibold text-xl">{{ item.title }}</h3>
-                    </nuxt-link>
-                    <UInput
-                        v-model="item.title"
-                        label="Name"
-                        type="text"
-                        class="mt-4" />
-                    <div class="flex gap-x-2">
-                        <UButton
-                            class="w-full mt-4"
-                            @click="_updateTag(item.id, item.title)">
-                            更新
-                        </UButton>
-                        <UButton
-                            class="w-full mt-4"
-                            @click="_deleteTag(item.id)">
-                            刪除
-                        </UButton>
+                    <div
+                        ref="loadMoreTrigger"
+                        class="col-span-full flex items-center justify-center py-4 text-sm text-slate-400">
+                        <UIcon
+                            v-if="loadingMore"
+                            name="i-lucide-loader-2"
+                            class="w-5 h-5 animate-spin" />
+                        <button
+                            v-else-if="hasMore"
+                            class="flex items-center gap-1 hover:text-accent"
+                            @click="loadMore">
+                            <UIcon
+                                name="i-lucide-chevron-down"
+                                class="w-4 h-4" />
+                            載入更多
+                        </button>
+                        <span v-else>沒有更多筆記本</span>
                     </div>
-                </UCard>
-            </template>
+                </div>
+            </UCard>
         </div>
-    </div>
-
-    <UCard class="w-100">
-        <UForm
-            :state="tagState"
-            :schema="tagSchema"
-            @submit="onTagSubmit"
-            class="space-y-4">
-            <h3 class="font-semibold">新增Tag</h3>
-            <UFormField label="title" name="title" required>
-                <UInput v-model="tagState.title" type="text" class="w-full" />
-            </UFormField>
-
-            <UButton type="submit" class="w-full">Create</UButton>
-        </UForm>
-    </UCard>
+    </DashboardShell>
 </template>
+
 <script setup lang="ts">
+import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    useRouter,
+    useAuth,
+} from "#imports";
+import DashboardShell from "~/components/dashboard/DashboardShell.vue";
+import Sidebar from "~/components/dashboard/Sidebar.vue";
+import NotebookCard from "~/components/ui/NotebookCard.vue";
+import { useNotebook } from "~/composables/model/useNotebook";
+import { useNotebookNav } from "~/composables/useNotebookNav";
+import type { Notebook } from "~~/types/Notebook";
+
 definePageMeta({ layout: "dashboard" });
 
-import * as z from "zod";
-import { useNotebook } from "~/composables/model/useNotebook";
-import { useTag } from "~/composables/model/useTag";
-
-import type { FormSubmitEvent } from "@nuxt/ui";
-import type { Notebook, UpdateNotebookDTO } from "~~/types/Notebook";
-import type { Tag, UpdateTagDTO } from "~~/types/Tag";
-import type { Pagination } from "~~/types";
-import type { ApiError, ApiResult } from "~~/types/common";
-
+const router = useRouter();
 const auth = useAuth();
-const { indexNotebook, createNotebook, updateNotebook, deleteNotebook } =
-    useNotebook();
+const { indexNotebook, deleteNotebook } = useNotebook();
+const {
+    items: navItems,
+    loading: navLoading,
+    fetchNotebooks: fetchNav,
+} = useNotebookNav();
 
-const { indexTags, createTag, updateTag, deleteTag } = useTag();
+const settingsSections = [
+    { label: "個人資料", value: "profile" },
+    { label: "帳號安全", value: "security" },
+    { label: "通知", value: "notification" },
+];
 
-const toast = useToast();
-
-const userId = ref<string>("");
-const email = ref<string>("");
 const notebooks = ref<Notebook[]>([]);
-const tags = ref<Tag[]>([]);
+const page = ref(1);
+const pageSize = 12;
+const totalCount = ref(0);
+const loading = ref(false);
+const loadingMore = ref(false);
+const keyword = ref("");
+const hasMore = computed(() => notebooks.value.length < totalCount.value);
 
-const notebookId = ref<string>("");
+const loadMoreTrigger = ref<HTMLElement | null>(null);
+const scrollContainer = ref<HTMLElement | null>(null);
+let observer: IntersectionObserver | null = null;
 
-const notebookSchema = z.object({
-    title: z.string().nonempty("筆記本名稱不能為空值"),
-    description: z.string().optional(),
+const userId = computed(() => auth.data.value?.user?.id || "");
+
+const mapNotebook = (
+    item: Notebook & { noteCount?: number; collab?: boolean }
+) => ({
+    ...item,
+    noteCount: item.noteCount ?? 0,
+    collab: item.collab ?? false,
 });
 
-type CreateNotebookSchema = z.output<typeof notebookSchema>;
-
-const notebookState = reactive<Partial<CreateNotebookSchema>>({
-    title: "",
-    description: "",
-});
-
-// tags
-const tagSchema = z.object({
-    title: z.string().nonempty("筆記本名稱不能為空值"),
-});
-
-type CreateTagSchema = z.output<typeof tagSchema>;
-
-const tagState = reactive<Partial<CreateTagSchema>>({
-    title: "",
-});
-
-async function getNotebooks() {
-    if (userId.value === null) {
-        toast.add({
-            title: "Auth error",
-            description: `sign in first.`,
-
-            color: "accent",
-        });
-        return;
+async function fetchList(reset = false) {
+    if (loading.value || loadingMore.value) return;
+    if (reset) {
+        page.value = 1;
+        notebooks.value = [];
     }
+    const isLoadMore = !reset && notebooks.value.length > 0;
+    if (isLoadMore) loadingMore.value = true;
+    else loading.value = true;
 
-    const resNotebook: Pagination<Notebook> | ApiError = await indexNotebook();
-
-    notebooks.value = resNotebook.items;
+    try {
+        const res = await indexNotebook({
+            page: page.value,
+            pageSize,
+            keyword: keyword.value || undefined,
+        });
+        const mapped = (res.items || []).map(mapNotebook);
+        notebooks.value = reset ? mapped : [...notebooks.value, ...mapped];
+        totalCount.value = res.count ?? notebooks.value.length;
+        if (hasMore.value) page.value += 1;
+    } finally {
+        loading.value = false;
+        loadingMore.value = false;
+    }
 }
 
-async function _updateNotebook(
-    notebookId: string,
-    title: string,
-    active?: boolean,
-    description?: string
-) {
-    let notebook: UpdateNotebookDTO = {
-        title: title,
-    };
-    if (active !== undefined) notebook.active = active;
-    if (description !== undefined) notebook.description = description;
-    await updateNotebook(userId.value, notebookId, notebook);
-
-    toast.add({
-        title: "Info",
-        description: "Update notebook success!",
-        color: "primary",
-    });
-
-    getNotebooks();
+function handleSearch() {
+    fetchList(true);
 }
 
-async function _deleteNotebook(notebookId: string) {
-    await deleteNotebook(userId.value, notebookId);
-
-    toast.add({
-        title: "Info",
-        description: "Delete notebook success!",
-        color: "primary",
-    });
-
-    getNotebooks();
+function loadMore() {
+    if (!hasMore.value) return;
+    fetchList(false);
 }
 
-async function onNotebookSubmit(event: FormSubmitEvent<CreateNotebookSchema>) {
-    const { title, description } = event.data;
-    await createNotebook(userId.value, { title, description });
-    toast.add({
-        title: "Success",
-        description: "The form has been submitted.",
-        color: "primary",
-    });
-
-    await getNotebooks();
+async function deleteNotebookItem(id: string) {
+    await deleteNotebook(userId.value, id);
+    notebooks.value = notebooks.value.filter((n) => n.id !== id);
+    totalCount.value = Math.max(0, totalCount.value - 1);
 }
 
-async function getTags() {
-    const res = await indexTags();
-    tags.value = res.items;
+function openNotebook(id: string) {
+    router.push(`/notebooks/${id}/notes`);
 }
 
-async function _updateTag(id: string, title: string) {
-    await updateTag({ id: id, title: title });
-    toast.add({
-        title: "Info",
-        description: "Update tag success!",
-        color: "primary",
-    });
-
-    getNotebooks();
-    getTags();
+function goCreate() {
+    router.push("/notebooks/create");
 }
 
-async function _deleteTag(id: string) {
-    await deleteTag(id);
-    toast.add({
-        title: "Info",
-        description: "Delete tag success!",
-        color: "primary",
-    });
-
-    getNotebooks();
-    getTags();
+function goNotebooks() {
+    router.push("/notebooks");
 }
 
-async function onTagSubmit(event: FormSubmitEvent<CreateTagSchema>) {
-    const { title } = event.data;
-    await createTag({ title });
-    toast.add({
-        title: "Success",
-        description: "The form has been submitted.",
-        color: "primary",
-    });
-
-    await getNotebooks();
-    await getTags();
+function goCoNotebooks() {
+    router.push({ path: "/notebooks", query: { collab: "true" } });
 }
 
-function clear() {
-    localStorage.clear();
-    navigateTo("/signIn");
-}
+onMounted(() => {
+    fetchList(true);
+    if (loadMoreTrigger.value) {
+        observer = new IntersectionObserver(
+            (entries) => {
+                const [entry] = entries;
+                if (
+                    entry?.isIntersecting &&
+                    hasMore.value &&
+                    !loadingMore.value
+                ) {
+                    loadMore();
+                }
+            },
+            {
+                root: scrollContainer.value || undefined,
+                threshold: 1,
+            }
+        );
+        observer.observe(loadMoreTrigger.value);
+    }
+    fetchNav();
+});
 
-onMounted(async () => {
-    await getNotebooks();
-    await getTags();
+onBeforeUnmount(() => {
+    if (observer) observer.disconnect();
 });
 </script>
 
-<style></style>
+<style scoped></style>

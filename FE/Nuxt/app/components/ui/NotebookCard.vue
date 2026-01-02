@@ -28,7 +28,8 @@
             </slot>
         </div>
 
-        <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+        <div
+            class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-400">
             <div class="flex items-center gap-1">
                 <UIcon name="i-lucide-notebook-pen" class="w-4 h-4" />
                 <span>{{ noteCount ?? 0 }} 筆記</span>
@@ -100,9 +101,10 @@ defineEmits<{
 
 const formattedUpdatedAt = computed(() => {
     if (!props.updatedAt) return "";
-    const date = props.updatedAt instanceof Date
-        ? props.updatedAt
-        : new Date(props.updatedAt);
+    const date =
+        props.updatedAt instanceof Date
+            ? props.updatedAt
+            : new Date(props.updatedAt);
     return date.toLocaleDateString("zh-TW", {
         month: "short",
         day: "2-digit",

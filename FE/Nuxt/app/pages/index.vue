@@ -7,7 +7,8 @@
                 :loading="notebooksLoading"
                 :current-id="notebooksNav[0]?.id"
                 :settings-sections="settingsSections"
-                @load-more="fetchNotebooks" />
+                @load-more="fetchNotebooks"
+                @create="goCreate" />
         </template>
 
         <template #header>
@@ -88,6 +89,10 @@ const settingsSections = [
 
 function goNote(id: string) {
     router.push(`/notes/${id}`);
+}
+
+function goCreate() {
+    router.push("/notebooks/create");
 }
 
 onMounted(() => {

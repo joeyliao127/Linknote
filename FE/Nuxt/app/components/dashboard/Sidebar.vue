@@ -38,21 +38,18 @@
         <div class="flex-1 px-2 mt-4 overflow-y-auto space-y-3 pr-1 pb-4">
             <div
                 class="rounded-2xl border border-slate-800 bg-slate-950/60 overflow-hidden">
-                <button
-                    class="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition"
-                    @click="isMyOpen = !isMyOpen">
+                <div
+                    class="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition cursor-pointer"
+                    @click="emit('go-notebooks');dashboardNav?.goNotebooks && dashboardNav.goNotebooks();">
                     <div class="flex items-center gap-2">
                         <UIcon name="i-lucide-notebook-pen" class="w-4 h-4" />
                         <span class="font-semibold">我的筆記本</span>
                     </div>
                     <UIcon
-                        :name="
-                            isMyOpen
-                                ? 'i-lucide-chevron-down'
-                                : 'i-lucide-chevron-right'
-                        "
-                        class="w-4 h-4" />
-                </button>
+                        :name="isMyOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                        class="w-4 h-4 transition text-slate-400 hover:text-accent"
+                        @click.stop="isMyOpen = !isMyOpen" />
+                </div>
 
                 <transition name="fade">
                     <div v-if="isMyOpen" class="divide-y divide-slate-800">
@@ -113,21 +110,18 @@
 
             <div
                 class="rounded-2xl border border-slate-800 bg-slate-950/60 overflow-hidden">
-                <button
-                    class="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition"
-                    @click="isCoOpen = !isCoOpen">
+                <div
+                    class="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition cursor-pointer"
+                    @click="emit('go-co-notebooks');dashboardNav?.goCoNotebooks && dashboardNav.goCoNotebooks();">
                     <div class="flex items-center gap-2">
                         <UIcon name="i-lucide-users" class="w-4 h-4" />
                         <span class="font-semibold">共編筆記本</span>
                     </div>
                     <UIcon
-                        :name="
-                            isCoOpen
-                                ? 'i-lucide-chevron-down'
-                                : 'i-lucide-chevron-right'
-                        "
-                        class="w-4 h-4" />
-                </button>
+                        :name="isCoOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                        class="w-4 h-4 transition text-slate-400 hover:text-accent"
+                        @click.stop="isCoOpen = !isCoOpen" />
+                </div>
 
                 <transition name="fade">
                     <div v-if="isCoOpen" class="divide-y divide-slate-800">
@@ -220,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { inject, onBeforeUnmount, onMounted, ref } from "vue";
 import SettingsModal from "./SettingsModal.vue";
 
 export interface NotebookNavItem {
@@ -267,7 +261,14 @@ const emit = defineEmits<{
     (e: "select-co", id: string): void;
     (e: "load-more-co"): void;
     (e: "logout"): void;
+    (e: "go-notebooks"): void;
+    (e: "go-co-notebooks"): void;
 }>();
+
+const dashboardNav = inject<{
+    goNotebooks?: () => void;
+    goCoNotebooks?: () => void;
+} | null>("dashboard-nav", null);
 
 const isMyOpen = ref(true);
 const isCoOpen = ref(false);

@@ -10,9 +10,17 @@ const _useNotebook = () => {
     const runtimeConfig = useRuntimeConfig();
     const baseURL = `${runtimeConfig.public.API_URL}/notebooks`;
 
-    const indexNotebook = async (): Promise<Pagination<Notebook>> => {
+    const indexNotebook = async (
+        query?: {
+            page?: number;
+            pageSize?: number;
+            keyword?: string;
+            collab?: boolean;
+        }
+    ): Promise<Pagination<Notebook>> => {
         const response: Pagination<Notebook> = await $fetch(baseURL, {
             method: "GET",
+            query,
         });
 
         return response;

@@ -1,18 +1,23 @@
-<!-- 
-1. dashboard layout 只用於套用 DashboardGroup，不指定 sidebar, main, search 的實作
-2. 因為 notes, note 的 sidebar 不同，search 目標也不同
-
--->
 <template>
-    <UDashboardGroup>
-        <slot>
-            <slot name="sidebar" />
-            <slot name="main" />
-            <slot name="search" />
-        </slot>
-    </UDashboardGroup>
+    <div class="min-h-screen w-full bg-slate-950 text-slate-100 overflow-hidden">
+        <slot />
+    </div>
 </template>
+<script setup lang="ts">
+import { onMounted, provide, useRouter } from "#imports";
+import { useNotebookNav } from "~/composables/useNotebookNav";
 
-<script setup></script>
+const { fetchNotebooks } = useNotebookNav();
+const router = useRouter();
 
-<style></style>
+const dashboardNav = {
+    goNotebooks: () => router.push("/notebooks"),
+    goCoNotebooks: () => router.push({ path: "/notebooks", query: { collab: "true" } }),
+};
+
+provide("dashboard-nav", dashboardNav);
+
+onMounted(() => {
+    fetchNotebooks();
+});
+</script>

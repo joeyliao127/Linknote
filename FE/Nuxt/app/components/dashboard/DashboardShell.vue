@@ -1,7 +1,7 @@
 <template>
     <div
         :class="[
-            'bg-slate-950 text-slate-100',
+            'bg-slate-950 text-slate-100 w-full',
             fullHeight ? 'h-screen overflow-hidden' : 'min-h-[640px]',
         ]">
         <div class="flex h-full min-h-inherit">
