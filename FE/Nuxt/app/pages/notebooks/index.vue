@@ -10,7 +10,9 @@
                 @load-more="fetchNav"
                 @create="goCreate"
                 @go-notebooks="goNotebooks"
-                @go-co-notebooks="goCoNotebooks" />
+                @go-co-notebooks="goCoNotebooks"
+                @select="openNotebook"
+                @select-co="openNotebook" />
         </template>
 
         <template #header>
@@ -160,7 +162,7 @@ async function fetchList(reset = false) {
         const res = await indexNotebook({
             page: page.value,
             pageSize,
-            keyword: keyword.value || undefined,
+            title: keyword.value || undefined,
         });
         const mapped = (res.items || []).map(mapNotebook);
         notebooks.value = reset ? mapped : [...notebooks.value, ...mapped];
@@ -188,7 +190,7 @@ async function deleteNotebookItem(id: string) {
 }
 
 function openNotebook(id: string) {
-    router.push(`/notebooks/${id}/notes`);
+    navigateTo(`/notebooks/${id}/notes`);
 }
 
 function goCreate() {

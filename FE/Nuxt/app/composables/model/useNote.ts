@@ -8,7 +8,15 @@ const _useNote = () => {
 
     const indexNotes = async (
         userId: string,
-        notebookId: string
+        notebookId: string,
+        query?: {
+            page?: number;
+            pageSize?: number;
+            title?: string;
+            tagIdList?: string[] | null;
+            star?: boolean;
+            sort?: "asc" | "desc";
+        }
     ): Promise<Pagination<Note>> => {
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notebooks/${notebookId}/notes`,
@@ -17,6 +25,7 @@ const _useNote = () => {
                 headers: {
                     Authorization: userId,
                 },
+                query,
             }
         );
         const items: Note[] = [];

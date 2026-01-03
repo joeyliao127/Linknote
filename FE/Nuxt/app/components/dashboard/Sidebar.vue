@@ -214,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, ref } from "vue";
+import { inject, onBeforeUnmount, onMounted, ref, computed, watchEffect } from "vue";
 import SettingsModal from "./SettingsModal.vue";
 
 export interface NotebookNavItem {
@@ -270,7 +270,7 @@ const dashboardNav = inject<{
     goCoNotebooks?: () => void;
 } | null>("dashboard-nav", null);
 
-const isMyOpen = ref(true);
+const isMyOpen = ref(false);
 const isCoOpen = ref(false);
 const settingsOpen = ref(false);
 const activeSettings = ref(props.settingsSections[0]?.value ?? "profile");

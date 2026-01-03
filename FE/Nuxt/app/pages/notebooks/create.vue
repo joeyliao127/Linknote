@@ -10,7 +10,9 @@
                 @load-more="fetchNotebooks"
                 @create="goCreate"
                 @go-notebooks="goNotebooks"
-                @go-co-notebooks="goCoNotebooks" />
+                @go-co-notebooks="goCoNotebooks"
+                @select="openNotebook"
+                @select-co="openNotebook" />
         </template>
 
         <template #header>
@@ -19,7 +21,10 @@
                     <p class="text-sm text-slate-400">筆記本</p>
                     <h1 class="text-2xl font-semibold">建立新的筆記本</h1>
                 </div>
-                <UButton variant="ghost" icon="i-lucide-arrow-left" @click="goBack">
+                <UButton
+                    variant="ghost"
+                    icon="i-lucide-arrow-left"
+                    @click="goBack">
                     返回
                 </UButton>
             </div>
@@ -53,8 +58,11 @@ definePageMeta({ layout: "dashboard" });
 const router = useRouter();
 const toast = useToast();
 const auth = useAuth();
-const { items: notebooksNav, fetchNotebooks, loading: notebooksLoading } =
-    useNotebookNav();
+const {
+    items: notebooksNav,
+    fetchNotebooks,
+    loading: notebooksLoading,
+} = useNotebookNav();
 const { createNotebook } = useNotebook();
 
 const settingsSections = [
@@ -67,7 +75,11 @@ const submitting = ref(false);
 
 const userId = computed(() => auth.data.value?.user?.id || "");
 
-async function handleSubmit(value: { title: string; description?: string; active?: boolean }) {
+async function handleSubmit(value: {
+    title: string;
+    description?: string;
+    active?: boolean;
+}) {
     if (submitting.value) return;
     submitting.value = true;
     try {
@@ -106,6 +118,10 @@ function goNotebooks() {
 
 function goCoNotebooks() {
     router.push({ path: "/notebooks", query: { collab: "true" } });
+}
+
+function openNotebook(id: string) {
+    navigateTo(`/notebooks/${id}/notes`);
 }
 
 onMounted(() => {

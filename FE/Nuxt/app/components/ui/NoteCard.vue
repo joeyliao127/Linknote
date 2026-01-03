@@ -3,27 +3,35 @@
         class="h-full bg-slate-900/60 border-slate-800 hover:border-accent/50 transition-colors">
         <div class="flex items-start justify-between gap-3">
             <div class="space-y-1 min-w-0">
-                <p class="font-semibold text-lg leading-tight line-clamp-2">
+                <p
+                    class="font-semibold text-lg leading-tight line-clamp-2 cursor-pointer hover:text-accent transition"
+                    @click="$emit('open', id)">
                     {{ title }}
                 </p>
-                <p v-if="description" class="text-xs text-slate-400 line-clamp-2">
+                <p
+                    v-if="description"
+                    class="text-xs text-slate-400 line-clamp-2">
                     {{ description }}
                 </p>
             </div>
             <UTooltip text="收藏">
                 <UButton
-                    :color="starred ? 'yellow' : 'neutral'"
+                    color="neutral"
                     variant="ghost"
                     size="sm"
-                    :icon="
-                        starred ? 'i-lucide-star' : 'i-lucide-star-off'
-                    "
-                    @click.stop="$emit('toggle-star', id, !starred)" />
+                    class="hover:text-yellow-300"
+                    @click.stop="$emit('toggle-star', id, !starred)">
+                    <UIcon
+                        :name="starred ? 'uis-star' : 'uil-star'"
+                        class="w-4 h-4"
+                        :class="starred ? 'text-yellow-400' : 'text-slate-300'"
+                    />
+                </UButton>
             </UTooltip>
         </div>
 
         <div
-            class="mt-3 flex flex-wrap gap-2 max-h-16 overflow-hidden content-start">
+            class="mt-3 flex flex-wrap gap-2 max-h-16 overflow-hidden content-start min-h-[28px]">
             <UBadge
                 v-for="tag in tags"
                 :key="tag.id"
@@ -34,7 +42,8 @@
             </UBadge>
         </div>
 
-        <div class="mt-4 flex items-center justify-between text-xs text-slate-400">
+        <div
+            class="mt-4 flex items-center justify-between text-xs text-slate-400">
             <span v-if="updatedAt">更新 {{ formattedUpdatedAt }}</span>
 
             <div class="flex items-center gap-2 ml-auto">
@@ -44,8 +53,7 @@
                         color="red"
                         variant="ghost"
                         size="sm"
-                        @click.stop="$emit('delete', id)">
-                    </UButton>
+                        @click.stop="$emit('delete', id)"></UButton>
                 </UTooltip>
                 <UButton
                     variant="soft"
@@ -53,7 +61,7 @@
                     size="sm"
                     icon-right="i-lucide-arrow-right"
                     @click="$emit('open', id)">
-                    開啟
+                    查看
                 </UButton>
             </div>
         </div>

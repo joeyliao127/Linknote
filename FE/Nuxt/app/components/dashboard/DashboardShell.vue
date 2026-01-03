@@ -10,7 +10,8 @@
                 <slot name="sidebar" />
             </aside>
 
-            <div class="flex-1 flex flex-col min-w-0 h-full max-h-screen overflow-hidden">
+            <div
+                class="flex-1 flex flex-col min-w-0 h-full max-h-screen overflow-hidden">
                 <header
                     v-if="hasHeader"
                     class="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/80 backdrop-blur px-4 lg:px-8 py-4">

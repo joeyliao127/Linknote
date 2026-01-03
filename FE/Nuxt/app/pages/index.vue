@@ -8,7 +8,11 @@
                 :current-id="notebooksNav[0]?.id"
                 :settings-sections="settingsSections"
                 @load-more="fetchNotebooks"
-                @create="goCreate" />
+                @create="goCreate"
+                @select="openNotebook"
+                @select-co="openNotebook"
+                @go-notebooks="goNotebooks"
+                @go-co-notebooks="goCoNotebooks" />
         </template>
 
         <template #header>
@@ -29,8 +33,12 @@
                     <UCard class="bg-slate-900/60 border-slate-800">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-slate-400">{{ stat.label }}</p>
-                                <p class="text-3xl font-bold mt-1">{{ stat.value }}</p>
+                                <p class="text-sm text-slate-400">
+                                    {{ stat.label }}
+                                </p>
+                                <p class="text-3xl font-bold mt-1">
+                                    {{ stat.value }}
+                                </p>
                             </div>
                             <div
                                 class="h-10 w-10 rounded-xl bg-accent/20 text-accent flex items-center justify-center">
@@ -45,7 +53,9 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <p class="text-lg font-semibold">最近開啟的筆記</p>
-                        <p class="text-sm text-slate-400">點擊可快速前往筆記內容</p>
+                        <p class="text-sm text-slate-400">
+                            點擊可快速前往筆記內容
+                        </p>
                     </div>
                     <UButton variant="ghost" icon="i-lucide-arrow-right">
                         查看全部
@@ -78,8 +88,11 @@ definePageMeta({ layout: "dashboard" });
 
 const router = useRouter();
 const { overview, recentNotes } = useDashboardMock();
-const { items: notebooksNav, fetchNotebooks, loading: notebooksLoading } =
-    useNotebookNav();
+const {
+    items: notebooksNav,
+    fetchNotebooks,
+    loading: notebooksLoading,
+} = useNotebookNav();
 
 const settingsSections = [
     { label: "個人資料", value: "profile" },
@@ -93,6 +106,18 @@ function goNote(id: string) {
 
 function goCreate() {
     router.push("/notebooks/create");
+}
+
+function openNotebook(id: string) {
+    navigateTo(`/notebooks/${id}/notes`);
+}
+
+function goNotebooks() {
+    router.push("/notebooks");
+}
+
+function goCoNotebooks() {
+    router.push({ path: "/notebooks", query: { collab: "true" } });
 }
 
 onMounted(() => {
