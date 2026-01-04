@@ -7,7 +7,6 @@ const _useNote = () => {
     const runtimeConfig = useRuntimeConfig();
 
     const indexNotes = async (
-        userId: string,
         notebookId: string,
         query?: {
             page?: number;
@@ -22,9 +21,6 @@ const _useNote = () => {
             `${runtimeConfig.public.API_URL}/notebooks/${notebookId}/notes`,
             {
                 method: "GET",
-                headers: {
-                    Authorization: userId,
-                },
                 query,
             }
         );
@@ -37,14 +33,22 @@ const _useNote = () => {
         return response;
     };
 
-    const createNote = async (userId: string, note: CreateNoteDTO) => {
+    const getNote = async (noteId: string): Promise<Note> => {
+        const response: Note = await $fetch(
+            `${runtimeConfig.public.API_URL}/notes/${noteId}`,
+            {
+                method: "GET",
+            }
+        );
+        // response.tagIdList = response.tags.map((item) => item.id);
+        return response;
+    };
+
+    const createNote = async (note: CreateNoteDTO) => {
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notes`,
             {
                 method: "POST",
-                headers: {
-                    Authorization: userId,
-                },
                 body: note,
             }
         );
@@ -52,14 +56,11 @@ const _useNote = () => {
         return response;
     };
 
-    const updateNote = async (userId: string, note: UpdateNoteDTO) => {
+    const updateNote = async (note: UpdateNoteDTO) => {
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notes/${note.id}`,
             {
                 method: "PUT",
-                headers: {
-                    Authorization: userId,
-                },
                 body: note,
             }
         );
@@ -67,14 +68,11 @@ const _useNote = () => {
         return response;
     };
 
-    const deleteNote = async (userId: string, noteId: string) => {
+    const deleteNote = async (noteId: string) => {
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notes/${noteId}`,
             {
                 method: "DELETE",
-                headers: {
-                    Authorization: userId,
-                },
             }
         );
     };
@@ -93,6 +91,7 @@ const _useNote = () => {
 
     return {
         indexNotes,
+        getNote,
         createNote,
         updateNote,
         deleteNote,

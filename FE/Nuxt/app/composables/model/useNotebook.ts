@@ -24,6 +24,14 @@ const _useNotebook = () => {
         return response;
     };
 
+    const getNotebook = async (notebookId: string) => {
+        const response: Notebook = await $fetch(`${baseURL}/${notebookId}`, {
+            method: "GET",
+        });
+
+        return response;
+    };
+
     const createNotebook = async (
         userId: string,
         notebook: CreateNotebookDTO
@@ -72,6 +80,7 @@ const _useNotebook = () => {
 
     return {
         indexNotebook,
+        getNotebook,
         createNotebook,
         updateNotebook,
         deleteNotebook,

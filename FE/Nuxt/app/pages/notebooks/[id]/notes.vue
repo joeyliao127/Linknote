@@ -160,7 +160,7 @@ async function fetchNotes(reset = false) {
     if (isLoadMore) loadingMore.value = true;
     else loading.value = true;
     try {
-        const res = await indexNotes(userId.value, notebookId.value, {
+        const res = await indexNotes(notebookId.value, {
             page: page.value,
             pageSize,
             title: noteFilter.keyword || undefined,
@@ -189,7 +189,7 @@ async function fetchTags() {
 async function handleCreate() {
     creating.value = true;
     try {
-        const res = await createNote(userId.value, {
+        const res = await createNote({
             title: "unknow",
             notebookId: notebookId.value,
             keypoint: "",
@@ -233,12 +233,12 @@ async function toggleNoteStar(id: string, next: boolean) {
     const target = notes.value.find((n) => n.id === id);
     if (!target) return;
     target.star = next;
-    await updateNote(userId.value, { ...target, notebookId: notebookId.value });
+    await updateNote({ ...target, notebookId: notebookId.value });
 }
 
 function deleteNoteItem(id: string) {
     dialogs.confirm("確定刪除？", "通知", async () => {
-        await deleteNote(userId.value, id);
+        await deleteNote(id);
         notes.value = notes.value.filter((n) => n.id !== id);
         totalCount.value = Math.max(0, totalCount.value - 1);
     });
