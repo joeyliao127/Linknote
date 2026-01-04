@@ -67,8 +67,9 @@ public class NotebookServiceImpl implements NotebookService {
 
 
     @Override
-    public NotebookDTO getNotebookById(UUID notebookId) {
-        return null;
+    public NotebookDTO get(UUID notebookId) {
+        Notebook notebook = notebookRepository.findById(notebookId).orElseThrow();
+        return NotebookDTO.fromEntity(notebook);
     }
 
     @Override

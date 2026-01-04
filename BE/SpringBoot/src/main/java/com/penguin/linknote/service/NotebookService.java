@@ -10,7 +10,7 @@ import com.penguin.linknote.domain.notebook.NotebookDTO;
 public interface NotebookService {
     PageResponse<NotebookDTO> index(UUID userId, String title, Boolean active, PageCommand pageCommand);
 
-    NotebookDTO getNotebookById(UUID notebookId);
+    NotebookDTO get(UUID notebookId);
 
     NotebookDTO create(NotebookCommand notebookCommand, UUID userId);
 

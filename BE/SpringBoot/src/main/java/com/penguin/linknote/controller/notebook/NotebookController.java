@@ -58,8 +58,16 @@ public class NotebookController {
         return ResponseEntity.ok(notebookDTOList);
     }
 
+    @GetMapping("/{notebookId}")
+    public ResponseEntity<NotebookDTO> get(@PathVariable UUID notebookId) {
+        NotebookDTO notebook = notebookService.get(notebookId);
+        return ResponseEntity.ok(notebook);
+        
+    }
+    
+
     @GetMapping("/{notebookId}/notes")
-    public ResponseEntity<PageResponse<NoteDTO>> get(@ModelAttribute NoteFilter  noteFilter, @PathVariable UUID notebookId, PageCommand pageCommand) {
+    public ResponseEntity<PageResponse<NoteDTO>> indexNotes(@ModelAttribute NoteFilter  noteFilter, @PathVariable UUID notebookId, PageCommand pageCommand) {
         noteFilter.setNotebookId(notebookId);
         PageResponse<NoteDTO> noteList = noteService.indexNotes(noteFilter, pageCommand);
         return ResponseEntity.ok(noteList);
