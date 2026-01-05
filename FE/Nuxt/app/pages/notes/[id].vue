@@ -13,46 +13,101 @@
 
         <template #header>
             <div
-                class="flex justify-between items-center border-y border-gray-800 px-2 h-12">
+                class="flex justify-between items-center border-b border-gray-500 px-2 h-12">
                 <template v-if="currentNote">
                     <UButton
-                        color="text-slate-100"
+                        color="gray"
                         variant="ghost"
                         class="hover:bg-gray-800"
                         icon="i-lucide-menu"
                         @click="isSidebarOpen = true" />
 
-                    <div
-                        class="flex items-center h-8 border border-gray-900 text-slate-100 cursor-pointer hover:border-gray-500 pl-4 pr-2 rounded-md">
-                        <p class="mr-2">{{ currentNote.title }}</p>
-                        <UButton
-                            color="text-slate-100"
-                            variant="ghost"
-                            icon="i-lucide-pen" />
-                    </div>
+                    <FormTitleEditor
+                        v-model="currentNote.title"
+                        @change="saveNote" />
 
                     <div class="flex items-center gap-x-2">
                         <UButton
                             icon="i-lucide-tag"
                             class="hover:bg-gray-800"
-                            color="slate-100" />
+                            color="gray"
+                            variant="ghost" />
                         <StarButton
                             :id="currentNote.id"
                             :stared="currentNote.star"
-                            size="lg"
                             @change="toggleStar" />
-
                         <UButton
                             icon="i-lucide-trash"
                             class="hover:bg-gray-800"
-                            color="slate-100" />
+                            color="gray"
+                            variant="ghost"
+                            @click="handleDelete" />
                     </div>
                 </template>
             </div>
         </template>
 
         <template #main>
-            <p>main</p>
+            <p>{{ currentNote }}</p>
+            <div v-if="currentNote" class="h-full flex bg-gray-900">
+                <!-- Left Panel - Note Content -->
+                <ResizablePanel
+                    orientation="vertical"
+                    :default-size="leftPanelWidth"
+                    :min-size="400"
+                    :max-size="1200"
+                    storage-key="note-left-panel-width">
+                    <NoteEditor
+                        v-model="currentNote.content"
+                        title="筆記內容"
+                        placeholder="在這裡開始撰寫筆記..."
+                        :default-height="600"
+                        :min-height="300"
+                        :max-height="1000"
+                        storage-key="note-content-height"
+                        @change="handleContentChange" />
+                </ResizablePanel>
+
+                <!-- Right Panel - Keypoint, Question, Tags -->
+                <div class="flex-1 flex flex-col overflow-hidden">
+                    <!-- Question Editor -->
+                    <NoteEditor
+                        v-model="currentNote.question"
+                        title="問題"
+                        subtitle="這篇筆記想解決什麼問題或目的是什麼？"
+                        placeholder="記錄這篇筆記要解決的問題..."
+                        :default-height="questionHeight"
+                        :min-height="150"
+                        :max-height="600"
+                        storage-key="note-question-height"
+                        @change="handleQuestionChange" />
+
+                    <!-- Keypoint Editor -->
+                    <NoteEditor
+                        v-model="currentNote.keypoint"
+                        title="重點整理"
+                        subtitle="此區塊可簡單記錄概要"
+                        placeholder="記錄重點摘要..."
+                        :default-height="keypointHeight"
+                        :min-height="150"
+                        :max-height="600"
+                        storage-key="note-keypoint-height"
+                        @change="handleKeypointChange" />
+
+                    <!-- Tags Section -->
+                    <div class="border border-slate-700 bg-slate-900 p-4 h-40">
+                        <h3 class="text-sm font-semibold text-slate-100 mb-3">
+                            標籤
+                        </h3>
+                        <div class="h-[100px] overflow-y-auto">
+                            <UInputTags
+                                v-model="currentNote.tagIdList"
+                                placeholder="新增標籤..."
+                                @update:model-value="handleTagsChange" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </template>
     </NoteShell>
 </template>
@@ -60,53 +115,58 @@
 <script setup lang="ts">
 definePageMeta({ layout: "main" });
 
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { NoteShell } from "#components";
 import StarButton from "~/components/ui/StarButton.vue";
-import NoteSidebar from "~/components/note/NoteSidebar.vue"; // 根據你的目錄結構調整
+import NoteSidebar from "~/components/note/NoteSidebar.vue";
+import ResizablePanel from "~/components/ui/ResizablePanel.vue";
+import NoteEditor from "~/components/note/NoteEditor.vue";
 import type { Note } from "~~/types/Note";
 import { useNote } from "~/composables/model/useNote";
 import { useNotebook } from "~/composables/model/useNotebook";
+import FormTitleEditor from "~/components/form/FormTitleEditor.vue";
 
 const route = useRoute();
 const router = useRouter();
+const dialog = useDialogs();
+
 const { indexNotes, getNote, updateNote, deleteNote } = useNote();
 const { getNotebook } = useNotebook();
 
 const currentNote = ref<Note>();
 const notes = ref<Note[]>([]);
-const notebookName = ref("我的筆記本"); // 從 API 或 route 取得
+const notebookName = ref("我的筆記本");
 const isSidebarOpen = ref(false);
+const isModify = ref(false);
+
+// Panel sizes
+const leftPanelWidth = ref(800);
+const questionHeight = computed(() => {
+    // Calculate based on available space minus tags height (160px) and gaps
+    return 300;
+});
+const keypointHeight = computed(() => {
+    return 300;
+});
 
 async function toggleStar(value: { id: string; stared: boolean }) {
-    console.log("change");
-    console.log(value.id);
-    console.log(value.stared);
-
     if (currentNote.value) {
         currentNote.value.star = value.stared;
+        await saveNote();
 
-        // 更新到後端
-        // await updateNote(currentNote.value.userId, {
-        //     ...currentNote.value,
-        //     star: value.stared,
-        // });
-
-        // 同步更新 notes 列表
-        // const noteInList = notes.value.find((n) => n.id === value.id);
-        // if (noteInList) {
-        //     noteInList.star = value.stared;
-        // }
+        // Sync with notes list
+        const noteInList = notes.value.find((n) => n.id === value.id);
+        if (noteInList) {
+            noteInList.star = value.stared;
+        }
     }
 }
 
 async function handleNoteSelect(noteId: string) {
-    // 導航到選中的筆記
     await router.push(`/notes/${noteId}`);
 }
 
 function handleReturn() {
-    // 返回筆記本列表
     const notebookId = route.query.notebookId || currentNote.value?.notebookId;
     if (notebookId) {
         router.push(`/notebooks/${notebookId}/notes`);
@@ -115,23 +175,63 @@ function handleReturn() {
     }
 }
 
+async function handleDelete() {
+    dialog.confirm(
+        "確定要刪除這篇筆記嗎？此操作無法復原。",
+        "刪除筆記",
+        async () => {
+            if (currentNote.value) {
+                await deleteNote(currentNote.value.id);
+                dialog.inform("筆記已成功刪除");
+                handleReturn();
+            }
+        }
+    );
+}
+
+// Save handlers - you can implement debounce or manual save here
+function handleContentChange(value: string) {
+    // TODO: Implement auto-save or manual save
+    console.log("Content changed:", value);
+}
+
+function handleQuestionChange(value: string) {
+    // TODO: Implement auto-save or manual save
+    console.log("Question changed:", value);
+}
+
+function handleKeypointChange(value: string) {
+    // TODO: Implement auto-save or manual save
+    console.log("Keypoint changed:", value);
+}
+
+function handleTagsChange(tags: string[]) {
+    // TODO: Implement auto-save or manual save
+    console.log("Tags changed:", tags);
+}
+
+function toggleModify() {
+    isModify.value = !isModify.value;
+}
+
+async function saveNote() {
+    if (currentNote.value) {
+        await updateNote(currentNote.value);
+    }
+}
+
 async function fetchNotes() {
-    // 取得同一個筆記本的所有筆記
     if (currentNote.value?.notebookId) {
         const result = await indexNotes(currentNote.value.notebookId);
         const notebook = await getNotebook(currentNote.value.notebookId);
         notes.value = result.items || [];
+        notebookName.value = notebook.title || "我的筆記本";
     }
 }
 
 onMounted(async () => {
     const note = await getNote(route.params.id as string);
-    // const notes =
-    console.log(note);
-
     currentNote.value = note;
-
-    // 取得筆記本名稱和其他筆記
     await fetchNotes();
 });
 </script>
