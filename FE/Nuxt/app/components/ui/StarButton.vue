@@ -10,7 +10,6 @@
                 icon="uil-star"
                 @click="change"
                 color="slate-800"
-                size="sm"
                 class="hover:text-amber-300" />
         </template>
     </div>

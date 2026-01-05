@@ -15,7 +15,7 @@
                 isOpen ? 'translate-x-0' : '-translate-x-full',
             ]">
             <div class="flex items-start flex-col h-full">
-                <div class="pl-2 py-1">
+                <div class="pl-2 py-2">
                     <UButton
                         variant="ghost"
                         color="slate-800"
