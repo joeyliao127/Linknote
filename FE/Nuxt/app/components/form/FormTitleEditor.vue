@@ -4,7 +4,7 @@
         <div
             v-if="!isEditing"
             @click="startEdit"
-            class="cursor-pointer px-2.5 py-1.5 transition-colors">
+            class="cursor-pointer px-2.5 py-1.5 transition-colors font-semibold">
             {{ model || "點擊輸入文字" }}
         </div>
 

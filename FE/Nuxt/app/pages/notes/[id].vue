@@ -136,8 +136,6 @@ import { useNotebook } from "~/composables/model/useNotebook";
 import { useTag } from "~/composables/model/useTag";
 import FormTitleEditor from "~/components/form/FormTitleEditor.vue";
 import type { Tag } from "~~/types/Tag";
-import { user } from "#build/ui";
-import { createContext } from "chart.js/helpers";
 
 const route = useRoute();
 const router = useRouter();
