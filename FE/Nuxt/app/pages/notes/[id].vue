@@ -27,21 +27,29 @@
                         @change="saveNote" />
 
                     <div class="flex items-center gap-x-2">
-                        <UButton
-                            icon="i-lucide-tag"
-                            class="hover:bg-gray-800"
-                            color="gray"
-                            variant="ghost" />
-                        <StarButton
-                            :id="currentNote.id"
-                            :stared="currentNote.star"
-                            @change="toggleStar" />
-                        <UButton
-                            icon="i-lucide-trash"
-                            class="hover:bg-gray-800"
-                            color="gray"
-                            variant="ghost"
-                            @click="handleDelete" />
+                        <UTooltip text="Create new note">
+                            <UButton
+                                icon="i-lucide-plus"
+                                class="hover:bg-gray-800"
+                                color="gray"
+                                variant="ghost" />
+                        </UTooltip>
+
+                        <UTooltip text="toggle star">
+                            <StarButton
+                                :id="currentNote.id"
+                                :stared="currentNote.star"
+                                @change="toggleStar" />
+                        </UTooltip>
+
+                        <UTooltip text="delete note">
+                            <UButton
+                                icon="i-lucide-trash"
+                                class="hover:bg-gray-800"
+                                color="gray"
+                                variant="ghost"
+                                @click="handleDelete" />
+                        </UTooltip>
                     </div>
                 </template>
             </div>
