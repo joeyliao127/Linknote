@@ -5,7 +5,7 @@
             v-for="dialog in alertDialogs"
             :key="dialog.id"
             v-model:open="dialog.isOpen"
-            :title="dialog.title || '品學堂'"
+            :title="dialog.title || '注意'"
             :close="UI_CLOSE"
             :ui="UI_MODAL"
             @close="handleClose(dialog.id)">
@@ -32,7 +32,7 @@
             v-for="dialog in confirmDialogs"
             :key="dialog.id"
             v-model:open="dialog.isOpen"
-            :title="dialog.title || '品學堂'"
+            :title="dialog.title || '確認通知'"
             :close="UI_CLOSE"
             :ui="UI_MODAL"
             @close="handleClose(dialog.id)">
@@ -64,7 +64,7 @@
             v-for="dialog in informDialogs"
             :key="dialog.id"
             v-model:open="dialog.isOpen"
-            :title="dialog.title || '品學堂'"
+            :title="dialog.title || '提醒'"
             :close="UI_CLOSE"
             :ui="UI_MODAL"
             @close="handleClose(dialog.id)">
@@ -98,7 +98,7 @@ const { dialogs, close } = useDialogs();
 const UI_MODAL = {
     header: "text-2xl pt-12 font-bold border-0 text-center justify-center pb-0",
     wrapper: "border-0",
-    content: "rounded-none ring-none border border-0.5 border-black bg-default",
+    content: "rounded-lg ring-none border border-0.5 border-black bg-default",
     body: "border-0 pt-0 text-lg md:text-base",
     footer: "items-center flex-col md:flex-row md:justify-center",
     overlay: "bg-black/30",
@@ -106,7 +106,7 @@ const UI_MODAL = {
 
 const UI_CLOSE = {
     variant: "link",
-    class: "text-black button_close !top-2 !end-2",
+    class: "text-white button_close !top-2 !end-2",
 };
 
 // Filter dialogs by type
