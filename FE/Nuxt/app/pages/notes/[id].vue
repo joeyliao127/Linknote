@@ -32,7 +32,8 @@
                                 icon="i-lucide-plus"
                                 class="hover:bg-gray-800"
                                 color="gray"
-                                variant="ghost" />
+                                variant="ghost"
+                                @click="handleCreate" />
                         </UTooltip>
 
                         <UTooltip text="toggle star">
@@ -136,12 +137,14 @@ import { useTag } from "~/composables/model/useTag";
 import FormTitleEditor from "~/components/form/FormTitleEditor.vue";
 import type { Tag } from "~~/types/Tag";
 import { user } from "#build/ui";
+import { createContext } from "chart.js/helpers";
 
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialogs();
 
-const { indexNotes, getNote, updateNote, deleteNote, addTags } = useNote();
+const { indexNotes, getNote, createNote, updateNote, deleteNote, addTags } =
+    useNote();
 const { getNotebook } = useNotebook();
 const { indexTags, createTag } = useTag();
 
@@ -192,6 +195,17 @@ function handleReturn() {
         router.push(`/notebooks/${notebookId}/notes`);
     } else {
         router.push("/notebooks");
+    }
+}
+
+async function handleCreate() {
+    const newNote = await createNote({
+        notebookId: currentNote.value?.notebookId,
+        title: "未命名",
+    });
+
+    if (newNote.id) {
+        navigateTo(`/notes/${newNote.id}`);
     }
 }
 

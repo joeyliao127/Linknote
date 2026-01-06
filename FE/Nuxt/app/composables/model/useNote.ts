@@ -45,7 +45,7 @@ const _useNote = () => {
     };
 
     const createNote = async (note: CreateNoteDTO) => {
-        const response: Pagination<Note> = await $fetch(
+        const response: Note = await $fetch(
             `${runtimeConfig.public.API_URL}/notes`,
             {
                 method: "POST",
