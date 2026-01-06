@@ -18,10 +18,10 @@ const _useTag = () => {
         return tags;
     };
 
-    const createTag = async (tag: CreateTagDTO) => {
-        const response: Pagination<Tag> = await $fetch(baseURL, {
+    const createTag = async (tag: string): Promise<Tag> => {
+        const response: Tag = await $fetch(baseURL, {
             method: "POST",
-            body: tag,
+            body: { title: tag },
         });
 
         return response;

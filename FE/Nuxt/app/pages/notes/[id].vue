@@ -48,7 +48,6 @@
         </template>
 
         <template #main>
-            <p>{{ currentNote }}</p>
             <div v-if="currentNote" class="h-full flex bg-gray-900">
                 <!-- Left Panel - Note Content -->
                 <ResizablePanel
@@ -101,9 +100,10 @@
                         </h3>
                         <div class="h-[100px] overflow-y-auto">
                             <UInputTags
-                                v-model="currentNote.tagIdList"
+                                v-model="noteTags"
                                 placeholder="新增標籤..."
-                                @update:model-value="handleTagsChange" />
+                                @addTag="handleTagAdd"
+                                @removeTag="handleTagRemove" />
                         </div>
                     </div>
                 </div>
@@ -124,14 +124,18 @@ import NoteEditor from "~/components/note/NoteEditor.vue";
 import type { Note } from "~~/types/Note";
 import { useNote } from "~/composables/model/useNote";
 import { useNotebook } from "~/composables/model/useNotebook";
+import { useTag } from "~/composables/model/useTag";
 import FormTitleEditor from "~/components/form/FormTitleEditor.vue";
+import type { Tag } from "~~/types/Tag";
+import { user } from "#build/ui";
 
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialogs();
 
-const { indexNotes, getNote, updateNote, deleteNote } = useNote();
+const { indexNotes, getNote, updateNote, deleteNote, addTags } = useNote();
 const { getNotebook } = useNotebook();
+const { indexTags, createTag } = useTag();
 
 const currentNote = ref<Note>();
 const notes = ref<Note[]>([]);
@@ -148,6 +152,14 @@ const questionHeight = computed(() => {
 const keypointHeight = computed(() => {
     return 300;
 });
+
+interface tagItem {
+    id: string;
+    title: string;
+}
+
+let userTags: tagItem[] = [];
+const noteTags = ref<string[]>([]);
 
 async function toggleStar(value: { id: string; stared: boolean }) {
     if (currentNote.value) {
@@ -190,17 +202,20 @@ async function handleDelete() {
 }
 
 // Save handlers - you can implement debounce or manual save here
-function handleContentChange(value: string) {
+async function handleContentChange(value: string) {
     // TODO: Implement auto-save or manual save
+    await saveNote();
     console.log("Content changed:", value);
 }
 
-function handleQuestionChange(value: string) {
+async function handleQuestionChange(value: string) {
+    await saveNote();
     // TODO: Implement auto-save or manual save
     console.log("Question changed:", value);
 }
 
-function handleKeypointChange(value: string) {
+async function handleKeypointChange(value: string) {
+    await saveNote();
     // TODO: Implement auto-save or manual save
     console.log("Keypoint changed:", value);
 }
@@ -208,10 +223,6 @@ function handleKeypointChange(value: string) {
 function handleTagsChange(tags: string[]) {
     // TODO: Implement auto-save or manual save
     console.log("Tags changed:", tags);
-}
-
-function toggleModify() {
-    isModify.value = !isModify.value;
 }
 
 async function saveNote() {
@@ -229,9 +240,56 @@ async function fetchNotes() {
     }
 }
 
+async function fetchUserTags() {
+    const res = await indexTags();
+    userTags = res.items.map((it) => {
+        return { id: it.id, title: it.title };
+    });
+    console.log("init");
+    console.log(userTags);
+}
+
+async function handleTagAdd(val: string) {
+    await nextTick();
+    if (isTagNotExist(val, userTags)) {
+        const tag = await createTag(val);
+        userTags.push({ id: tag.id, title: tag.title });
+        noteTags.value.push(tag.title);
+    }
+
+    await updateNoteTags();
+
+    function isTagNotExist(target: string, tags: tagItem[]) {
+        for (let it of tags) {
+            if (it.title === target) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+async function handleTagRemove() {
+    // nextTick 等待畫面變更後 noteTags value 才會更新
+    await nextTick();
+    await updateNoteTags();
+}
+
+async function updateNoteTags() {
+    const tagIdList = userTags
+        .filter((it) => {
+            return noteTags.value.includes(it.title);
+        })
+        .map((it) => it.id);
+
+    await addTags(currentNote.value?.id, tagIdList);
+}
+
 onMounted(async () => {
     const note = await getNote(route.params.id as string);
+    noteTags.value = note.tags.map((it) => it.title);
     currentNote.value = note;
     await fetchNotes();
+    await fetchUserTags();
 });
 </script>

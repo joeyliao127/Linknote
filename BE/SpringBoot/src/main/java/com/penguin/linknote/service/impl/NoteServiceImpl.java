@@ -120,7 +120,26 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public NoteDTO get(UUID noteId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException("Note note found."));
-        return NoteDTO.fromEntity(note);
+
+        QNote qNote = QNote.note;
+        QTag qTag = QTag.tag;
+        QNoteTag qNoteTag = QNoteTag.noteTag;
+
+        List<TagDTO> tags = jpaQueryFactory
+                .select(qTag)
+                .from(qNoteTag)
+                .join(qNote).on(qNoteTag.note.id.eq(qNote.id))
+                .join(qTag).on(qNoteTag.tag.id.eq(qTag.id))
+                .where(qNoteTag.note.id.eq(noteId))
+                .orderBy(qTag.title.asc())
+                .fetch()
+                .stream()
+                .map(TagDTO::fromEntity)
+                .toList();
+
+        NoteDTO noteDTO = NoteDTO.fromEntity(note);
+        noteDTO.setTags(tags);
+        return noteDTO;
     }
 
     @Override
@@ -157,6 +176,9 @@ public class NoteServiceImpl implements NoteService {
         noteRepository.deleteById(noteId);
     }
 
+    /**
+     * addTag 是將 note's tag 一次更新為 tagIdList 中的 ids，而非 toggle 加入
+     */
     @Override
     @Transactional
     public void addTagToNote(UUID noteId, List<UUID> tagIdList) {
