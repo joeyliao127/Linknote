@@ -18,7 +18,7 @@
 interface Props {
     id: string;
     stared: boolean;
-    size: string;
+    size?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
