@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.penguin.linknote.common.command.PageCommand;
@@ -24,7 +23,10 @@ import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteFilter;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
+import com.penguin.linknote.domain.notebook.NotebookCondition;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
+import com.penguin.linknote.domain.notebook.NotebookOrderBy;
+import com.penguin.linknote.domain.notebook.exception.InvalidNotebookParameterException;
 import com.penguin.linknote.service.NoteService;
 import com.penguin.linknote.service.NotebookService;
 
@@ -47,14 +49,17 @@ public class NotebookController {
 
     @GetMapping
     public ResponseEntity<PageResponse<NotebookDTO>> index(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Boolean active,
+            @ModelAttribute NotebookCondition condition,
             Authentication authentication,
             PageCommand pageCommand)
     {
-        // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
+        if (condition != null && condition.getOrderBy() != null && !condition.getOrderBy().isBlank()) {
+            if (NotebookOrderBy.from(condition.getOrderBy()) == null) {
+                throw new InvalidNotebookParameterException("Invalid parameter orderBy ");
+            }
+        }
         UUID userId = (UUID) authentication.getPrincipal();
-        PageResponse<NotebookDTO> notebookDTOList = notebookService.index(userId, title, active, pageCommand);
+        PageResponse<NotebookDTO> notebookDTOList = notebookService.index(userId, condition, pageCommand);
         return ResponseEntity.ok(notebookDTOList);
     }
 

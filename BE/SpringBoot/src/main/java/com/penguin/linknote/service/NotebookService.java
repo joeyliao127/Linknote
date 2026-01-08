@@ -5,10 +5,11 @@ import java.util.UUID;
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
+import com.penguin.linknote.domain.notebook.NotebookCondition;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
 
 public interface NotebookService {
-    PageResponse<NotebookDTO> index(UUID userId, String title, Boolean active, PageCommand pageCommand);
+    PageResponse<NotebookDTO> index(UUID userId, NotebookCondition condition, PageCommand pageCommand);
 
     NotebookDTO get(UUID notebookId);
 
@@ -18,7 +19,6 @@ public interface NotebookService {
 
     void delete(UUID notebookId);
 }
-
 
 
 

@@ -1,10 +1,23 @@
 package com.penguin.linknote.repository;
 
-import com.penguin.linknote.entity.Notebook;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public interface NotebookRepository extends JpaRepository<Notebook, UUID>, QuerydslPredicateExecutor<Notebook> {
+import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.domain.notebook.NotebookCondition;
+import com.penguin.linknote.entity.Notebook;
+
+public interface NotebookRepository {
+    List<Notebook> index(UUID userId, Integer limit);
+
+    PageResponse<Notebook> paginate(int page, int limit, NotebookCondition condition);
+
+    Optional<Notebook> get(UUID id);
+
+    Notebook create(Notebook notebook);
+
+    Notebook update(Notebook notebook);
+
+    void delete(UUID id);
 }
