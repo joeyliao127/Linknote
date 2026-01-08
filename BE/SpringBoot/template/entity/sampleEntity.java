@@ -3,30 +3,17 @@ package com.penguin.linknote.entity;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-//TODO: 確認 table name
-@Table(name="!{lower}s")
-@Entity
-@Getter
-@Setter
+// TODO: 確認 table name 與欄位
+@Data
 public class !{upper} {
 
-    // TODO: 修正
-    // auto increment annotation 
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
+    // TODO: 若使用 auto increment，改為對應型別與建立方式
     private UUID id;
 
-    @Column(name = "created_at")
     private Instant createdAt;
 
-    @Column(name = "updated_at")
     private Instant updatedAt;
 
 

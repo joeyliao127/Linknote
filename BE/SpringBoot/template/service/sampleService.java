@@ -5,13 +5,13 @@ import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.!{lower}.!{upper}CreateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}UpdateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}DTO;
-import com.penguin.linknote.domain.!{lower}.!{upper}Filter;
+import com.penguin.linknote.domain.!{lower}.!{upper}Condition;
 
 import java.util.UUID;
 
 public interface !{upper}Service {
     // TODO: 支援 star, tag, order by desc 等 filters
-    PageResponse<!{upper}DTO> index(!{upper}Filter filter, PageCommand pageCommand);
+    PageResponse<!{upper}DTO> index(!{upper}Condition condition, PageCommand pageCommand);
 
     !{upper}DTO create(!{upper}CreateCommand !{lower}CreateCommand);
 

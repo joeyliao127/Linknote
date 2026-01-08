@@ -18,6 +18,12 @@ public class !{upper}ExceptionHandler {
     //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     // }
 
+    @ExceptionHandler(Invalid!{upper}ParameterException.class)
+    public ResponseEntity<ApiResponse> handleInvalidParameter(Invalid!{upper}ParameterException e) {
+        ApiResponse apiResponse = new ApiResponse(false, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception e) {
         ApiResponse apiResponse = new ApiResponse(false, e.getMessage());

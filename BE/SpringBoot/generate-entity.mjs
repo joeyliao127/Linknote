@@ -11,6 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = __dirname; // 現在這層與 package.json 同層
 const SRC_ROOT = path.join(ROOT, "src", "main", "java", "com", "penguin", "linknote");
+const TEMPLATE_ROOT = path.join(ROOT, "template");
 
 // Colors and symbols
 const log = {
@@ -111,7 +112,7 @@ async function copyDomainSample(entity) {
     const upper = entity.charAt(0).toUpperCase() + entity.slice(1);
     const lower = entity.toLowerCase();
 
-    const srcDir = path.join(SRC_ROOT, "domain", "sample");
+    const srcDir = path.join(TEMPLATE_ROOT, "domain", "sample");
     const destDir = path.join(SRC_ROOT, "domain", lower);
 
     fs.mkdirSync(destDir, { recursive: true });
@@ -120,7 +121,7 @@ async function copyDomainSample(entity) {
 
     for (const entry of entries) {
         const srcPath = path.join(srcDir, entry.name);
-        let destPath = path.join(destDir, entry.name.replace("sample", upper).replace(".disabled", ""));
+        let destPath = path.join(destDir, entry.name.replace("sample", upper));
 
         if (entry.isDirectory()) {
             if (entry.name === "exception") {
@@ -129,7 +130,7 @@ async function copyDomainSample(entity) {
                 const exFiles = fs.readdirSync(srcPath);
                 for (const f of exFiles) {
                     const srcEx = path.join(srcPath, f);
-                    const destEx = path.join(exceptionDir, f.replace("Sample", upper).replace(".disabled", ""));
+                    const destEx = path.join(exceptionDir, f.replace("Sample", upper));
                     await copyFileWithReplace(srcEx, destEx, entity);
                 }
             }
@@ -168,34 +169,38 @@ async function copyDomainSample(entity) {
     if (selections.includes("repository")) {
         await copyDomainSample(entity);
         await copyFileWithReplace(
-            path.join(SRC_ROOT, "repository", "sampleRepository.java.disabled"),
+            path.join(TEMPLATE_ROOT, "repository", "sampleRepository.java.disabled"),
             path.join(SRC_ROOT, "repository", `${entityUpper}Repository.java`),
             entity,
         );
         await copyFileWithReplace(
-            path.join(SRC_ROOT, "entity", "sampleEntity.java.disabled"),
+            path.join(TEMPLATE_ROOT, "entity", "sampleEntity.java"),
             path.join(SRC_ROOT, "entity", `${entityUpper}.java`),
             entity,
         );
-        log.info("執行 Maven 編譯以建立 Q 物件...");
-        try {
-            execSync("./mvnw clean compile", { cwd: ROOT, stdio: "inherit", shell: "/bin/bash" });
-        } catch (e) {
-            log.error("Maven 編譯失敗，請手動檢查。");
-        }
+        await copyFileWithReplace(
+            path.join(TEMPLATE_ROOT, "repository/impl", "sampleRepositoryImpl.java"),
+            path.join(SRC_ROOT, "repository/impl", `${entityUpper}RepositoryImpl.java`),
+            entity,
+        );
+        await copyFileWithReplace(
+            path.join(TEMPLATE_ROOT, "repository/rowmapper", "sampleRowMapper.java"),
+            path.join(SRC_ROOT, "repository/rowmapper", `${entityUpper}RowMapper.java`),
+            entity,
+        );
     }
 
     // --- service ---
     if (selections.includes("service")) {
         await copyFileWithReplace(
-            path.join(SRC_ROOT, "service", "sampleService.java.disabled"),
+            path.join(TEMPLATE_ROOT, "service", "sampleService.java"),
             path.join(SRC_ROOT, "service", `${entityUpper}Service.java`),
             entity,
         );
 
         // 新增 ServiceImpl 複製
         await copyFileWithReplace(
-            path.join(SRC_ROOT, "service/impl", "sampleServiceImpl.java.disabled"),
+            path.join(TEMPLATE_ROOT, "service/impl", "sampleServiceImpl.java"),
             path.join(SRC_ROOT, "service/impl", `${entityUpper}ServiceImpl.java`),
             entity,
         );
@@ -204,7 +209,7 @@ async function copyDomainSample(entity) {
     // --- controller ---
     if (selections.includes("controller")) {
         await copyFileWithReplace(
-            path.join(SRC_ROOT, "controller", "sampleController.java.disabled"),
+            path.join(TEMPLATE_ROOT, "controller", "sampleController.java"),
             path.join(SRC_ROOT, "controller", `${entityUpper}Controller.java`),
             entity,
         );
@@ -225,6 +230,8 @@ async function copyDomainSample(entity) {
         allNewFiles.push(
             path.join(SRC_ROOT, "repository", `${entityUpper}Repository.java`),
             path.join(SRC_ROOT, "entity", `${entityUpper}.java`),
+            path.join(SRC_ROOT, "repository/impl", `${entityUpper}RepositoryImpl.java`),
+            path.join(SRC_ROOT, "repository/rowmapper", `${entityUpper}RowMapper.java`),
         );
     if (selections.includes("service"))
         allNewFiles.push(

@@ -169,9 +169,9 @@
 					</annotationProcessorPaths>
 
 					<excludes>
-						<exclude>**/sample.java.disabled</exclude>
 						<!-- 也可排除整個樣式，如所有 .disabled 結尾的檔案 -->
-						<exclude>**/*.disabled</exclude>
+						<!-- <exclude>**/sample.java.disabled</exclude>
+						<exclude>**/*.disabled</exclude> -->
 					</excludes>
 				</configuration>
 			</plugin>

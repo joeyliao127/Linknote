@@ -15,16 +15,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
-import com.penguin.linknote.domain.!{lower}.!{upper}Filter;
+import com.penguin.linknote.domain.!{lower}.!{upper}Condition;
 import com.penguin.linknote.domain.!{lower}.!{upper}CreateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}UpdateCommand;
 import com.penguin.linknote.domain.!{lower}.!{upper}DTO;
+import com.penguin.linknote.domain.!{lower}.!{upper}OrderBy;
+import com.penguin.linknote.domain.!{lower}.exception.Invalid!{upper}ParameterException;
 import com.penguin.linknote.service.!{upper}Service;
 
 import jakarta.validation.Valid;
@@ -50,11 +51,16 @@ public class !{upper}Controller {
             // @RequestParam(required = false) String title,
             // @RequestParam(required = false) Boolean active,
             // @RequestHeader(name = "Authorization") UUID userId,
-            @ModelAttribute !{upper}Filter !{lower}Filter,
+            @ModelAttribute !{upper}Condition !{lower}Condition,
             PageCommand pageCommand)
     {
-        // @ModelAttribute(忽略沒寫，用於pageCommand) 用於 Get Method，可以自動接收 Query String 到 Object 中，但 Object 必須有 no arg constructor
-        PageResponse<!{upper}DTO> !{lower}DTOList = !{lower}Service.index(!{lower}Filter, pageCommand);
+        if (!{lower}Condition != null && !{lower}Condition.getOrderBy() != null
+                && !{lower}Condition.getOrderBy().isBlank()) {
+            if (!{upper}OrderBy.from(!{lower}Condition.getOrderBy()) == null) {
+                throw new Invalid!{upper}ParameterException();
+            }
+        }
+        PageResponse<!{upper}DTO> !{lower}DTOList = !{lower}Service.index(!{lower}Condition, pageCommand);
         return ResponseEntity.ok(!{lower}DTOList);
     }
 
