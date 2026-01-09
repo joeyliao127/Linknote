@@ -3,40 +3,41 @@ package com.penguin.linknote.service.impl;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
-import com.penguin.linknote.common.service.PaginationService;
 import com.penguin.linknote.domain.tag.TagCommand;
+import com.penguin.linknote.domain.tag.TagCondition;
 import com.penguin.linknote.domain.tag.TagDTO;
+import com.penguin.linknote.domain.tag.exception.TagNotFoundException;
 import com.penguin.linknote.entity.Tag;
 import com.penguin.linknote.repository.TagRepository;
 import com.penguin.linknote.service.TagService;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
-    private final PaginationService paginationService;
 
-    public TagServiceImpl(TagRepository tagRepository, PaginationService paginationService) {
+    public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
-        this.paginationService = paginationService;
     }
 
     @Override
-    public PageResponse<TagDTO> index(UUID userId, PageCommand pageCommand) {
-        PageCommand normalPageCommand = paginationService.normalizePageCommand(pageCommand);
-        Pageable pageable = PageRequest.of(normalPageCommand.getPage(), normalPageCommand.getPageSize());
-        Page<Tag> tagList = tagRepository.findByUserId(userId, pageable);
+    public PageResponse<TagDTO> index(TagCondition condition, PageCommand pageCommand) {
+        int page = pageCommand == null || pageCommand.getPage() == null ? 1 : pageCommand.getPage();
+        int limit = pageCommand == null || pageCommand.getPageSize() == null ? 0 : pageCommand.getPageSize();
 
-        return  PageResponse.fromPage(tagList, TagDTO::fromEntity);
+        PageResponse<Tag> tagPage = tagRepository.paginate(page, limit, condition);
+
+        PageResponse<TagDTO> response = new PageResponse<>();
+        response.setCount(tagPage.getCount());
+        response.setCurrentPage(tagPage.getCurrentPage());
+        response.setPageSize(tagPage.getPageSize());
+        response.setTotalPage(tagPage.getTotalPage());
+        response.setItems(tagPage.getItems().stream().map(TagDTO::fromEntity).toList());
+        return response;
     }
 
     @Override
@@ -49,23 +50,24 @@ public class TagServiceImpl implements TagService {
         tag.setCreatedAt(Instant.now());
         tag.setUpdatedAt(Instant.now());
 
-        return TagDTO.fromEntity(tagRepository.save(tag));
+        return TagDTO.fromEntity(tagRepository.create(tag));
     }
 
     @Override
     public TagDTO update(UUID tagId, TagCommand tagCommand) {
-        Tag existingTag = tagRepository.findById(tagId).orElseThrow(() -> new EntityNotFoundException("Tag Not found. TagId:" + tagId));
+        Tag existingTag = tagRepository.get(tagId)
+                .orElseThrow(() -> new TagNotFoundException("Tag Not found. TagId:" + tagId));
 
         existingTag.setId(existingTag.getId());
         existingTag.setUserId(existingTag.getUserId());
         existingTag.setTitle(tagCommand.getTitle() == null ? existingTag.getTitle() : tagCommand.getTitle());
         existingTag.setCreatedAt(existingTag.getCreatedAt());
         existingTag.setUpdatedAt(Instant.now());
-        return TagDTO.fromEntity(tagRepository.save(existingTag));
+        return TagDTO.fromEntity(tagRepository.update(existingTag));
     }
 
     @Override
     public void deleteTag(UUID tagId) {
-        tagRepository.deleteById(tagId);
+        tagRepository.delete(tagId);
     }
 }

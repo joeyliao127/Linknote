@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +18,10 @@ import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.tag.TagCommand;
+import com.penguin.linknote.domain.tag.TagCondition;
 import com.penguin.linknote.domain.tag.TagDTO;
+import com.penguin.linknote.domain.tag.TagOrderBy;
+import com.penguin.linknote.domain.tag.exception.InvalidTagParameterException;
 import com.penguin.linknote.service.TagService;
 
 @RestController
@@ -32,9 +36,21 @@ public class TagController {
 
 
     @GetMapping
-    public ResponseEntity<PageResponse<TagDTO>> index(PageCommand pageCommand, Authentication authentication) {
+    public ResponseEntity<PageResponse<TagDTO>> index(
+            @ModelAttribute TagCondition condition,
+            PageCommand pageCommand,
+            Authentication authentication) {
+        if (condition == null) {
+            condition = new TagCondition();
+        }
+        if (condition.getOrderBy() != null && !condition.getOrderBy().isBlank()) {
+            if (TagOrderBy.from(condition.getOrderBy()) == null) {
+                throw new InvalidTagParameterException();
+            }
+        }
         UUID userId = (UUID) authentication.getPrincipal();
-        PageResponse<TagDTO> tagDTOList = tagService.index(userId, pageCommand);
+        condition.setUserId(userId);
+        PageResponse<TagDTO> tagDTOList = tagService.index(condition, pageCommand);
         return ResponseEntity.ok(tagDTOList);
     }
 

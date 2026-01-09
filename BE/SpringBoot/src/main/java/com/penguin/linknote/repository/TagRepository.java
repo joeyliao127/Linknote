@@ -1,16 +1,25 @@
 package com.penguin.linknote.repository;
 
-import com.penguin.linknote.entity.Tag;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public interface TagRepository extends JpaRepository<Tag, UUID>, QuerydslPredicateExecutor<Tag> {
-    Page<Tag> findByUserId(UUID userId, Pageable pageable);
-    List<Tag> findByIdIn(List<UUID> ids);
+import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.domain.tag.TagCondition;
+import com.penguin.linknote.entity.Tag;
 
+public interface TagRepository {
+    List<Tag> index(UUID userId, Integer limit);
+
+    PageResponse<Tag> paginate(int page, int limit, TagCondition condition);
+
+    Optional<Tag> get(UUID id);
+
+    Tag create(Tag tag);
+
+    Tag update(Tag tag);
+
+    void delete(UUID id);
+
+    List<Tag> findAllById(List<UUID> ids);
 }
