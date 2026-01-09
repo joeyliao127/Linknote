@@ -1,13 +1,18 @@
 package com.penguin.linknote.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.Optional;
 
 import com.penguin.linknote.entity.AccessPolicies;
 
-public interface AccessPoliciesRepository extends JpaRepository<AccessPolicies, Integer> {
-    // Sample code
-    // Page<Invitation> findByInviterId(UUID userId, Pageable pageable);
-    // Page<Invitation> findByInviteeId(UUID userId, Pageable pageable);
-    // Optional<Invitation> findByInviterIdAndInviteeId(UUID userId, UUID inviteeId);
-    // Optional<Invitation> findByIdAndInviteeId(UUID id, UUID inviteeId);
+public interface AccessPoliciesRepository {
+    List<AccessPolicies> index(Integer limit);
+
+    Optional<AccessPolicies> get(Integer id);
+
+    AccessPolicies create(AccessPolicies policy);
+
+    AccessPolicies update(AccessPolicies policy);
+
+    void delete(Integer id);
 }

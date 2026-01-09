@@ -1,13 +1,18 @@
 package com.penguin.linknote.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.Optional;
 
 import com.penguin.linknote.entity.Resources;
 
-public interface ResourcesRepository extends JpaRepository<Resources, Integer> {
-    // Sample code
-    // Page<Invitation> findByInviterId(UUID userId, Pageable pageable);
-    // Page<Invitation> findByInviteeId(UUID userId, Pageable pageable);
-    // Optional<Invitation> findByInviterIdAndInviteeId(UUID userId, UUID inviteeId);
-    // Optional<Invitation> findByIdAndInviteeId(UUID id, UUID inviteeId);
+public interface ResourcesRepository {
+    List<Resources> index(Integer limit);
+
+    Optional<Resources> get(Integer id);
+
+    Resources create(Resources resource);
+
+    Resources update(Resources resource);
+
+    void delete(Integer id);
 }

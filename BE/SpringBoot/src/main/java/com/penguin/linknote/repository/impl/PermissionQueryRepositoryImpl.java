@@ -1,8 +1,8 @@
 package com.penguin.linknote.repository.impl;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,16 +11,20 @@ import com.penguin.linknote.domain.rbac.ResourceType;
 import com.penguin.linknote.domain.rbac.RoleType;
 import com.penguin.linknote.repository.PermissionQueryRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 @Repository
 @Transactional
 public class PermissionQueryRepositoryImpl implements PermissionQueryRepository {
 
-	@PersistenceContext
-	private EntityManager em;
+	private final NamedParameterJdbcTemplate jdbcTemplate;
 
+	public PermissionQueryRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	/*
+	 * UUID resourceInstanceId like notebookId, noteId, tagId etc.
+	 * DB 層無法使用 fk 關聯 resourceInstanceId
+	 */
 	@Override
 	public boolean hasPermission(UUID userId, UUID resourceInstanceId,
 								OperationType operation, ResourceType resourceType) {
@@ -39,12 +43,13 @@ public class PermissionQueryRepositoryImpl implements PermissionQueryRepository 
 			LIMIT 1
 			""";
 
-		List<?> results = em.createNativeQuery(sql)
-				.setParameter("userId", userId)
-				.setParameter("resourceInstanceId", resourceInstanceId)
-				.setParameter("resourceType", resourceType.name())
-				.setParameter("operation", operation.name())
-				.getResultList();
+		var params = new java.util.HashMap<String, Object>();
+		params.put("userId", userId);
+		params.put("resourceInstanceId", resourceInstanceId);
+		params.put("resourceType", resourceType.name());
+		params.put("operation", operation.name());
+
+		var results = jdbcTemplate.query(sql, params, (rs, rowNum) -> 1);
 
 		return !results.isEmpty();
 	}
@@ -52,25 +57,27 @@ public class PermissionQueryRepositoryImpl implements PermissionQueryRepository 
 	@Override
 	public void addResourceRolePermission(UUID userId, UUID resourceInstanceId, RoleType roleType, ResourceType resourceType) {
 		String roleSql = "SELECT id FROM roles WHERE title = :roleType LIMIT 1";
-		Integer roleId = (Integer) em.createNativeQuery(roleSql)
-				.setParameter("roleType", roleType.name())
-				.getSingleResult();
+		Integer roleId = jdbcTemplate.queryForObject(
+				roleSql,
+				java.util.Map.of("roleType", roleType.name()),
+				Integer.class);
 		
 		String resourceSql = "SELECT id FROM resources WHERE title = :resourceType LIMIT 1";
-		Integer resourceId = (Integer) em.createNativeQuery(resourceSql)
-				.setParameter("resourceType", resourceType.name())
-				.getSingleResult();
+		Integer resourceId = jdbcTemplate.queryForObject(
+				resourceSql,
+				java.util.Map.of("resourceType", resourceType.name()),
+				Integer.class);
 		
 		String insertSQL = """
 			INSERT INTO resource_acl (user_id, role_id, resource_id, resource_instance_id)
 			VALUES (:userId, :roleId, :resourceId, :resourceInstanceId)
 			""";
-		em.createNativeQuery(insertSQL)
-			.setParameter("userId", userId)
-			.setParameter("roleId", roleId)
-			.setParameter("resourceId", resourceId)
-			.setParameter("resourceInstanceId", resourceInstanceId)
-			.executeUpdate();
+		jdbcTemplate.update(insertSQL, java.util.Map.of(
+				"userId", userId,
+				"roleId", roleId,
+				"resourceId", resourceId,
+				"resourceInstanceId", resourceInstanceId
+		));
 	}
 	
 }
