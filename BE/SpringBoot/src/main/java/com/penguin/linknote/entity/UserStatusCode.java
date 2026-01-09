@@ -1,15 +1,11 @@
 package com.penguin.linknote.entity;
 
-import jakarta.persistence.*;
+import lombok.Data;
 
-@Entity
-@Table(name = "user_status_codes")
+@Data
 public class UserStatusCode {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
     private String title;
 }

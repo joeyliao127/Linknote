@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
 
-        User newUser = userRepository.save(user);
+        User newUser = userRepository.create(user);
 
         return UserDTO.fromEntity(newUser);
     }
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean existsById(UUID userId) {
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> user = userRepository.get(userId);
         return !user.isEmpty();
     }
 }

@@ -4,17 +4,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.penguin.linknote.entity.User;
 
-import jakarta.validation.constraints.NotEmpty;
+public interface UserRepository {
+    Optional<User> get(UUID id);
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+    User create(User user);
 
-    Optional<User> findByEmail(@NotEmpty String email);
+    User update(User user);
 
-    List<User> findAllByUsername(@NotEmpty String title);
+    void delete(UUID id);
+
+    Optional<User> findByEmail(String email);
+
+    List<User> findAllByUsername(String title);
 
     Optional<User> findByEmailAndPassword(String email, String password);
 }
