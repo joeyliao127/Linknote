@@ -16,6 +16,18 @@ public class InvitationExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
+    @ExceptionHandler(InvalidInvitationParameterException.class)
+    public ResponseEntity<ApiResponse> handleInvalidInvitationParameterException(InvalidInvitationParameterException e) {
+        ApiResponse apiResponse = new ApiResponse(false, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(InvitationNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleInvitationNotFoundException(InvitationNotFoundException e) {
+        ApiResponse apiResponse = new ApiResponse(false, e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception e) {
         ApiResponse apiResponse = new ApiResponse(false, e.getMessage());

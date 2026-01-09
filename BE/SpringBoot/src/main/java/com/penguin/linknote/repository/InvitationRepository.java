@@ -1,16 +1,31 @@
 package com.penguin.linknote.repository;
 
-import com.penguin.linknote.entity.Invitation;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface InvitationRepository extends JpaRepository<Invitation, UUID> {
-    Page<Invitation> findByInviterId(UUID userId, Pageable pageable);
-    Page<Invitation> findByInviteeId(UUID userId, Pageable pageable);
-    Optional<Invitation> findByInviterIdAndInviteeId(UUID userId, UUID inviteeId);
-    Optional<Invitation> findByIdAndInviteeId(UUID id, UUID inviteeId);
+import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.domain.invitation.InvitationCondition;
+import com.penguin.linknote.entity.Invitation;
+
+public interface InvitationRepository {
+    List<Invitation> indexByInviter(UUID userId, Integer limit);
+
+    List<Invitation> indexByInvitee(UUID userId, Integer limit);
+
+    PageResponse<Invitation> paginateByInviter(int page, int limit, InvitationCondition condition);
+
+    PageResponse<Invitation> paginateByInvitee(int page, int limit, InvitationCondition condition);
+
+    Optional<Invitation> get(UUID id);
+
+    Optional<Invitation> getByInvitee(UUID id, UUID inviteeId);
+
+    Optional<Invitation> getByInviterAndInvitee(UUID inviterId, UUID inviteeId);
+
+    Invitation create(Invitation invitation);
+
+    Invitation update(Invitation invitation);
+
+    void delete(UUID id);
 }

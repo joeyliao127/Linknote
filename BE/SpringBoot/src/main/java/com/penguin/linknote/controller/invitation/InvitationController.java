@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,9 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
+import com.penguin.linknote.domain.invitation.InvitationCondition;
 import com.penguin.linknote.domain.invitation.InvitationCreateCommand;
 import com.penguin.linknote.domain.invitation.InvitationDTO;
+import com.penguin.linknote.domain.invitation.InvitationOrderBy;
 import com.penguin.linknote.domain.invitation.InvitationUpdateCommand;
+import com.penguin.linknote.domain.invitation.exception.InvalidInvitationParameterException;
 import com.penguin.linknote.service.InvitationService;
 
 import jakarta.validation.Valid;
@@ -33,16 +37,40 @@ public class InvitationController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<InvitationDTO>> indexInvitations(PageCommand pageCommand, Authentication authentication) {
+    public ResponseEntity<PageResponse<InvitationDTO>> indexInvitations(
+            @ModelAttribute InvitationCondition condition,
+            PageCommand pageCommand,
+            Authentication authentication) {
+        if (condition == null) {
+            condition = new InvitationCondition();
+        }
+        if (condition.getOrderBy() != null && !condition.getOrderBy().isBlank()) {
+            if (InvitationOrderBy.from(condition.getOrderBy()) == null) {
+                throw new InvalidInvitationParameterException();
+            }
+        }
         UUID userId = (UUID) authentication.getPrincipal();
-        PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInviter(userId, pageCommand);
+        condition.setUserId(userId);
+        PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInvitee(condition, pageCommand);
         return ResponseEntity.ok(invitationDTOList);
     }
 
     @GetMapping("/sent")
-    public ResponseEntity<PageResponse<InvitationDTO>> indexSentInvitations(PageCommand pageCommand, Authentication authentication) {
+    public ResponseEntity<PageResponse<InvitationDTO>> indexSentInvitations(
+            @ModelAttribute InvitationCondition condition,
+            PageCommand pageCommand,
+            Authentication authentication) {
+        if (condition == null) {
+            condition = new InvitationCondition();
+        }
+        if (condition.getOrderBy() != null && !condition.getOrderBy().isBlank()) {
+            if (InvitationOrderBy.from(condition.getOrderBy()) == null) {
+                throw new InvalidInvitationParameterException();
+            }
+        }
         UUID userId = (UUID) authentication.getPrincipal();
-        PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInvitee(userId, pageCommand);
+        condition.setUserId(userId);
+        PageResponse<InvitationDTO> invitationDTOList = invitationService.indexByInviter(condition, pageCommand);
         return ResponseEntity.ok(invitationDTOList);
     }
 
