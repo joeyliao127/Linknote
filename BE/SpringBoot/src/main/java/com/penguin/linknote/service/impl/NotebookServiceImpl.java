@@ -67,7 +67,7 @@ public class NotebookServiceImpl implements NotebookService {
 
     @Override
     public NotebookDTO create(NotebookCommand notebookCommand, UUID userId) {
-        userRepository.findById(userId).orElseThrow(InvalidNotebookParameterException::new);
+        userRepository.get(userId).orElseThrow(InvalidNotebookParameterException::new);
         Notebook notebook = new Notebook();
         notebook.setId(UUID.randomUUID());
         notebook.setTitle(notebookCommand.getTitle());

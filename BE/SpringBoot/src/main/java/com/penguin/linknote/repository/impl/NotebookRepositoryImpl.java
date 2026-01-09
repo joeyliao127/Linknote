@@ -107,7 +107,7 @@ public class NotebookRepositoryImpl implements NotebookRepository {
 
         PageResponse<Notebook> response = new PageResponse<>();
         response.setItems(items);
-        response.setCount(items.size());
+        response.setCount(total);
         response.setCurrentPage(normalizedPage);
         response.setPageSize(normalizedLimit);
         response.setTotalPage(totalPage);

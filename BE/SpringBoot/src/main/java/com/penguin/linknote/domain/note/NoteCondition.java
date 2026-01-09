@@ -1,14 +1,17 @@
 package com.penguin.linknote.domain.note;
 
-import lombok.Data;
-
 import java.util.List;
 import java.util.UUID;
 
+import lombok.Data;
+
 @Data
-public class NoteFilter {
+public class NoteCondition {
+    private UUID userId;
     private UUID notebookId;
     private String title;
     private Boolean star;
-    private List<UUID> tagIdList;
+    private List<UUID> tagIds;
+    private String orderBy;
+    private String orderDirection;
 }

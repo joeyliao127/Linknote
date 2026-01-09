@@ -16,6 +16,7 @@ import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.domain.note.NoteCommand;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteTagCommand;
+import com.penguin.linknote.domain.note.exception.InvalidNoteParameterException;
 import com.penguin.linknote.service.NoteService;
 
 import jakarta.validation.Valid;
@@ -56,6 +57,9 @@ public class NoteController {
 
     @PutMapping("/{noteId}/tags")
     public ResponseEntity<ApiResponse> addTag(@PathVariable UUID noteId, @RequestBody @Valid NoteTagCommand command) {
+        if (command.getTagIdList() == null) {
+            throw new InvalidNoteParameterException();
+        }
         noteService.addTagToNote(noteId, command.getTagIdList().stream().map(UUID::fromString).toList());
         return ResponseEntity.ok(new ApiResponse(true, "Add tag successfully"));
     }

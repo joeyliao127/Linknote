@@ -21,7 +21,9 @@ import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.note.NoteDTO;
-import com.penguin.linknote.domain.note.NoteFilter;
+import com.penguin.linknote.domain.note.NoteCondition;
+import com.penguin.linknote.domain.note.NoteOrderBy;
+import com.penguin.linknote.domain.note.exception.InvalidNoteParameterException;
 import com.penguin.linknote.domain.notebook.NotebookCommand;
 import com.penguin.linknote.domain.notebook.NotebookCondition;
 import com.penguin.linknote.domain.notebook.NotebookDTO;
@@ -72,9 +74,23 @@ public class NotebookController {
     
 
     @GetMapping("/{notebookId}/notes")
-    public ResponseEntity<PageResponse<NoteDTO>> indexNotes(@ModelAttribute NoteFilter  noteFilter, @PathVariable UUID notebookId, PageCommand pageCommand) {
-        noteFilter.setNotebookId(notebookId);
-        PageResponse<NoteDTO> noteList = noteService.indexNotes(noteFilter, pageCommand);
+    public ResponseEntity<PageResponse<NoteDTO>> indexNotes(
+            @ModelAttribute NoteCondition noteCondition,
+            @PathVariable UUID notebookId,
+            PageCommand pageCommand,
+            Authentication authentication) {
+        if (noteCondition == null) {
+            noteCondition = new NoteCondition();
+        }
+        if (noteCondition.getOrderBy() != null && !noteCondition.getOrderBy().isBlank()) {
+            if (NoteOrderBy.from(noteCondition.getOrderBy()) == null) {
+                throw new InvalidNoteParameterException();
+            }
+        }
+        UUID userId = (UUID) authentication.getPrincipal();
+        noteCondition.setNotebookId(notebookId);
+        noteCondition.setUserId(userId);
+        PageResponse<NoteDTO> noteList = noteService.indexNotes(noteCondition, pageCommand);
         return ResponseEntity.ok(noteList);
     }
 
