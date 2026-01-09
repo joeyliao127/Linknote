@@ -148,6 +148,10 @@ Decision
 
 使用 QueryDSL 製作動態查詢。
 
+Status
+
+Superseded by ADR-011.
+
 Rationale • type-safe • 不需要手寫字串 SQL • BooleanBuilder 適合 Filter-Based Query
 
 Consequences • 需額外學習 QueryDSL 語法 • 架 CI 時需加入 Q-class 產生
@@ -169,3 +173,19 @@ Decision
 Rationale • 分層乾淨，錯誤原因易追蹤 • 只處理各自 controller 拋出的錯誤 • 全域仍保留 Global Handler 最終兜底
 
 Consequences • 需維護多個 Handler（但結構更清晰）
+
+⸻
+
+ADR-011 — Replace JPA/QueryDSL with JDBC
+
+Context
+
+專案權限模型複雜（RBAC + ACL），多數查詢需要維護多表 relation 與條件拼接。
+
+Decision
+
+移除 JPA/QueryDSL，改用 JDBC（NamedParameterJdbcTemplate）手寫 SQL 查詢與 RowMapper。
+
+Rationale • ORM 在複雜 join 與 ACL 條件下維護成本高 • SQL 更能精準控制查詢與效能 • 減少抽象層、降低除錯成本
+
+Consequences • 需手動維護 SQL 與 RowMapper • 測試覆蓋需更完整 • DB schema 變更需同步更新查詢
