@@ -6,12 +6,11 @@ import java.util.UUID;
 import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.note.NoteCommand;
+import com.penguin.linknote.domain.note.NoteCondition;
 import com.penguin.linknote.domain.note.NoteDTO;
-import com.penguin.linknote.domain.note.NoteFilter;
 
 public interface NoteService {
-    // TODO: 支援 star, tag, order by desc 等 filters
-    PageResponse<NoteDTO> indexNotes(NoteFilter filter, PageCommand pageCommand);
+    PageResponse<NoteDTO> indexNotes(NoteCondition condition, PageCommand pageCommand);
 
     NoteDTO get(UUID noteId);
 

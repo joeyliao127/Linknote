@@ -4,23 +4,17 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-@Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoteTagId implements Serializable {
     
-    @Column(name = "note_id")
     private UUID noteId;
     
-    @Column(name = "tag_id")
     private UUID tagId;
     
     @Override
