@@ -1,7 +1,7 @@
 <template>
     <UFormField :label="label" :name="name" :required="required">
         <UInput
-            class="w-full"
+            class="w-full auth-input"
             :type="type"
             :trailing-icon="getIcon"
             :placeholder="placeholder" />
