@@ -60,3 +60,8 @@ todo.md
 
 #agent skills
 .codex
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
