@@ -58,6 +58,12 @@ public class RagNoteRepositoryImpl implements RagNoteRepository {
         return jdbcTemplate.queryForObject(sql, params, rowMapper);
     }
 
+    @Override
+    public void delete(UUID noteId, UUID userId) {
+        String sql = "DELETE FROM rag_notes WHERE note_id = :noteId AND user_id = :userId";
+        jdbcTemplate.update(sql, Map.of("noteId", noteId, "userId", userId));
+    }
+
     private Timestamp toTimestamp(Instant instant) {
         return instant == null ? null : Timestamp.from(instant);
     }

@@ -19,3 +19,7 @@ class IngestResponse(BaseModel):
     notes_processed: int
     chunks_ingested: int
     message: str
+
+
+class DeleteNoteRequest(BaseModel):
+    user_id: str

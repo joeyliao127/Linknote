@@ -27,6 +27,11 @@ public class RagNoteServiceImpl implements RagNoteService {
     }
 
     @Override
+    public void delete(UUID noteId, UUID userId) {
+        ragNoteRepository.delete(noteId, userId);
+    }
+
+    @Override
     public RagNoteDTO upsert(RagNoteCommand command, UUID userId) {
         RagNote ragNote = new RagNote();
         ragNote.setNoteId(command.getNoteId());

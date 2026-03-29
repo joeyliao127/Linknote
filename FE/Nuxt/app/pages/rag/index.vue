@@ -134,9 +134,50 @@
                             {{ statusLabel(row.original.status, row.original.behindDays) }}
                         </UBadge>
                     </template>
+                    <template #action-cell="{ row }">
+                        <UButton
+                            icon="i-lucide-trash-2"
+                            color="red"
+                            variant="ghost"
+                            size="xs"
+                            :loading="deletingNoteId === row.original.noteId"
+                            @click="openConfirm(row.original)" />
+                    </template>
                 </UTable>
             </UCard>
         </div>
+
+        <!-- 刪除確認 Dialog -->
+        <UModal v-model:open="confirmOpen" :dismissible="false">
+            <template #header>
+                <p class="font-semibold">確認從知識庫移除</p>
+            </template>
+            <template #body>
+                <p class="text-sm text-slate-300">
+                    確定要將
+                    <span class="font-medium text-white">
+                        {{ confirmTarget?.noteTitle ?? "此筆記" }}
+                    </span>
+                    從 RAG 知識庫中移除嗎？此操作不會刪除原始筆記。
+                </p>
+            </template>
+            <template #footer>
+                <div class="flex justify-end gap-2">
+                    <UButton
+                        variant="ghost"
+                        color="neutral"
+                        @click="confirmOpen = false">
+                        取消
+                    </UButton>
+                    <UButton
+                        color="red"
+                        :loading="deletingNoteId !== null"
+                        @click="confirmDelete">
+                        確認移除
+                    </UButton>
+                </div>
+            </template>
+        </UModal>
     </DashboardShell>
 </template>
 
@@ -174,6 +215,9 @@ const selectedNoteIds = ref(new Set<string>());
 const ingesting = ref(false);
 const ragNotes = ref<RagNote[]>([]);
 const statusLoading = ref(false);
+const deletingNoteId = ref<string | null>(null);
+const confirmOpen = ref(false);
+const confirmTarget = ref<RagNote | null>(null);
 
 const notebookOptions = computed(() =>
     notebooks.value.map((nb) => ({ label: nb.title, value: nb.id })),
@@ -198,6 +242,7 @@ const ragColumns = [
     { accessorKey: "noteUpdatedAt", header: "筆記更新日期" },
     { accessorKey: "ragUpdatedAt", header: "RAG 建立日期" },
     { accessorKey: "status", header: "狀態" },
+    { id: "action", header: "" },
 ];
 
 async function loadNotebooks() {
@@ -260,6 +305,28 @@ async function handleIngest() {
         });
     } finally {
         ingesting.value = false;
+    }
+}
+
+function openConfirm(ragNote: RagNote) {
+    confirmTarget.value = ragNote;
+    confirmOpen.value = true;
+}
+
+async function confirmDelete() {
+    if (!confirmTarget.value) return;
+    const noteId = confirmTarget.value.noteId;
+    confirmOpen.value = false;
+    deletingNoteId.value = noteId;
+    try {
+        await $fetch(`/api/rag/notes/${noteId}`, { method: "DELETE" });
+        await loadRagNotes();
+        toast.add({ title: "已從知識庫移除", color: "success" });
+    } catch {
+        toast.add({ title: "移除失敗，請稍後再試", color: "error" });
+    } finally {
+        deletingNoteId.value = null;
+        confirmTarget.value = null;
     }
 }
 

@@ -4,7 +4,7 @@ from app.modules.embedding.ollama_embedder import embed
 from app.modules.vector_store.qdrant_store import (
     get_client, ensure_collection, delete_by_note_id, upsert_chunks,
 )
-from app.schemas.ingest import IngestRequest, IngestResponse
+from app.schemas.ingest import IngestRequest, IngestResponse, DeleteNoteRequest
 
 router = APIRouter()
 
@@ -46,3 +46,13 @@ async def ingest(request: IngestRequest):
         chunks_ingested=len(all_chunks),
         message="Ingestion complete",
     )
+
+
+@router.delete("/notes/{note_id}")
+async def delete_note(note_id: str, request: DeleteNoteRequest):
+    try:
+        client = get_client()
+        await delete_by_note_id(client, note_id, request.user_id)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Qdrant delete failed: {e}")
+    return {"deleted": True, "note_id": note_id}

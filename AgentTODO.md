@@ -5,7 +5,7 @@
 ### FastAPI
 
 - [x] `POST /ingest` 修改為接受 `Array<Note>` request body，支援新增與更新（先刪除 note_id 所有 chunks，再重新 embed 寫入，idempotent）
-- [ ] `DELETE /notes/{noteId}` 刪除 Qdrant 中指定 note_id 的所有 chunks
+- [x] `DELETE /notes/{noteId}` 刪除 Qdrant 中指定 note_id 的所有 chunks
 - [x] `POST /query` 加入 `user_id` payload filter，確保查詢結果隔離
 
 Request body schema（`POST /ingest`）：
@@ -46,7 +46,7 @@ CREATE TABLE rag_notes (
 ```
 
 - [x] `POST /rag-notes` — upsert rag_note 紀錄（ON CONFLICT DO UPDATE）
-- [ ] `DELETE /rag-notes/{noteId}` — 從 rag_notes 移除紀錄
+- [x] `DELETE /rag-notes/{noteId}` — 從 rag_notes 移除紀錄
 - [x] `GET /rag-notes?notebookId=` — 回傳 rag_notes 列表（含 note_updated_at）
 
 ---
@@ -54,7 +54,7 @@ CREATE TABLE rag_notes (
 ### BFF（Nuxt server/api）
 
 - [x] `POST /api/rag/ingest` — 向 Spring Boot 取得 notes → 送 FastAPI `/ingest` → 寫入 rag_notes
-- [ ] `DELETE /api/rag/notes/[noteId]` — 呼叫 FastAPI + Spring Boot 刪除
+- [x] `DELETE /api/rag/notes/[noteId]` — 呼叫 FastAPI + Spring Boot 刪除
 - [x] `GET /api/rag/notes` — 取得 rag_notes，與 notes 比對 updated_at 計算版本狀態
 
 版本狀態邏輯：
