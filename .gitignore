@@ -52,6 +52,7 @@ target/
 
 # DB
 Database/data/
+Database/qdrant/
 
 # temp
 BE/SpringBootOld/
