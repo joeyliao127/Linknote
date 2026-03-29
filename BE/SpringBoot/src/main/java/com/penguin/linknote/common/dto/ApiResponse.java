@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ApiResponse {
-    private Boolean result;
+    private boolean result;
     private String message;
 }
