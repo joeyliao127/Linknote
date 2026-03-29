@@ -75,6 +75,14 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
+    public List<NoteDTO> getByIds(List<UUID> noteIds) {
+        if (noteIds == null || noteIds.isEmpty()) {
+            return List.of();
+        }
+        return NoteDTO.fromEntityList(noteRepository.findByIds(noteIds));
+    }
+
+    @Override
     public NoteDTO get(UUID noteId) {
         Note note = noteRepository.get(noteId)
                 .orElseThrow(() -> new NoteNotFoundException("Note note found."));

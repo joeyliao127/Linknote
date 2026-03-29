@@ -11,6 +11,8 @@ import com.penguin.linknote.entity.Note;
 public interface NoteRepository {
     List<Note> index(UUID userId, UUID notebookId, Integer limit);
 
+    List<Note> findByIds(List<UUID> ids);
+
     PageResponse<Note> paginate(int page, int limit, NoteCondition condition);
 
     Optional<Note> get(UUID id);

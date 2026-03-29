@@ -11,6 +11,7 @@ export default defineNuxtConfig({
         // 兩個 BE API Server
         AUTH_API: process.env.AUTH_API_BASE,
         RESOURCE_API: process.env.RESOURCE_API_BASE,
+        RAG_API: process.env.RAG_API_BASE,
         public: {
             API_URL: process.env.API_URL,
             SESSION_COOKIE: "ln_auth_session",

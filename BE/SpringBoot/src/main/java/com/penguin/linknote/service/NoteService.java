@@ -14,6 +14,8 @@ public interface NoteService {
 
     NoteDTO get(UUID noteId);
 
+    List<NoteDTO> getByIds(List<UUID> noteIds);
+
     NoteDTO create(NoteCommand noteCommand);
 
     NoteDTO update(UUID noteId, NoteCommand noteCommand);

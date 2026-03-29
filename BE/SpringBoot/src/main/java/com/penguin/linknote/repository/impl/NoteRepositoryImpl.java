@@ -114,6 +114,19 @@ public class NoteRepositoryImpl implements NoteRepository {
     }
 
     @Override
+    public List<Note> findByIds(List<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        String sql = """
+            SELECT id, notebook_id, title, question, content, keypoint, star, created_at, updated_at
+            FROM notes
+            WHERE id IN (:ids)
+            """;
+        return jdbcTemplate.query(sql, Map.of("ids", ids), rowMapper);
+    }
+
+    @Override
     public Optional<Note> get(UUID id) {
         String sql = """
             SELECT n.id, n.notebook_id, n.title, n.question, n.content, n.keypoint, n.star,

@@ -38,7 +38,8 @@ def split_note(note: dict) -> list[dict]:
     return [
         {
             "text": chunk,
-            "note_id": str(note["id"]),
+            "note_id": str(note.get("note_id") or note.get("id")),
+            "user_id": str(note.get("user_id", "")),
             "notebook_id": str(note["notebook_id"]),
             "title": note.get("title") or "",
             "chunk_index": i,

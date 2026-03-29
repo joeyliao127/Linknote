@@ -32,6 +32,15 @@
                         概覽
                     </UButton>
                 </NuxtLink>
+                <NuxtLink to="/rag">
+                    <UButton
+                        block
+                        variant="ghost"
+                        icon="i-lucide-brain"
+                        class="justify-start">
+                        AI 個人知識庫
+                    </UButton>
+                </NuxtLink>
             </nav>
         </div>
 
@@ -40,13 +49,20 @@
                 class="rounded-2xl border border-slate-800 bg-slate-950/60 overflow-hidden">
                 <div
                     class="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition cursor-pointer"
-                    @click="emit('go-notebooks');dashboardNav?.goNotebooks && dashboardNav.goNotebooks();">
+                    @click="
+                        emit('go-notebooks');
+                        dashboardNav?.goNotebooks && dashboardNav.goNotebooks();
+                    ">
                     <div class="flex items-center gap-2">
                         <UIcon name="i-lucide-notebook-pen" class="w-4 h-4" />
                         <span class="font-semibold">我的筆記本</span>
                     </div>
                     <UIcon
-                        :name="isMyOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                        :name="
+                            isMyOpen
+                                ? 'i-lucide-chevron-down'
+                                : 'i-lucide-chevron-right'
+                        "
                         class="w-4 h-4 transition text-slate-400 hover:text-accent"
                         @click.stop="isMyOpen = !isMyOpen" />
                 </div>
@@ -112,13 +128,21 @@
                 class="rounded-2xl border border-slate-800 bg-slate-950/60 overflow-hidden">
                 <div
                     class="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition cursor-pointer"
-                    @click="emit('go-co-notebooks');dashboardNav?.goCoNotebooks && dashboardNav.goCoNotebooks();">
+                    @click="
+                        emit('go-co-notebooks');
+                        dashboardNav?.goCoNotebooks &&
+                            dashboardNav.goCoNotebooks();
+                    ">
                     <div class="flex items-center gap-2">
                         <UIcon name="i-lucide-users" class="w-4 h-4" />
                         <span class="font-semibold">共編筆記本</span>
                     </div>
                     <UIcon
-                        :name="isCoOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                        :name="
+                            isCoOpen
+                                ? 'i-lucide-chevron-down'
+                                : 'i-lucide-chevron-right'
+                        "
                         class="w-4 h-4 transition text-slate-400 hover:text-accent"
                         @click.stop="isCoOpen = !isCoOpen" />
                 </div>
@@ -214,7 +238,14 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, ref, computed, watchEffect } from "vue";
+import {
+    inject,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    computed,
+    watchEffect,
+} from "vue";
 import SettingsModal from "./SettingsModal.vue";
 
 export interface NotebookNavItem {
@@ -251,7 +282,7 @@ const props = withDefaults(
             { label: "帳號安全", value: "security" },
             { label: "通知", value: "notification" },
         ],
-    }
+    },
 );
 
 const emit = defineEmits<{
@@ -302,7 +333,7 @@ onMounted(() => {
                 emit("load-more");
             }
         },
-        { threshold: 1 }
+        { threshold: 1 },
     );
 
     coObserver = new IntersectionObserver(
@@ -312,7 +343,7 @@ onMounted(() => {
                 emit("load-more-co");
             }
         },
-        { threshold: 1 }
+        { threshold: 1 },
     );
 
     if (myLoadMoreTrigger.value) {
@@ -338,7 +369,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
 .fade-enter-from,
 .fade-leave-to {

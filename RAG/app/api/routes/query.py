@@ -15,7 +15,12 @@ async def query(request: QueryRequest):
 
     try:
         client = get_client()
-        results = await search(client, query_vector=embeddings[0], top_k=request.top_k)
+        results = await search(
+            client,
+            query_vector=embeddings[0],
+            top_k=request.top_k,
+            user_id=request.user_id,
+        )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Qdrant search failed: {e}")
 
