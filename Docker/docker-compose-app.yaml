@@ -46,6 +46,30 @@ services:
             project_net:
                 ipv4_address: ${FRONTEND_HOST}
 
+    fastapi:
+        container_name: ${PROJECT_NAME}_fastapi
+        build:
+            context: ../RAG
+            dockerfile: Dockerfile
+        ports:
+            - "${RAG_PORT}:${RAG_PORT}"
+        environment:
+            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_PORT=${POSTGRES_PORT}
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - QDRANT_HOST=${QDRANT_HOST}
+            - QDRANT_PORT=${QDRANT_PORT}
+            - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+            - QDRANT_DISTANCE=${QDRANT_DISTANCE}
+            - RAG_PORT=${RAG_PORT}
+        volumes:
+            - ../RAG:/app
+        networks:
+            project_net:
+                ipv4_address: ${RAG_HOST}
+
     nginx:
         container_name: ${PROJECT_NAME}_nginx
         image: nginx:alpine
