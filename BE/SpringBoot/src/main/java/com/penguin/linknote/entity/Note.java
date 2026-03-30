@@ -26,6 +26,8 @@ public class Note {
 
     private UUID notebookId;
 
+    private Long viewCount;
+
     public Note() {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
@@ -40,6 +42,7 @@ public class Note {
                 .content(this.content)
                 .keypoint(this.keypoint)
                 .star(this.star)
+                .viewCount(this.viewCount)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .build();

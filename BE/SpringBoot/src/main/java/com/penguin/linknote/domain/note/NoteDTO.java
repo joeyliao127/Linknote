@@ -20,6 +20,7 @@ public class NoteDTO {
     private String question;
     private String keypoint;
     private Boolean star;
+    private Long viewCount;
     private Instant createdAt;
     private Instant updatedAt;
     private List<TagDTO> tags;
@@ -32,6 +33,7 @@ public class NoteDTO {
                 .content(note.getContent())
                 .keypoint(note.getKeypoint())
                 .star(note.getStar())
+                .viewCount(note.getViewCount())
                 .createdAt(note.getCreatedAt())
                 .updatedAt(note.getUpdatedAt())
                 .notebookId(note.getNotebookId())

@@ -22,4 +22,6 @@ public interface NoteRepository {
     Note update(Note note);
 
     void delete(UUID id);
+
+    void incrementViewCount(UUID noteId);
 }

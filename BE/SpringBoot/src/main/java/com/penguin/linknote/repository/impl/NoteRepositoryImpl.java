@@ -29,7 +29,7 @@ import com.penguin.linknote.repository.rowmapper.NoteRowMapper;
 public class NoteRepositoryImpl implements NoteRepository {
     private static final String BASE_SELECT = """
         SELECT n.id, n.notebook_id, n.title, n.question, n.content, n.keypoint, n.star,
-               n.created_at, n.updated_at
+               n.view_count, n.created_at, n.updated_at
         FROM notes n
         JOIN resource_acl ra ON ra.resource_instance_id = n.notebook_id
         JOIN resources rs ON ra.resource_id = rs.id
@@ -119,7 +119,7 @@ public class NoteRepositoryImpl implements NoteRepository {
             return List.of();
         }
         String sql = """
-            SELECT id, notebook_id, title, question, content, keypoint, star, created_at, updated_at
+            SELECT id, notebook_id, title, question, content, keypoint, star, view_count, created_at, updated_at
             FROM notes
             WHERE id IN (:ids)
             """;
@@ -130,7 +130,7 @@ public class NoteRepositoryImpl implements NoteRepository {
     public Optional<Note> get(UUID id) {
         String sql = """
             SELECT n.id, n.notebook_id, n.title, n.question, n.content, n.keypoint, n.star,
-                   n.created_at, n.updated_at
+                   n.view_count, n.created_at, n.updated_at
             FROM notes n
             WHERE n.id = :id
             """;
@@ -147,7 +147,7 @@ public class NoteRepositoryImpl implements NoteRepository {
         String sql = """
             INSERT INTO notes (id, notebook_id, title, question, content, keypoint, star, created_at, updated_at)
             VALUES (:id, :notebookId, :title, :question, :content, :keypoint, :star, :createdAt, :updatedAt)
-            RETURNING id, notebook_id, title, question, content, keypoint, star, created_at, updated_at
+            RETURNING id, notebook_id, title, question, content, keypoint, star, view_count, created_at, updated_at
             """;
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -175,7 +175,7 @@ public class NoteRepositoryImpl implements NoteRepository {
                 star = :star,
                 updated_at = :updatedAt
             WHERE id = :id
-            RETURNING id, notebook_id, title, question, content, keypoint, star, created_at, updated_at
+            RETURNING id, notebook_id, title, question, content, keypoint, star, view_count, created_at, updated_at
             """;
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -194,6 +194,12 @@ public class NoteRepositoryImpl implements NoteRepository {
     public void delete(UUID id) {
         String sql = "DELETE FROM notes WHERE id = :id";
         jdbcTemplate.update(sql, Map.of("id", id));
+    }
+
+    @Override
+    public void incrementViewCount(UUID noteId) {
+        String sql = "UPDATE notes SET view_count = view_count + 1 WHERE id = :noteId";
+        jdbcTemplate.update(sql, Map.of("noteId", noteId));
     }
 
     private List<String> buildConditions(NoteCondition condition, Map<String, Object> params) {

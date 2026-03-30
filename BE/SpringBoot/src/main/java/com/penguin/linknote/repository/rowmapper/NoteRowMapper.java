@@ -19,6 +19,7 @@ public class NoteRowMapper implements RowMapper<Note> {
         note.setContent(rs.getString("content"));
         note.setKeypoint(rs.getString("keypoint"));
         note.setStar(rs.getObject("star", Boolean.class));
+        note.setViewCount(rs.getLong("view_count"));
 
         Timestamp createdAt = rs.getTimestamp("created_at");
         if (createdAt != null) {

@@ -3,6 +3,7 @@
 -- 2. Table name 使用負數形式命名，避免與保留字衝突，如 order, group
 
 -- Drop tables if they exist (in reverse dependency order)
+DROP TABLE IF EXISTS note_interactions CASCADE;
 DROP TABLE IF EXISTS notebook_user_roles CASCADE;
 DROP TABLE IF EXISTS note_tags CASCADE;
 DROP TABLE IF EXISTS role_permissions CASCADE;
@@ -222,6 +223,7 @@ CREATE TABLE notes (
   content       TEXT,
   keypoint      TEXT,
   star          BOOLEAN     DEFAULT FALSE,
+  view_count    BIGINT      NOT NULL DEFAULT 0,
   created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   notebook_id   UUID        NOT NULL,
@@ -290,3 +292,23 @@ CREATE TABLE chat_session (
   CONSTRAINT fk_rag_notes_user_id     FOREIGN KEY (user_id)     REFERENCES users (id)     ON DELETE CASCADE,
   CONSTRAINT fk_rag_notes_notebook_id FOREIGN KEY (notebook_id) REFERENCES notebooks (id) ON DELETE CASCADE
 );
+
+CREATE TABLE note_interactions (
+  id        BIGINT                   GENERATED ALWAYS AS IDENTITY,
+  user_id   UUID                     NOT NULL,
+  note_id   UUID                     NOT NULL,
+  action    VARCHAR(20)              NOT NULL,
+  acted_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_note_interactions_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT fk_note_interactions_note_id FOREIGN KEY (note_id) REFERENCES notes (id) ON DELETE CASCADE,
+  PRIMARY KEY (id)
+);
+
+-- Per-minute deduplication: same user + note + action within the same minute = 1 record
+CREATE UNIQUE INDEX uidx_note_interactions_dedup
+    ON note_interactions (user_id, note_id, action, date_trunc('minute', acted_at));
+
+CREATE INDEX idx_note_interactions_note_id  ON note_interactions (note_id);
+CREATE INDEX idx_note_interactions_user_id  ON note_interactions (user_id);
+CREATE INDEX idx_note_interactions_acted_at ON note_interactions (acted_at);

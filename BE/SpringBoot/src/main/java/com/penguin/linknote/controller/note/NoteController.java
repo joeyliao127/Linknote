@@ -3,6 +3,7 @@ package com.penguin.linknote.controller.note;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import com.penguin.linknote.domain.note.NoteCommand;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteTagCommand;
 import com.penguin.linknote.domain.note.exception.InvalidNoteParameterException;
+import com.penguin.linknote.service.NoteInteractionService;
 import com.penguin.linknote.service.NoteService;
 
 import java.util.List;
@@ -29,9 +31,11 @@ import jakarta.validation.Valid;
 public class NoteController {
 
     private final NoteService noteService;
+    private final NoteInteractionService noteInteractionService;
 
-    public NoteController(NoteService noteService) {
+    public NoteController(NoteService noteService, NoteInteractionService noteInteractionService) {
         this.noteService = noteService;
+        this.noteInteractionService = noteInteractionService;
     }
 
     @PostMapping("/batch")
@@ -41,8 +45,12 @@ public class NoteController {
     }
 
     @GetMapping("/{noteId}")
-    public ResponseEntity<NoteDTO> get(@PathVariable UUID noteId) {
+    public ResponseEntity<NoteDTO> get(@PathVariable UUID noteId, Authentication authentication) {
         NoteDTO noteDTO = noteService.get(noteId);
+        if (authentication != null) {
+            UUID userId = (UUID) authentication.getPrincipal();
+            noteInteractionService.recordView(userId, noteId);
+        }
         return ResponseEntity.ok(noteDTO);
     }
 
