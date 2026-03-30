@@ -45,6 +45,9 @@ export default defineNuxtConfig({
      * 2. endpoints 設定對應的 API 路徑，需要在 server/api/auth/ 下實作對應的 API，透過 Nuxt server 呼叫 Spring Boot API
      */
     auth: {
+        globalAppMiddleware: {
+            isEnabled: true,
+        },
         provider: {
             type: "local",
             endpoints: {

@@ -164,7 +164,7 @@ import { ref, onBeforeMount } from "vue";
 import { navigateTo, useAuth } from "#imports";
 import { ValidationMessages } from "#imports";
 
-definePageMeta({ layout: "default" });
+definePageMeta({ layout: "default", auth: false });
 
 const { signIn, status } = useAuth();
 
