@@ -246,15 +246,15 @@ onMounted(() => {
 }
 
 .sb-create-btn {
-    background: #22c55e !important;
-    color: #0f1a0f !important;
+    background: var(--primary) !important;
+    color: #ffffff !important;
     font-weight: 600;
     border: none !important;
     transition: background 150ms ease;
 }
 
 .sb-create-btn:hover {
-    background: #16a34a !important;
+    background: var(--primary-dark) !important;
 }
 
 /* ── Nav area ────────────────────────────────────────── */
@@ -339,8 +339,8 @@ onMounted(() => {
 }
 
 .sb-notebook-active {
-    color: #22c55e;
-    border-left: 2px solid #22c55e;
+    color: var(--primary);
+    border-left: 2px solid var(--primary);
     padding-left: calc(2.75rem - 2px);
 }
 
@@ -395,7 +395,7 @@ onMounted(() => {
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 50%;
-    background: #22c55e;
+    background: var(--primary);
     flex-shrink: 0;
 }
 
@@ -408,15 +408,15 @@ onMounted(() => {
 }
 
 .sb-signout-btn {
-    background: #22c55e !important;
-    color: #0f1a0f !important;
+    background: var(--primary) !important;
+    color: #ffffff !important;
     font-weight: 600;
     border: none !important;
     transition: background 150ms ease;
 }
 
 .sb-signout-btn:hover {
-    background: #16a34a !important;
+    background: var(--primary-dark) !important;
 }
 
 /* ── Transition ──────────────────────────────────────── */

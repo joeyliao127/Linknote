@@ -343,7 +343,7 @@ onBeforeMount(() => {
 }
 
 .code-word {
-    color: #4ade80;
+    color: var(--primary-light);
     font-weight: 700;
     font-size: 1.6rem;
     vertical-align: baseline;
@@ -367,7 +367,7 @@ onBeforeMount(() => {
 }
 
 .code-letter {
-    color: #4ade80;
+    color: var(--primary-light);
     font-weight: 700;
     font-size: 1.1rem;
     display: inline-block;
@@ -440,14 +440,14 @@ onBeforeMount(() => {
 
 .form-error {
     font-size: 0.78rem;
-    color: #e30606;
+    color: var(--accent);
     margin-top: -0.25rem;
 }
 
 .form-submit {
     margin-top: 0px;
-    background: #22c55e;
-    color: #0f1a0f;
+    background: var(--primary);
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     font-weight: 600;
@@ -455,7 +455,7 @@ onBeforeMount(() => {
 }
 
 .form-submit:hover {
-    background: #16a34a;
+    background: var(--primary-dark);
 }
 
 .form-switch {
@@ -478,7 +478,7 @@ onBeforeMount(() => {
 }
 
 .switch-link:hover {
-    color: #4ade80;
+    color: var(--primary-light);
 }
 
 /* ── Responsive ─────────────────────────────────────── */

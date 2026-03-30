@@ -18,12 +18,12 @@ export default defineAppConfig({
         },
         formField: {
             slots: {
-                error: "text-[#e30606]",
-                required: "after:content-['*'] after:ml-0.5 after:text-[#e30606]",
+                error: "text-red-600",
+                required: "after:content-['*'] after:ml-0.5 after:text-red-600",
             },
             required: {
                 true: {
-                    label: "after:content-['*'] after:ms-0.5 after:text-[#e30606]",
+                    label: "after:content-['*'] after:ms-0.5 after:text-red-600",
                 },
             },
         },
