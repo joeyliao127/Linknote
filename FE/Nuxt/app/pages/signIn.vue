@@ -250,7 +250,7 @@ async function handleSignIn(email: string, password: string) {
         },
         {
             callbackUrl: "/notebooks",
-        }
+        },
     );
 
     if (result?.error) {

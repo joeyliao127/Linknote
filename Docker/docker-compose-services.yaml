@@ -24,6 +24,18 @@ services:
             project_net:
                 ipv4_address: ${POSTGRES_HOST}
 
+    qdrant:
+        container_name: ${PROJECT_NAME}_qdrant
+        image: qdrant/qdrant
+        ports:
+            - "6333:6333"
+            - "6334:6334"
+        volumes:
+            - ../Database/qdrant:/qdrant/storage # 跟 PG 放在一起
+        networks:
+            project_net:
+                ipv4_address: ${QDRANT_HOST}
+
 networks:
     project_net:
         name: ${PROJECT_NAME}_net

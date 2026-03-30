@@ -37,6 +37,7 @@ out/
 .nuxt/
 node_modules/
 .pnpm-store/
+screenshot/
 pnpm-lock.yaml
 node-compile-cache
 api.d.ts
@@ -52,7 +53,16 @@ target/
 
 # DB
 Database/data/
+Database/qdrant/
 
 # temp
 BE/SpringBootOld/
 todo.md
+
+#agent skills
+.codex
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

@@ -10,9 +10,8 @@
                 </p>
                 <p
                     v-if="description"
-                    class="text-xs text-slate-400 line-clamp-2">
-                    {{ description }}
-                </p>
+                    v-html="description"
+                    class="text-xs text-slate-400 line-clamp-2"></p>
             </div>
             <UTooltip text="收藏">
                 <UButton
@@ -24,8 +23,9 @@
                     <UIcon
                         :name="starred ? 'uis-star' : 'uil-star'"
                         class="w-4 h-4"
-                        :class="starred ? 'text-yellow-400' : 'text-slate-300'"
-                    />
+                        :class="
+                            starred ? 'text-yellow-400' : 'text-slate-300'
+                        " />
                 </UButton>
             </UTooltip>
         </div>
@@ -85,7 +85,7 @@ const props = withDefaults(
         description: "",
         starred: false,
         updatedAt: undefined,
-    }
+    },
 );
 
 defineEmits<{

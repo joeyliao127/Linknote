@@ -217,7 +217,7 @@ async function handleDelete() {
                 dialog.inform("筆記已成功刪除");
                 handleReturn();
             }
-        }
+        },
     );
 }
 

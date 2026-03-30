@@ -260,3 +260,33 @@ CREATE TABLE note_tags (
 
 CREATE INDEX idx_note_tags_note_id ON note_tags (note_id);
 CREATE INDEX idx_note_tags_tag_id ON note_tags (tag_id);
+
+DROP TABLE IF EXISTS rag_notes;
+CREATE TABLE rag_notes (
+  note_id         UUID        NOT NULL,
+  user_id         UUID        NOT NULL,
+  notebook_id     UUID        NOT NULL,
+  note_updated_at TIMESTAMP   NOT NULL,
+  created_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (note_id),
+  CONSTRAINT fk_rag_notes_note_id     FOREIGN KEY (note_id)     REFERENCES notes (id)     ON DELETE CASCADE,
+  CONSTRAINT fk_rag_notes_user_id     FOREIGN KEY (user_id)     REFERENCES users (id)     ON DELETE CASCADE,
+  CONSTRAINT fk_rag_notes_notebook_id FOREIGN KEY (notebook_id) REFERENCES notebooks (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_rag_notes_user_id     ON rag_notes (user_id);
+CREATE INDEX idx_rag_notes_notebook_id ON rag_notes (notebook_id);
+
+
+DROP TABLE IF EXISTS chat_session;
+CREATE TABLE chat_session (
+  note_id         UUID        NOT NULL,
+  user_id         UUID        NOT NULL,
+  notebook_id     UUID        NOT NULL,
+  note_updated_at TIMESTAMP   NOT NULL,
+  created_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (note_id),
+  CONSTRAINT fk_rag_notes_note_id     FOREIGN KEY (note_id)     REFERENCES notes (id)     ON DELETE CASCADE,
+  CONSTRAINT fk_rag_notes_user_id     FOREIGN KEY (user_id)     REFERENCES users (id)     ON DELETE CASCADE,
+  CONSTRAINT fk_rag_notes_notebook_id FOREIGN KEY (notebook_id) REFERENCES notebooks (id) ON DELETE CASCADE
+);

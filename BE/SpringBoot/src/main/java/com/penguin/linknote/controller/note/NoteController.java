@@ -19,6 +19,9 @@ import com.penguin.linknote.domain.note.NoteTagCommand;
 import com.penguin.linknote.domain.note.exception.InvalidNoteParameterException;
 import com.penguin.linknote.service.NoteService;
 
+import java.util.List;
+import java.util.Map;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -29,6 +32,12 @@ public class NoteController {
 
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<List<NoteDTO>> getByIds(@RequestBody Map<String, List<UUID>> body) {
+        List<UUID> noteIds = body.get("noteIds");
+        return ResponseEntity.ok(noteService.getByIds(noteIds));
     }
 
     @GetMapping("/{noteId}")
