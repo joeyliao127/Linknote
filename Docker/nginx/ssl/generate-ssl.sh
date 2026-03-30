@@ -9,10 +9,7 @@ CERT_FILE="$SSL_DIR/$DOMAIN.pem"
 echo "正在生成 $DOMAIN 的自簽章 SSL 憑證..."
 
 # 使用 openssl 生成憑證
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout "$KEY_FILE" \
-  -out "$CERT_FILE" \
-  -subj "/C=TW/ST=Taipei/L=Taipei/O=Linknote/CN=$DOMAIN"
+mkcert $DOMAIN
 
 if [ $? -eq 0 ]; then
   echo "--------------------------------------------------"
