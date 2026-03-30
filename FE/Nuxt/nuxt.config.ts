@@ -56,6 +56,9 @@ export default defineNuxtConfig({
                 signUp: { path: "/signUp", method: "post" },
                 getSession: { path: "/session", method: "get" },
             },
+            pages: {
+                login: "/signIn",
+            },
         },
     },
     i18n: {
