@@ -10,14 +10,20 @@ export default defineAppConfig({
                 base: ["justify-center font-bold"],
             },
         },
+        input: {
+            slots: {
+                root: "ring-0 shadow-none",
+                base: "ring-0 border-0 outline-none focus:ring-0 focus-visible:ring-0 shadow-none",
+            },
+        },
         formField: {
             slots: {
-                error: "text-red-500",
-                required: "after:content-['*'] after:ml-0.5 after:text-red-500",
+                error: "text-[#e30606]",
+                required: "after:content-['*'] after:ml-0.5 after:text-[#e30606]",
             },
             required: {
                 true: {
-                    label: "after:content-['*'] after:ms-0.5 after:text-red-500",
+                    label: "after:content-['*'] after:ms-0.5 after:text-[#e30606]",
                 },
             },
         },

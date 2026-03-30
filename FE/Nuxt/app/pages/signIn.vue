@@ -1,220 +1,157 @@
 <template>
-    <div slot="main" class="auth-shell font-jakarta">
-        <div class="decor decor-1" aria-hidden="true"></div>
-        <div class="decor decor-2" aria-hidden="true"></div>
-        <div class="decor decor-3" aria-hidden="true"></div>
+    <div class="auth-page">
+        <!-- Atmospheric background -->
+        <div class="auth-bg" aria-hidden="true" />
 
-        <div
-            class="relative mx-auto flex min-h-screen w-full max-w-6xl items-center px-6 py-12 sm:px-10 lg:px-16"
-        >
-            <div class="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,420px)_1fr]">
-                <UCard class="glass-card">
-                    <div class="flex items-center gap-3">
-                        <div class="brand-mark">LN</div>
-                        <div>
-                            <p class="text-sm font-semibold text-strong">Linknote</p>
-                            <p class="text-xs text-subtle">
-                                Knowledge that stays connected.
+        <div class="auth-layout">
+            <!-- Left: Branding -->
+            <div class="auth-left">
+                <h1 class="auth-tagline">Collaborate with partners</h1>
+                <div class="auth-sub">
+                    <p class="sub-line sub-left">Build your second brain</p>
+                    <p class="sub-line sub-right">
+                        with
+                        <span class="code-word">CODE</span>
+                        Method.
+                    </p>
+                </div>
+                <ul class="code-list">
+                    <li>
+                        <span class="code-letter">C</span>
+                        apture
+                    </li>
+                    <li>
+                        <span class="code-letter">O</span>
+                        rganization
+                    </li>
+                    <li>
+                        <span class="code-letter">D</span>
+                        istill
+                    </li>
+                    <li>
+                        <span class="code-letter">E</span>
+                        xpress
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right: Glass card -->
+            <div class="auth-right">
+                <div class="glass-card">
+                    <!-- Sign In Form -->
+                    <template v-if="mode === 'signIn'">
+                        <h2 class="form-title">SignIn</h2>
+
+                        <UForm
+                            :state="signInState"
+                            :schema="signInSchema"
+                            class="form-body"
+                            @submit="onSignIn">
+                            <UFormField name="email">
+                                <UInput
+                                    v-model="signInState.email"
+                                    type="email"
+                                    placeholder="Email"
+                                    trailing-icon="i-lucide-mail"
+                                    class="form-input w-full" />
+                            </UFormField>
+
+                            <UFormField name="password">
+                                <UInput
+                                    v-model="signInState.password"
+                                    type="password"
+                                    placeholder="Password"
+                                    trailing-icon="i-lucide-lock"
+                                    class="form-input w-full" />
+                            </UFormField>
+
+                            <p v-if="authError" class="form-error">
+                                {{ authError }}
                             </p>
-                        </div>
-                        <span class="ml-auto pill">
-                            Encrypted
-                        </span>
-                    </div>
 
-                    <div class="mt-6">
-                        <h1 class="text-2xl font-semibold text-strong">
-                            Welcome back
-                        </h1>
-                        <p class="mt-2 text-sm text-muted">
-                            Sign in to keep your ideas synced and ready to search.
+                            <UButton
+                                type="submit"
+                                :loading="isLoading"
+                                class="form-submit w-full">
+                                SignIn
+                            </UButton>
+                        </UForm>
+
+                        <p class="form-switch">
+                            Don't have an account? Click
+                            <button
+                                class="switch-link"
+                                @click="switchMode('signUp')">
+                                Register
+                            </button>
                         </p>
-                    </div>
+                    </template>
 
-                    <div class="mt-6">
-                        <UTabs :items="tabsForm" color="neutral" class="w-full">
-                            <template #signin>
-                                <FormSignIn @sign-in="handleSignIn" />
-                            </template>
-                            <template #signup>
-                                <FormSignUp @sign-up="handleSignUp" />
-                            </template>
-                        </UTabs>
-                    </div>
+                    <!-- Sign Up Form -->
+                    <template v-else>
+                        <h2 class="form-title">SignUp</h2>
 
-                    <div
-                        v-if="authError"
-                        class="mt-4 rounded-lg border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-100"
-                    >
-                        {{ authError }}
-                    </div>
+                        <UForm
+                            :state="signUpState"
+                            :schema="signUpSchema"
+                            class="form-body"
+                            @submit="onSignUp">
+                            <UFormField name="username">
+                                <UInput
+                                    v-model="signUpState.username"
+                                    placeholder="username"
+                                    trailing-icon="i-lucide-user"
+                                    class="form-input w-full" />
+                            </UFormField>
 
-                    <div
-                        v-if="isLoading"
-                        class="mt-4 flex items-center gap-2 text-xs text-muted"
-                    >
-                        <span class="h-2 w-2 animate-pulse rounded-full loading-dot"></span>
-                        Securing your session...
-                    </div>
+                            <UFormField name="email">
+                                <UInput
+                                    v-model="signUpState.email"
+                                    type="email"
+                                    placeholder="Email"
+                                    trailing-icon="i-lucide-mail"
+                                    class="form-input w-full" />
+                            </UFormField>
 
-                    <div class="mt-6 flex items-start gap-2 text-xs text-subtle">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            class="mt-0.5 h-4 w-4 icon-tone"
-                            aria-hidden="true"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M16.5 10.5V8.25a4.5 4.5 0 10-9 0V10.5m-1.5 0h12a1.5 1.5 0 011.5 1.5v6a1.5 1.5 0 01-1.5 1.5h-12A1.5 1.5 0 014.5 18v-6a1.5 1.5 0 011.5-1.5z"
-                            />
-                        </svg>
-                        <span>
-                            We use encrypted connections and never store plain-text
-                            passwords.
-                        </span>
-                    </div>
-                </UCard>
+                            <UFormField name="password">
+                                <UInput
+                                    v-model="signUpState.password"
+                                    type="password"
+                                    placeholder="Password"
+                                    trailing-icon="i-lucide-lock"
+                                    class="form-input w-full" />
+                            </UFormField>
 
-                <div class="space-y-6">
-                    <div class="glass-panel">
-                        <div class="flex items-center gap-2 text-xs text-subtle">
-                            <span class="chip">
-                                New
-                            </span>
-                            <span>AI-assisted capture</span>
-                        </div>
-                        <h2 class="mt-4 text-3xl font-semibold text-strong">
-                            Turn quick thoughts into linked knowledge.
-                        </h2>
-                        <p class="mt-3 text-sm text-muted">
-                            Collect highlights, research, and ideas in one place, then
-                            auto-connect them across projects.
+                            <UFormField name="passwordConfirm">
+                                <UInput
+                                    v-model="signUpState.passwordConfirm"
+                                    type="password"
+                                    placeholder="Confirm Your Password"
+                                    trailing-icon="i-lucide-lock"
+                                    class="form-input w-full" />
+                            </UFormField>
+
+                            <p v-if="authError" class="form-error">
+                                {{ authError }}
+                            </p>
+
+                            <UButton
+                                type="submit"
+                                :loading="isLoading"
+                                class="form-submit w-full">
+                                SignUp
+                            </UButton>
+                        </UForm>
+
+                        <p class="form-switch">
+                            Back to
+                            <button
+                                class="switch-link"
+                                @click="switchMode('signIn')">
+                                Signin
+                            </button>
                         </p>
-
-                        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                            <div class="stat-card">
-                                <p class="text-xs text-subtle">Daily focus</p>
-                                <p class="mt-2 text-xl font-semibold text-strong">
-                                    3x faster recall
-                                </p>
-                                <p class="mt-2 text-xs text-subtle">
-                                    Smart links surface what you need.
-                                </p>
-                            </div>
-                            <div class="stat-card">
-                                <p class="text-xs text-subtle">Team-ready</p>
-                                <p class="mt-2 text-xl font-semibold text-strong">
-                                    Shared workspaces
-                                </p>
-                                <p class="mt-2 text-xs text-subtle">
-                                    Collaborate without losing context.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div class="feature-card">
-                            <div class="flex items-center gap-2">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.5"
-                                    class="h-4 w-4 icon-tone"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M4.5 12l4.5 4.5L19.5 7.5"
-                                    />
-                                </svg>
-                                <p class="text-sm font-semibold text-strong">
-                                    Live sync
-                                </p>
-                            </div>
-                            <p class="mt-2 text-xs text-subtle">
-                                Notes stay updated across every device.
-                            </p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="flex items-center gap-2">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.5"
-                                    class="h-4 w-4 icon-tone"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M12 6v6l4 2"
-                                    />
-                                </svg>
-                                <p class="text-sm font-semibold text-strong">
-                                    Instant search
-                                </p>
-                            </div>
-                            <p class="mt-2 text-xs text-subtle">
-                                Find answers with semantic recall.
-                            </p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="flex items-center gap-2">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.5"
-                                    class="h-4 w-4 icon-tone"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M12 4.5v15m7.5-7.5h-15"
-                                    />
-                                </svg>
-                                <p class="text-sm font-semibold text-strong">
-                                    Quick capture
-                                </p>
-                            </div>
-                            <p class="mt-2 text-xs text-subtle">
-                                Clip ideas from web, mail, or meeting notes.
-                            </p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="flex items-center gap-2">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.5"
-                                    class="h-4 w-4 icon-tone"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M12 3.75l6.75 3.75v7.5L12 18.75 5.25 15v-7.5L12 3.75z"
-                                    />
-                                </svg>
-                                <p class="text-sm font-semibold text-strong">
-                                    Secure by design
-                                </p>
-                            </div>
-                            <p class="mt-2 text-xs text-subtle">
-                                Granular access controls and audit trails.
-                            </p>
-                        </div>
-                    </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -222,35 +159,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import * as z from "zod";
+import { ref, onBeforeMount } from "vue";
 import { navigateTo, useAuth } from "#imports";
-import FormSignIn from "~/components/form/FormSignIn.vue";
-import FormSignUp from "~/components/form/FormSignUp.vue";
-import type { TabsItem } from "@nuxt/ui";
+import { ValidationMessages } from "#imports";
 
-const { signIn } = useAuth();
+definePageMeta({ layout: "default" });
 
-const isLoading = ref<boolean>(false);
+const { signIn, status } = useAuth();
+
+const mode = ref<"signIn" | "signUp">("signIn");
+const isLoading = ref(false);
 const authError = ref<string | null>(null);
 
-const tabsForm: TabsItem[] = [
-    { label: "Sign In", slot: "signin" as const },
-    { label: "Sign Up", slot: "signup" as const },
-];
+// ── Sign In ──────────────────────────────────────────
+const signInState = ref({ email: "", password: "" });
 
-async function handleSignIn(email: string, password: string) {
+const signInSchema = z.object({
+    email: z.email(ValidationMessages.email.invalid),
+    password: z
+        .string()
+        .nonempty(ValidationMessages.password.required)
+        .min(3, ValidationMessages.password.minLength),
+});
+
+async function onSignIn() {
     isLoading.value = true;
     authError.value = null;
 
     const result = await signIn(
         {
-            email,
-            password,
+            email: signInState.value.email,
+            password: signInState.value.password,
             redirect: false,
         },
-        {
-            callbackUrl: "/notebooks",
-        },
+        { callbackUrl: "/notebooks" },
     );
 
     if (result?.error) {
@@ -263,17 +206,51 @@ async function handleSignIn(email: string, password: string) {
     await navigateTo("/notebooks");
 }
 
-async function handleSignUp(email: string, username: string, password: string) {
+// ── Sign Up ──────────────────────────────────────────
+const signUpState = ref({
+    email: "",
+    username: "",
+    password: "",
+    passwordConfirm: "",
+});
+
+const signUpSchema = z
+    .object({
+        email: z.email(ValidationMessages.email.invalid),
+        username: z.string().nonempty(ValidationMessages.username.required),
+        password: z
+            .string()
+            .nonempty(ValidationMessages.password.required)
+            .min(8, ValidationMessages.password.minLength),
+        passwordConfirm: z
+            .string()
+            .nonempty(ValidationMessages.password.required),
+    })
+    .refine((d) => d.password === d.passwordConfirm, {
+        message: "密碼與確認密碼不符",
+        path: ["passwordConfirm"],
+    });
+
+async function onSignUp() {
     isLoading.value = true;
     authError.value = null;
 
     try {
         await $fetch("/api/auth/signUp", {
             method: "POST",
-            body: { email, password, username },
+            body: {
+                email: signUpState.value.email,
+                username: signUpState.value.username,
+                password: signUpState.value.password,
+            },
         });
 
-        await handleSignIn(email, password);
+        signInState.value = {
+            email: signUpState.value.email,
+            password: signUpState.value.password,
+        };
+        mode.value = "signIn";
+        await onSignIn();
     } catch (error: any) {
         authError.value =
             error?.data?.message || error?.message || "註冊失敗，請稍後再試";
@@ -281,183 +258,249 @@ async function handleSignUp(email: string, username: string, password: string) {
         isLoading.value = false;
     }
 }
+
+// ── Switch ────────────────────────────────────────────
+function switchMode(target: "signIn" | "signUp") {
+    mode.value = target;
+    authError.value = null;
+}
+
+// ── Auto-redirect if already logged in ───────────────
+onBeforeMount(() => {
+    if (status.value === "authenticated") {
+        navigateTo("/notebooks");
+    }
+});
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap");
-
-.font-jakarta {
-    font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
-}
-
-.auth-shell {
+/* ── Page shell ─────────────────────────────────────── */
+.auth-page {
     position: relative;
+    min-height: 100vh;
+    width: 100%;
     overflow: hidden;
     color-scheme: dark;
-    background-color: var(--background);
-    background-image:
-        radial-gradient(900px circle at 12% 8%, var(--auth-glow-primary), transparent 60%),
-        radial-gradient(800px circle at 88% 10%, var(--auth-glow-accent), transparent 55%);
-    color: var(--auth-text-strong);
-    --auth-text-strong: rgba(248, 250, 252, 0.95);
-    --auth-text-muted: rgba(226, 232, 240, 0.72);
-    --auth-text-subtle: rgba(226, 232, 240, 0.6);
-    --auth-surface: rgba(30, 38, 60, 0.74);
-    --auth-surface-strong: rgba(38, 48, 74, 0.86);
-    --auth-border: rgba(255, 255, 255, 0.12);
-    --auth-glow-primary: rgba(236, 201, 75, 0.28);
-    --auth-glow-accent: rgba(251, 146, 60, 0.26);
-    --auth-text-strong: color-mix(in oklab, var(--secondary) 92%, white 8%);
-    --auth-text-muted: color-mix(in oklab, var(--secondary) 68%, transparent);
-    --auth-text-subtle: color-mix(in oklab, var(--secondary) 55%, transparent);
-    --auth-surface: color-mix(in oklab, var(--background) 72%, white 28%);
-    --auth-surface-strong: color-mix(in oklab, var(--background) 64%, white 36%);
-    --auth-border: color-mix(in oklab, var(--secondary) 14%, transparent);
-    --auth-glow-primary: color-mix(in oklab, var(--primary) 40%, transparent);
-    --auth-glow-accent: color-mix(in oklab, var(--accent) 38%, transparent);
+    color: rgba(248, 250, 252, 0.92);
 }
 
-.decor {
+.auth-bg {
     position: absolute;
-    border-radius: 9999px;
-    filter: blur(56px);
-    opacity: 0.85;
-    pointer-events: none;
+    inset: 0;
+    z-index: 0;
+    background-image: url("/image/fugi.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-.decor-1 {
-    top: -120px;
-    left: -120px;
-    width: 280px;
-    height: 280px;
-    background: var(--auth-glow-primary);
+/* ── Two-column layout ─────────────────────────────── */
+.auth-layout {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 3rem 4rem;
+    gap: clamp(14rem, 20vw, 22rem);
+    max-width: calc(100vw - 8rem);
+    margin: 0 auto;
 }
 
-.decor-2 {
-    bottom: -160px;
-    right: -140px;
-    width: 320px;
-    height: 320px;
-    background: var(--auth-glow-accent);
+/* ── Left branding ──────────────────────────────────── */
+.auth-left {
+    flex: 1;
+    max-width: 480px;
 }
 
-.decor-3 {
-    top: 40%;
-    right: 12%;
-    width: 180px;
-    height: 180px;
-    background: rgba(251, 146, 60, 0.22);
-    background: color-mix(in oklab, var(--primary) 35%, var(--accent) 35%);
+.auth-tagline {
+    font-size: 2.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: rgba(248, 250, 252, 0.95);
+    margin-bottom: 1.25rem;
+    white-space: nowrap;
 }
 
-.glass-card,
-.glass-panel,
-.stat-card,
-.feature-card {
-    border: 1px solid var(--auth-border);
-    background: var(--auth-surface);
-    box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
-    backdrop-filter: blur(18px);
+.auth-sub {
+    margin-bottom: 2rem;
+}
+
+.sub-line {
+    font-size: 1.35rem;
+    color: rgba(226, 232, 240, 0.8);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.sub-left {
+    margin-left: 0px;
+}
+
+.sub-right {
+    margin-left: 20px;
+}
+
+.code-word {
+    color: #4ade80;
+    font-weight: 700;
+    font-size: 1.6rem;
+    vertical-align: baseline;
+}
+
+.code-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.code-list li {
+    font-size: 1.05rem;
+    color: rgba(226, 232, 240, 0.75);
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+}
+
+.code-letter {
+    color: #4ade80;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: inline-block;
+    width: 1rem;
+}
+
+/* ── Right: glass card ─────────────────────────────── */
+.auth-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .glass-card {
-    padding: 2rem;
-    border-radius: 1.5rem;
+    width: 400px;
+    height: 500px;
+    border-radius: 20px; /* intentionally not the site's 5px */
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    padding: 40px 50px 24px 50px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
-.glass-panel {
-    padding: 2rem;
-    border-radius: 1.5rem;
-}
-
-.stat-card {
-    padding: 1.25rem;
-    border-radius: 1rem;
-}
-
-.feature-card {
-    padding: 1.25rem;
-    border-radius: 1rem;
-}
-
-.stat-card,
-.feature-card {
-    background: var(--auth-surface-strong);
-}
-
-.text-strong {
-    color: var(--auth-text-strong);
-}
-
-.text-muted {
-    color: var(--auth-text-muted);
-}
-
-.text-subtle {
-    color: var(--auth-text-subtle);
-}
-
-.icon-tone {
-    color: var(--auth-text-muted);
-}
-
-.pill {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    border: 1px solid var(--auth-border);
-    background: var(--auth-surface-strong);
-    color: var(--auth-text-strong);
-    padding: 0.25rem 0.75rem;
-    font-size: 11px;
+/* ── Form internals ─────────────────────────────────── */
+.form-title {
+    text-align: center;
+    font-size: 1.25rem;
     font-weight: 600;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+    color: rgba(248, 250, 252, 0.95);
+    margin-bottom: 1.5rem;
 }
 
-.chip {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    border: 1px solid var(--auth-border);
-    background: rgba(236, 201, 75, 0.16);
-    background: color-mix(in oklab, var(--primary) 24%, transparent);
-    color: var(--auth-text-strong);
-    padding: 0.25rem 0.5rem;
-    font-size: 11px;
+.form-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Override Nuxt UI input styles for glass context */
+.form-input :deep(input) {
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: 0;
+    color: rgba(248, 250, 252, 0.9);
+    padding-left: 0;
+    transition: border-color 180ms ease;
+}
+
+.form-input :deep(input::placeholder) {
+    color: rgba(226, 232, 240, 0.5);
+}
+
+.form-input :deep(input:focus) {
+    outline: none;
+    border-bottom-color: rgba(255, 255, 255, 0.7);
+    box-shadow: none;
+}
+
+.form-input :deep(.i-lucide-mail),
+.form-input :deep(.i-lucide-lock),
+.form-input :deep(.i-lucide-user) {
+    color: rgba(226, 232, 240, 0.6);
+}
+
+.form-error {
+    font-size: 0.78rem;
+    color: #e30606;
+    margin-top: -0.25rem;
+}
+
+.form-submit {
+    margin-top: 0px;
+    background: #22c55e;
+    color: #0f1a0f;
+    border: none;
+    border-radius: 5px;
     font-weight: 600;
+    transition: background 180ms ease;
 }
 
-.loading-dot {
-    background: var(--primary);
+.form-submit:hover {
+    background: #16a34a;
 }
 
-.brand-mark {
-    display: inline-flex;
-    height: 40px;
-    width: 40px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
+.form-switch {
+    margin-top: 1.25rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: rgba(226, 232, 240, 0.65);
+}
+
+.switch-link {
+    color: rgba(248, 250, 252, 0.9);
     font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: 0 12px 24px rgba(236, 201, 75, 0.35);
-    box-shadow: 0 12px 24px color-mix(in oklab, var(--primary) 40%, transparent);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
 }
 
-@media (max-width: 1024px) {
-    .glass-card,
-    .glass-panel {
-        padding: 1.5rem;
+.switch-link:hover {
+    color: #4ade80;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+    .auth-layout {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 1.5rem;
+        gap: 0;
+        max-width: 100vw;
     }
-}
 
-@media (prefers-reduced-motion: reduce) {
-    .decor {
-        filter: blur(0);
+    /* Hide branding on mobile — show form only */
+    .auth-left {
+        display: none;
+    }
+
+    .glass-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 2rem 2rem 1.5rem;
     }
 }
 </style>

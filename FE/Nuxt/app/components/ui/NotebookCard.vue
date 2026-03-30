@@ -1,8 +1,8 @@
 <template>
     <UCard
-        class="h-full bg-slate-900/60 border-slate-800 hover:border-accent/60 transition-colors">
+        class="h-full bg-slate-900/60 border-slate-800 hover:border-accent/60 transition-colors cursor-default">
         <div class="flex items-start justify-between gap-2">
-            <div class="flex flex-col gap-1 min-w-0">
+            <div class="flex flex-col gap-1 min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                     <p class="font-semibold text-lg truncate">
                         {{ title }}
@@ -15,9 +15,40 @@
                         共編
                     </UBadge>
                 </div>
-                <p class="text-sm text-slate-400 line-clamp-2">
-                    {{ description || "尚未填寫描述" }}
-                </p>
+                <div
+                    v-if="!isEditingDesc"
+                    class="desc-display"
+                    @click.stop="startEditingDesc">
+                    <p class="text-sm text-slate-400 line-clamp-2">
+                        {{ description || "尚未填寫描述" }}
+                    </p>
+                </div>
+                <div
+                    v-else
+                    class="desc-edit-container"
+                    @click.stop>
+                    <UInput
+                        v-model="editingDesc"
+                        placeholder="輸入描述..."
+                        class="desc-input"
+                        @keyup.enter="saveDescription"
+                        @keyup.escape="cancelEdit" />
+                    <div class="desc-edit-actions">
+                        <UButton
+                            size="xs"
+                            variant="soft"
+                            color="green"
+                            @click="saveDescription">
+                            儲存
+                        </UButton>
+                        <UButton
+                            size="xs"
+                            variant="ghost"
+                            @click="cancelEdit">
+                            取消
+                        </UButton>
+                    </div>
+                </div>
             </div>
             <slot name="actions">
                 <UButton
@@ -71,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = withDefaults(
     defineProps<{
@@ -94,10 +125,14 @@ const props = withDefaults(
     }
 );
 
-defineEmits<{
+const emit = defineEmits<{
     (e: "open", id: string): void;
     (e: "delete", id: string): void;
+    (e: "update-description", id: string, description: string): void;
 }>();
+
+const isEditingDesc = ref(false);
+const editingDesc = ref(props.description);
 
 const formattedUpdatedAt = computed(() => {
     if (!props.updatedAt) return "";
@@ -110,4 +145,71 @@ const formattedUpdatedAt = computed(() => {
         day: "2-digit",
     });
 });
+
+function startEditingDesc() {
+    editingDesc.value = props.description;
+    isEditingDesc.value = true;
+}
+
+async function saveDescription() {
+    if (editingDesc.value === props.description) {
+        isEditingDesc.value = false;
+        return;
+    }
+    emit("update-description", props.id, editingDesc.value);
+    isEditingDesc.value = false;
+}
+
+function cancelEdit() {
+    isEditingDesc.value = false;
+}
 </script>
+
+<style scoped>
+.desc-display {
+    padding: 0.25rem 0;
+    border-radius: 3px;
+    transition: background-color 150ms ease;
+    cursor: pointer;
+}
+
+.desc-display:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.desc-edit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.desc-input {
+    width: 100%;
+}
+
+.desc-input :deep(input) {
+    background: transparent;
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    border-radius: 3px;
+    color: rgba(248, 250, 252, 0.9);
+    padding: 0.4rem 0.6rem;
+    font-size: 0.875rem;
+    transition: border-color 150ms ease;
+}
+
+.desc-input :deep(input::placeholder) {
+    color: rgba(226, 232, 240, 0.4);
+}
+
+.desc-input :deep(input:focus) {
+    outline: none;
+    border-color: rgba(74, 222, 128, 0.8);
+}
+
+.desc-edit-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+</style>

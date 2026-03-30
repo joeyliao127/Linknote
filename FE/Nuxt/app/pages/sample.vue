@@ -90,6 +90,30 @@
         <FormSignTabs />
 
         <USeparator>
+            <h2 class="title text-2xl">Sidebar V2 Preview</h2>
+        </USeparator>
+
+        <div class="flex gap-6">
+            <!-- Standalone sidebar preview (fixed height) -->
+            <div class="h-[680px] w-64 rounded-xl overflow-hidden border border-slate-700 flex-shrink-0">
+                <SidebarV2
+                    @logout="() => toast.add({ title: '登出觸發（SidebarV2 預覽）' })" />
+            </div>
+            <div class="text-sm text-slate-400 space-y-2 pt-2">
+                <p>預覽說明：</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>頂部：Hi 使用者名稱（取自登入 email 前綴）</li>
+                    <li>New Notebook → emit create</li>
+                    <li>My Notebooks / Collaborative Notebooks：點選展開 accordion</li>
+                    <li>Invitations Management → /invitations</li>
+                    <li>Setting → SettingsModal</li>
+                    <li>RAG 知識庫 → /rag</li>
+                    <li>底部：online dot + email + SignOut</li>
+                </ul>
+            </div>
+        </div>
+
+        <USeparator>
             <h2 class="title text-2xl">Dashboard + Components Demo</h2>
         </USeparator>
 
@@ -184,6 +208,7 @@ import StarItem from "~/components/ui/StarItem.vue";
 import NoteCard from "~/components/ui/NoteCard.vue";
 import DashboardShell from "~/components/dashboard/DashboardShell.vue";
 import Sidebar from "~/components/dashboard/Sidebar.vue";
+import SidebarV2 from "~/components/dashboard/SidebarV2.vue";
 import NotebookCard from "~/components/ui/NotebookCard.vue";
 import NoteToolbar from "~/components/note/NoteToolbar.vue";
 import NotebookForm from "~/components/notebook/NotebookForm.vue";

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "@nuxt/ui";
 @plugin "@tailwindcss/typography";
@@ -12,22 +13,63 @@
     --height-header: 48px;
     --height-footer: 32px;
     --height-spacer: 28px;
-    --background: oklch(0.279 0.041 260.031);
-    --background: oklch(0.279 0.041 260.031);
+    --background: #1f221f;
     --primary: oklch(0.828 0.189 84.429);
     --secondary: oklch(0.9491 0 0);
     --accent: oklch(0.704 0.191 22.216);
+
+    /* Border radius */
+    --ui-radius: 0.3125rem;
+
+    /* Semantic color overrides */
+    --ui-error: #e30606;
+    --ui-info: #0c5013;
 }
 
 .dark {
-    --background: oklch(0.279 0.041 260.031);
+    --background: #1f221f;
     --primary: oklch(0.828 0.189 84.429);
     --secondary: oklch(0.9491 0 0);
     --accent: oklch(0.704 0.191 22.216);
+    --ui-error: #e30606;
+    --ui-info: #0c5013;
 }
 
 @layer base {
+    html,
+    body {
+        font-family: "Kanit", sans-serif;
+    }
+
     button {
         @apply cursor-pointer;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: oklch(0.42 0.03 260);
+        border-radius: 0;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: oklch(0.52 0.03 260);
+    }
+
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: oklch(0.42 0.03 260) transparent;
     }
 }
