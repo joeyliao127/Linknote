@@ -37,6 +37,7 @@ out/
 .nuxt/
 node_modules/
 .pnpm-store/
+screenshot/
 pnpm-lock.yaml
 node-compile-cache
 api.d.ts
