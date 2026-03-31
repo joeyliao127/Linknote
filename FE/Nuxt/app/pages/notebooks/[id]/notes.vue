@@ -120,6 +120,7 @@ import ConfirmModal from "~/components/ui/ConfirmModal.vue";
 import { useNote } from "~/composables/model/useNote";
 import { useTag } from "~/composables/model/useTag";
 import { useNotebook } from "~/composables/model/useNotebook";
+import { useNotebookNav } from "~/composables/useNotebookNav";
 import type { Note } from "~~/types/Note";
 import type { Tag } from "~~/types/Tag";
 import type { Notebook } from "~~/types/Notebook";
@@ -132,6 +133,7 @@ const auth = useAuth();
 const { indexNotes, createNote, updateNote, deleteNote } = useNote();
 const { indexTags, createTag, deleteTag } = useTag();
 const { getNotebook, updateNotebook, deleteNotebook } = useNotebook();
+const { fetchNotebooks } = useNotebookNav();
 
 // Notebook state
 const notebook = ref<Notebook | null>(null);
@@ -319,6 +321,7 @@ async function handleDeleteNotebook() {
     deletingNotebook.value = true;
     try {
         await deleteNotebook(userId.value, notebookId.value);
+        fetchNotebooks(true);
         navigateTo("/notebooks");
     } catch (error) {
         console.error("Failed to delete notebook:", error);

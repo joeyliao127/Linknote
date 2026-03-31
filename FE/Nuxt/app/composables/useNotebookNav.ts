@@ -19,6 +19,10 @@ export const useNotebookNav = () => {
     const error = useState<string | null>("notebook-nav-error", () => null);
     const initialized = useState<boolean>("notebook-nav-initialized", () => false);
 
+    const coItems = useState<NotebookNavItem[]>("notebook-nav-co-items", () => []);
+    const coLoading = useState<boolean>("notebook-nav-co-loading", () => false);
+    const coInitialized = useState<boolean>("notebook-nav-co-initialized", () => false);
+
     const mapNotebook = (notebook: Notebook): NotebookNavItem => ({
         id: notebook.id,
         title: notebook.title,
@@ -49,10 +53,29 @@ export const useNotebookNav = () => {
         }
     };
 
+    const fetchCoNotebooks = async (force = false) => {
+        if (coLoading.value) return;
+        if (coInitialized.value && !force) return;
+        coLoading.value = true;
+
+        try {
+            const res = await indexNotebook({ collab: true, pageSize: 50 });
+            coItems.value = (res.items || []).map(mapNotebook);
+            coInitialized.value = true;
+        } catch {
+            // silent
+        } finally {
+            coLoading.value = false;
+        }
+    };
+
     return {
         items,
         loading,
         error,
         fetchNotebooks,
+        coItems,
+        coLoading,
+        fetchCoNotebooks,
     };
 };

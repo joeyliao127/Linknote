@@ -78,15 +78,14 @@ function emitSignUp() {
 </script>
 
 <style scoped>
+@reference "~/assets/css/tailwind.css";
+
 .auth-form {
     color: var(--auth-text-strong, var(--secondary, #f8fafc));
 }
 
 .auth-title {
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    @apply text-center text-xl font-semibold tracking-[0.02em];
     color: var(--auth-text-strong, var(--secondary, #f8fafc));
 }
 
@@ -96,10 +95,8 @@ function emitSignUp() {
 }
 
 .auth-form-body :deep(label) {
+    @apply text-[0.7rem] uppercase tracking-[0.12em];
     color: var(--auth-text-subtle, rgba(226, 232, 240, 0.7));
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
 }
 
 .auth-form-body :deep(.auth-input input) {
@@ -119,9 +116,9 @@ function emitSignUp() {
 }
 
 .auth-primary {
+    @apply border-0;
     background: linear-gradient(135deg, var(--primary, #facc15), var(--accent, #fb923c));
     color: #16181d;
-    border: none;
     box-shadow: 0 14px 30px rgba(15, 23, 42, 0.5);
     transition: transform 180ms ease, box-shadow 180ms ease;
 }

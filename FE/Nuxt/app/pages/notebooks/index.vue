@@ -76,6 +76,7 @@ import {
 } from "#imports";
 import NotebookCard from "~/components/ui/NotebookCard.vue";
 import { useNotebook } from "~/composables/model/useNotebook";
+import { useNotebookNav } from "~/composables/useNotebookNav";
 import type { Notebook } from "~~/types/Notebook";
 
 definePageMeta({ layout: "dashboard" });
@@ -83,6 +84,7 @@ definePageMeta({ layout: "dashboard" });
 const router = useRouter();
 const auth = useAuth();
 const { indexNotebook, deleteNotebook, updateNotebook } = useNotebook();
+const { fetchNotebooks } = useNotebookNav();
 
 const notebooks = ref<Notebook[]>([]);
 const page = ref(1);
@@ -145,6 +147,7 @@ async function deleteNotebookItem(id: string) {
     await deleteNotebook(userId.value, id);
     notebooks.value = notebooks.value.filter((n) => n.id !== id);
     totalCount.value = Math.max(0, totalCount.value - 1);
+    fetchNotebooks(true);
 }
 
 async function updateNotebookDescription(id: string, description: string) {

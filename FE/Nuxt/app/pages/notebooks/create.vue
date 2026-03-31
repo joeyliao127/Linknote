@@ -53,6 +53,7 @@ import { ref, computed } from "vue";
 import { useRouter, useAuth, useToast } from "#imports";
 import NotebookForm from "~/components/notebook/NotebookForm.vue";
 import { useNotebook } from "~/composables/model/useNotebook";
+import { useNotebookNav } from "~/composables/useNotebookNav";
 
 definePageMeta({ layout: "dashboard" });
 
@@ -60,6 +61,7 @@ const router = useRouter();
 const toast = useToast();
 const auth = useAuth();
 const { createNotebook } = useNotebook();
+const { fetchNotebooks } = useNotebookNav();
 
 const submitting = ref(false);
 const userId = computed(() => auth.data.value?.user?.id || "");
@@ -78,6 +80,7 @@ async function handleSubmit(value: {
             active: value.active,
         });
         toast.add({ title: "建立成功", color: "accent" });
+        fetchNotebooks(true);
         router.push("/notebooks");
     } catch (error: any) {
         toast.add({

@@ -103,7 +103,22 @@
                 </button>
                 <transition name="slide">
                     <div v-if="isCoOpen" class="overflow-hidden">
+                        <UIcon
+                            v-if="coLoading"
+                            name="i-lucide-loader-2"
+                            class="w-3.5 h-3.5 animate-spin mx-auto my-2 block" />
+                        <template v-else-if="coItems.length > 0">
+                            <button
+                                v-for="nb in coItems"
+                                :key="nb.id"
+                                class="block w-full py-[0.45rem] pl-11 pr-5 text-left text-xs text-slate-200/65 bg-transparent border-none cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis transition-colors hover:bg-white/5 hover:text-white"
+                                :class="nb.id === currentId ? 'text-primary border-l-2 border-primary pl-[calc(2.75rem-2px)]' : ''"
+                                @click="onSelect(nb.id)">
+                                {{ nb.title }}
+                            </button>
+                        </template>
                         <p
+                            v-else
                             class="py-[0.45rem] pl-11 pr-5 text-[0.78rem] text-slate-200/35 italic">
                             尚無筆記本
                         </p>
@@ -215,7 +230,7 @@ const { data: userInfo } = useFetch<{
 }>("/api/user/token");
 
 // ── Notebooks（shared state via useState, no extra fetch） ──
-const { items: notebooks, loading, fetchNotebooks } = useNotebookNav();
+const { items: notebooks, loading, fetchNotebooks, coItems, coLoading, fetchCoNotebooks } = useNotebookNav();
 
 // ── 路由推導 currentId ────────────────────────────────
 const route = useRoute();
@@ -256,6 +271,7 @@ const activeSettings = ref(props.settingsSections[0]?.value ?? "profile");
 // ── Init：使用 useState cache，initialized 時不重複 fetch ─
 onMounted(() => {
     fetchNotebooks();
+    fetchCoNotebooks();
 });
 </script>
 

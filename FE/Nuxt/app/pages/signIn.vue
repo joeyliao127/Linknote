@@ -72,7 +72,7 @@
                             <UButton
                                 type="submit"
                                 :loading="isLoading"
-                                class="form-submit w-full">
+                                class="form-submit text-sencondary w-full">
                                 SignIn
                             </UButton>
                         </UForm>
@@ -138,7 +138,7 @@
                             <UButton
                                 type="submit"
                                 :loading="isLoading"
-                                class="form-submit w-full">
+                                class="form-submit text-sencondary w-full">
                                 SignUp
                             </UButton>
                         </UForm>
@@ -173,7 +173,7 @@ const isLoading = ref(false);
 const authError = ref<string | null>(null);
 
 // ── Sign In ──────────────────────────────────────────
-const signInState = ref({ email: "", password: "" });
+const signInState = ref({ email: "joey@test.com", password: "test123" });
 
 const signInSchema = z.object({
     email: z.email(ValidationMessages.email.invalid),
@@ -274,141 +274,90 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
+@reference "~/assets/css/tailwind.css";
+
 /* ── Page shell ─────────────────────────────────────── */
 .auth-page {
-    position: relative;
-    min-height: 100vh;
-    width: 100%;
-    overflow: hidden;
+    @apply relative min-h-screen w-full overflow-hidden;
     color-scheme: dark;
     color: rgba(248, 250, 252, 0.92);
 }
 
 .auth-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+    @apply absolute inset-0 z-0 bg-cover bg-center bg-no-repeat;
     background-image: url("/image/fugi.jpeg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 /* ── Two-column layout ─────────────────────────────── */
 .auth-layout {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 3rem 4rem;
+    @apply relative z-10 flex items-center justify-center min-h-screen py-12 px-16 mx-auto;
     gap: clamp(14rem, 20vw, 22rem);
     max-width: calc(100vw - 8rem);
-    margin: 0 auto;
 }
 
 /* ── Left branding ──────────────────────────────────── */
 .auth-left {
-    flex: 1;
-    max-width: 480px;
+    @apply flex-1 max-w-[480px];
 }
 
 .auth-tagline {
-    font-size: 2.75rem;
-    font-weight: 600;
-    line-height: 1.2;
+    @apply text-[3.25rem] font-semibold leading-tight mb-5 whitespace-nowrap;
     color: rgba(248, 250, 252, 0.95);
-    margin-bottom: 1.25rem;
-    white-space: nowrap;
 }
 
 .auth-sub {
-    margin-bottom: 2rem;
+    @apply mb-8;
 }
 
 .sub-line {
-    font-size: 1.35rem;
+    @apply text-[1.6rem] leading-[1.7] m-0;
     color: rgba(226, 232, 240, 0.8);
-    line-height: 1.7;
-    margin: 0;
-}
-
-.sub-left {
-    margin-left: 0px;
 }
 
 .sub-right {
-    margin-left: 20px;
+    @apply ml-5;
 }
 
 .code-word {
-    color: var(--primary-light);
-    font-weight: 700;
-    font-size: 1.6rem;
-    vertical-align: baseline;
+    @apply font-bold text-[1.9rem] align-baseline;
+    color: var(--primary);
 }
 
 .code-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    @apply list-none p-0 m-0 flex flex-col gap-2;
 }
 
 .code-list li {
-    font-size: 1.05rem;
+    @apply text-[1.3rem] flex items-center gap-[0.1rem];
     color: rgba(226, 232, 240, 0.75);
-    display: flex;
-    align-items: center;
-    gap: 0.1rem;
 }
 
 .code-letter {
-    color: var(--primary-light);
-    font-weight: 700;
-    font-size: 1.1rem;
-    display: inline-block;
-    width: 1rem;
+    @apply font-bold text-[1.35rem] inline-block w-4;
+    color: var(--primary);
 }
 
 /* ── Right: glass card ─────────────────────────────── */
 .auth-right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @apply flex items-center justify-center;
 }
 
 .glass-card {
-    width: 400px;
-    height: 500px;
-    border-radius: 20px; /* intentionally not the site's 5px */
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    @apply w-[400px] h-[500px] rounded-[20px] bg-transparent border-2 border-white/20 overflow-y-auto flex flex-col;
+    padding: 40px 50px 24px 50px; /* asymmetric padding */
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
-    padding: 40px 50px 24px 50px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
 }
 
 /* ── Form internals ─────────────────────────────────── */
 .form-title {
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: 600;
+    @apply text-center text-xl font-semibold mb-6;
     color: rgba(248, 250, 252, 0.95);
-    margin-bottom: 1.5rem;
 }
 
 .form-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    @apply flex flex-col gap-4;
 }
 
 /* Override Nuxt UI input styles for glass context */
@@ -418,7 +367,7 @@ onBeforeMount(() => {
     border-bottom: 1.5px solid rgba(255, 255, 255, 0.35);
     border-radius: 0;
     color: rgba(248, 250, 252, 0.9);
-    padding-left: 0;
+    padding-left: 0.5rem;
     transition: border-color 180ms ease;
 }
 
@@ -439,18 +388,13 @@ onBeforeMount(() => {
 }
 
 .form-error {
-    font-size: 0.78rem;
+    @apply text-[0.78rem] -mt-1;
     color: var(--accent);
-    margin-top: -0.25rem;
 }
 
 .form-submit {
-    margin-top: 0px;
+    @apply mt-0 border-0 rounded font-semibold;
     background: var(--primary);
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-weight: 600;
     transition: background 180ms ease;
 }
 
@@ -459,47 +403,36 @@ onBeforeMount(() => {
 }
 
 .form-switch {
-    margin-top: 1.25rem;
-    text-align: center;
-    font-size: 0.82rem;
+    @apply mt-5 text-center text-[0.82rem];
     color: rgba(226, 232, 240, 0.65);
 }
 
 .switch-link {
+    @apply font-semibold underline cursor-pointer bg-transparent border-0 p-0;
     color: rgba(248, 250, 252, 0.9);
-    font-weight: 600;
-    text-decoration: underline;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
     font-size: inherit;
     font-family: inherit;
 }
 
 .switch-link:hover {
-    color: var(--primary-light);
+    color: var(--primary);
 }
 
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 768px) {
     .auth-layout {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 2rem 1.5rem;
+        @apply flex-col justify-center items-center py-8 px-6;
         gap: 0;
         max-width: 100vw;
     }
 
     /* Hide branding on mobile — show form only */
     .auth-left {
-        display: none;
+        @apply hidden;
     }
 
     .glass-card {
-        width: 100%;
-        max-width: 420px;
+        @apply w-full max-w-[420px];
         padding: 2rem 2rem 1.5rem;
     }
 }
