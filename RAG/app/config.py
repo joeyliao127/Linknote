@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     QDRANT_PORT: int = 6333
     QDRANT_COLLECTION: str = "notes"
 
+    EMBEDDING_PROVIDER: str = "openai"  # "ollama" | "openai"
+    OPENAPI_EMBEDDING: str = ""
+    OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-small"
+
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "bge-m3"
     # distance 類型需要根據 embedding model 選擇：

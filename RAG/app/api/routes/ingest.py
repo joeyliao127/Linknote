@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from app.modules.splitter.text_splitter import split_note
-from app.modules.embedding.ollama_embedder import embed
+from app.modules.embedding.base import Embedder
+from app.modules.embedding.factory import get_embedder
 from app.modules.vector_store.qdrant_store import (
     get_client, ensure_collection, delete_by_note_id, upsert_chunks,
 )
@@ -10,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/ingest", response_model=IngestResponse)
-async def ingest(request: IngestRequest):
+async def ingest(request: IngestRequest, embedder: Embedder = Depends(get_embedder)):
     if not request.notes:
         return IngestResponse(notes_processed=0, chunks_ingested=0, message="No notes provided")
 
@@ -26,18 +27,18 @@ async def ingest(request: IngestRequest):
         )
 
     try:
-        embeddings = await embed([c["text"] for c in all_chunks])
+        embeddings = await embedder.embed([c["text"] for c in all_chunks])
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Ollama embedding failed: {e}")
+        raise HTTPException(status_code=502, detail=f"Embedding failed: {e}")
 
     try:
         client = get_client()
-        await ensure_collection(client, vector_size=len(embeddings[0]))
+        collection_name = await ensure_collection(client, vector_size=embedder.vector_size)
         # 先刪除各 note 的舊 chunks，確保 idempotent（chunk 數量改變時不留孤兒資料）
         note_user_pairs = {(note.note_id, note.user_id) for note in request.notes}
         for note_id, user_id in note_user_pairs:
-            await delete_by_note_id(client, note_id, user_id)
-        await upsert_chunks(client, all_chunks, embeddings)
+            await delete_by_note_id(client, note_id, user_id, collection_name)
+        await upsert_chunks(client, all_chunks, embeddings, collection_name)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Qdrant operation failed: {e}")
 
@@ -49,10 +50,11 @@ async def ingest(request: IngestRequest):
 
 
 @router.delete("/notes/{note_id}")
-async def delete_note(note_id: str, request: DeleteNoteRequest):
+async def delete_note(note_id: str, request: DeleteNoteRequest, embedder: Embedder = Depends(get_embedder)):
     try:
         client = get_client()
-        await delete_by_note_id(client, note_id, request.user_id)
+        collection_name = await ensure_collection(client, vector_size=embedder.vector_size)
+        await delete_by_note_id(client, note_id, request.user_id, collection_name)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Qdrant delete failed: {e}")
     return {"deleted": True, "note_id": note_id}

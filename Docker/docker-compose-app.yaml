@@ -65,6 +65,9 @@ services:
             - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
             - QDRANT_DISTANCE=${QDRANT_DISTANCE}
             - RAG_PORT=${RAG_PORT}
+            - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER}
+            - OPENAPI_EMBEDDING=${OPENAPI_EMBEDDING}
+            - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL}
         volumes:
             - ../RAG:/app
         networks:
