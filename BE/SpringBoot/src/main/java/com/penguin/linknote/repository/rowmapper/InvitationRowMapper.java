@@ -39,6 +39,8 @@ public class InvitationRowMapper implements RowMapper<Invitation> {
         status.setId(rs.getLong("status_id"));
         status.setTitle(rs.getString("status_title"));
         invitation.setInvitationStatusCode(status);
+        invitation.setInviterName(rs.getString("inviter_username"));
+        invitation.setNotebookTitle(rs.getString("notebook_title"));
 
         return invitation;
     }

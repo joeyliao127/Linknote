@@ -16,6 +16,9 @@ public class InvitationDTO {
     private String inviteeEmail;
     private String message;
     private InvitationStateEnum status;
+    private UUID notebookId;
+    private String notebookTitle;
+    private String inviterName;
 
     public static InvitationDTO fromEntity(Invitation invitation) {
         return InvitationDTO.builder()
@@ -24,6 +27,9 @@ public class InvitationDTO {
                 .inviteeName(invitation.getInviteeName())
                 .status(invitation.getStatus())
                 .message(invitation.getMessage())
+                .notebookId(invitation.getNotebookId())
+                .notebookTitle(invitation.getNotebookTitle())
+                .inviterName(invitation.getInviterName())
                 .build();
     }
 

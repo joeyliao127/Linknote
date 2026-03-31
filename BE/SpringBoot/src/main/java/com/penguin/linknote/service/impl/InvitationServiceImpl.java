@@ -18,25 +18,31 @@ import com.penguin.linknote.domain.invitation.state.enums.InvitationAction;
 import com.penguin.linknote.entity.Invitation;
 import com.penguin.linknote.entity.InvitationStatusCode;
 import com.penguin.linknote.entity.User;
+import com.penguin.linknote.domain.rbac.ResourceType;
+import com.penguin.linknote.domain.rbac.RoleType;
 import com.penguin.linknote.repository.InvitationRepository;
 import com.penguin.linknote.repository.InvitationStatusRepository;
 import com.penguin.linknote.repository.UserRepository;
 import com.penguin.linknote.service.InvitationService;
+import com.penguin.linknote.service.PermissionService;
 
 @Service
 public class InvitationServiceImpl implements InvitationService {
     private final InvitationRepository invitationRepository;
     private final InvitationStatusRepository invitationStatusRepository;
     private final UserRepository userRepository;
+    private final PermissionService permissionService;
 
     public InvitationServiceImpl(
             InvitationRepository invitationRepository,
             InvitationStatusRepository invitationStatusRepository,
-            UserRepository userRepository)
+            UserRepository userRepository,
+            PermissionService permissionService)
     {
         this.invitationRepository = invitationRepository;
         this.invitationStatusRepository = invitationStatusRepository;
         this.userRepository = userRepository;
+        this.permissionService = permissionService;
     }
 
     @Override
@@ -110,6 +116,12 @@ public class InvitationServiceImpl implements InvitationService {
         switch (updateCommand.getStatus()) {
             case ACCEPT -> {
                 updatedInvitation = invitationStateMachine.acceptInvitation(invitation);
+                permissionService.addResourceRolePermission(
+                    inviteeId,
+                    invitation.getNotebookId(),
+                    RoleType.ROLE_COLLABORATOR,
+                    ResourceType.NOTEBOOK
+                );
             }
             case REJECT -> {
                 updatedInvitation = invitationStateMachine.rejectInvitation(invitation);

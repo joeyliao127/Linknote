@@ -25,6 +25,10 @@ public class Invitation {
 
     private UUID notebookId;
 
+    private String notebookTitle;
+
+    private String inviterName;
+
     public InvitationStateEnum getStatus() {
         return InvitationStateEnum.fromTitle(invitationStatusCode.getTitle());
     }

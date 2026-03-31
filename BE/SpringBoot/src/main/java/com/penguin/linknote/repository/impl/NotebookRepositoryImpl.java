@@ -184,11 +184,25 @@ public class NotebookRepositoryImpl implements NotebookRepository {
         List<String> conditions = new ArrayList<>();
         conditions.add("ra.user_id = :userId");
         conditions.add("rs.title = :resourceType");
-        conditions.add("r.title = :roleType");
-
         params.put("userId", condition.getUserId());
         params.put("resourceType", ResourceType.NOTEBOOK.name());
-        params.put("roleType", RoleType.ROLE_OWNER.name());
+
+        if (Boolean.TRUE.equals(condition.getCollab())) {
+            conditions.add("r.title != :ownerRole");
+            conditions.add("""
+                EXISTS (
+                    SELECT 1 FROM role_permissions rp2
+                    JOIN operations op ON rp2.operation_id = op.id
+                    WHERE rp2.role_id = ra.role_id
+                      AND rp2.resource_id = ra.resource_id
+                      AND op.title = 'READ'
+                )
+                """);
+            params.put("ownerRole", RoleType.ROLE_OWNER.name());
+        } else {
+            conditions.add("r.title = :roleType");
+            params.put("roleType", RoleType.ROLE_OWNER.name());
+        }
 
         if (condition.getTitle() != null) {
             conditions.add("n.title = :title");

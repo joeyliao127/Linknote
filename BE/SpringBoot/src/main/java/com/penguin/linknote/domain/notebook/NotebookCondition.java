@@ -13,6 +13,7 @@ public class NotebookCondition {
     private UUID userId;
     private String title;
     private Boolean active;
+    private Boolean collab;
     private String orderBy;
     private String orderDirection;
 }

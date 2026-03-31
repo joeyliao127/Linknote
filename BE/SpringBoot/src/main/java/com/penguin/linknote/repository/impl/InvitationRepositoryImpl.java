@@ -28,9 +28,13 @@ public class InvitationRepositoryImpl implements InvitationRepository {
     private static final String BASE_SELECT = """
         SELECT i.id, i.inviter_id, i.invitee_id, i.message, i.created_at, i.updated_at, i.notebook_id,
                u.username AS invitee_username, u.email AS invitee_email,
+               u2.username AS inviter_username,
+               nb.title AS notebook_title,
                s.id AS status_id, s.title AS status_title
         FROM invitations i
         JOIN users u ON i.invitee_id = u.id
+        JOIN users u2 ON i.inviter_id = u2.id
+        JOIN notebooks nb ON i.notebook_id = nb.id
         JOIN invitation_status_codes s ON i.invitation_status_id = s.id
         """;
 

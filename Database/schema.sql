@@ -307,7 +307,12 @@ CREATE TABLE note_interactions (
 
 -- Per-minute deduplication: same user + note + action within the same minute = 1 record
 CREATE UNIQUE INDEX uidx_note_interactions_dedup
-    ON note_interactions (user_id, note_id, action, date_trunc('minute', acted_at));
+    ON note_interactions (
+        user_id, 
+        note_id, 
+        action, 
+        date_trunc('minute', acted_at AT TIME ZONE 'UTC')
+    );
 
 CREATE INDEX idx_note_interactions_note_id  ON note_interactions (note_id);
 CREATE INDEX idx_note_interactions_user_id  ON note_interactions (user_id);
