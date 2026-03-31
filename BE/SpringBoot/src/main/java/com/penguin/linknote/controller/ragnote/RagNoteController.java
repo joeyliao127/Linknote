@@ -50,10 +50,13 @@ public class RagNoteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RagNoteDTO>> findByNotebookId(
-            @RequestParam UUID notebookId,
+    public ResponseEntity<List<RagNoteDTO>> findRagNotes(
+            @RequestParam(required = false) UUID notebookId,
             Authentication authentication) {
         UUID userId = (UUID) authentication.getPrincipal();
-        return ResponseEntity.ok(ragNoteService.findByNotebookId(notebookId, userId));
+        if (notebookId != null) {
+            return ResponseEntity.ok(ragNoteService.findByNotebookId(notebookId, userId));
+        }
+        return ResponseEntity.ok(ragNoteService.findByUserId(userId));
     }
 }

@@ -7,6 +7,7 @@ import com.penguin.linknote.entity.RagNote;
 
 public interface RagNoteRepository {
     List<RagNote> findByNotebookId(UUID notebookId, UUID userId);
+    List<RagNote> findByUserId(UUID userId);
     RagNote upsert(RagNote ragNote);
     void delete(UUID noteId, UUID userId);
 }

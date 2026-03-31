@@ -8,6 +8,7 @@ import com.penguin.linknote.domain.ragnote.RagNoteDTO;
 
 public interface RagNoteService {
     List<RagNoteDTO> findByNotebookId(UUID notebookId, UUID userId);
+    List<RagNoteDTO> findByUserId(UUID userId);
     RagNoteDTO upsert(RagNoteCommand command, UUID userId);
     void delete(UUID noteId, UUID userId);
 }

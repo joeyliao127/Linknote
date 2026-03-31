@@ -23,7 +23,8 @@
                         <UButton
                             :disabled="selectedNoteIds.size === 0 || ingesting"
                             :loading="ingesting"
-                            color="accent"
+                            color="primary"
+                            class="text-white"
                             icon="i-lucide-brain"
                             @click="handleIngest">
                             加入 RAG（{{ selectedNoteIds.size }}）
@@ -47,7 +48,11 @@
                 <template #title-cell="{ row }">
                     <span
                         class="text-sm"
-                        :class="isNoteDisabled(row.original.id) ? 'text-slate-500' : ''">
+                        :class="
+                            isNoteDisabled(row.original.id)
+                                ? 'text-slate-500'
+                                : ''
+                        ">
                         {{ row.original.title || "未命名" }}
                     </span>
                 </template>
@@ -110,7 +115,12 @@
                     <UBadge
                         :color="statusColor(row.original.status)"
                         variant="subtle">
-                        {{ statusLabel(row.original.status, row.original.behindDays) }}
+                        {{
+                            statusLabel(
+                                row.original.status,
+                                row.original.behindDays,
+                            )
+                        }}
                     </UBadge>
                 </template>
                 <template #action-cell="{ row }">
@@ -231,10 +241,9 @@ async function onNotebookChange(notebookId: string) {
 }
 
 async function loadRagNotes() {
-    if (!selectedNotebookId.value) return;
     statusLoading.value = true;
     try {
-        ragNotes.value = await getRagNotes(selectedNotebookId.value);
+        ragNotes.value = await getRagNotes();
     } finally {
         statusLoading.value = false;
     }
@@ -262,7 +271,11 @@ async function handleIngest() {
             color: "success",
         });
     } catch {
-        toast.add({ title: "RAG 建立失敗", description: "請稍後再試", color: "error" });
+        toast.add({
+            title: "RAG 建立失敗",
+            description: "請稍後再試",
+            color: "error",
+        });
     } finally {
         ingesting.value = false;
     }
@@ -299,7 +312,11 @@ function formatDate(dateStr: string) {
 }
 
 function statusColor(status: string) {
-    return status === "up_to_date" ? "green" : status === "outdated" ? "yellow" : "red";
+    return status === "up_to_date"
+        ? "green"
+        : status === "outdated"
+          ? "yellow"
+          : "red";
 }
 
 function statusLabel(status: string, behindDays: number) {
@@ -310,5 +327,6 @@ function statusLabel(status: string, behindDays: number) {
 
 onMounted(() => {
     loadNotebooks();
+    loadRagNotes();
 });
 </script>

@@ -27,6 +27,11 @@ public class RagNoteServiceImpl implements RagNoteService {
     }
 
     @Override
+    public List<RagNoteDTO> findByUserId(UUID userId) {
+        return RagNoteDTO.fromEntityList(ragNoteRepository.findByUserId(userId));
+    }
+
+    @Override
     public void delete(UUID noteId, UUID userId) {
         ragNoteRepository.delete(noteId, userId);
     }

@@ -5,9 +5,9 @@ export const useRag = () => {
             body: { noteIds },
         });
 
-    const getRagNotes = (notebookId: string) =>
+    const getRagNotes = (notebookId?: string) =>
         $fetch<import("~~/types/RagNote").RagNote[]>("/api/rag/notes", {
-            query: { notebookId },
+            query: notebookId ? { notebookId } : {},
         });
 
     return { ingest, getRagNotes };

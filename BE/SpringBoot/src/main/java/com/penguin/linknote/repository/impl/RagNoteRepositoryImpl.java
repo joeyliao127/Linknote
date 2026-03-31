@@ -37,6 +37,17 @@ public class RagNoteRepositoryImpl implements RagNoteRepository {
     }
 
     @Override
+    public List<RagNote> findByUserId(UUID userId) {
+        String sql = """
+            SELECT note_id, user_id, notebook_id, note_updated_at, created_at
+            FROM rag_notes
+            WHERE user_id = :userId
+            ORDER BY created_at DESC
+            """;
+        return jdbcTemplate.query(sql, Map.of("userId", userId), rowMapper);
+    }
+
+    @Override
     public RagNote upsert(RagNote ragNote) {
         String sql = """
             INSERT INTO rag_notes (note_id, user_id, notebook_id, note_updated_at, created_at)
