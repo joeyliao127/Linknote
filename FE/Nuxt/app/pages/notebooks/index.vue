@@ -1,27 +1,35 @@
 <template>
-    <div class="notebooks-page">
-        <div class="nb-header">
-            <div class="nb-header-title">
-                <p class="nb-subtitle">筆記本</p>
-                <h1 class="nb-title">所有筆記本</h1>
+    <div class="flex flex-col h-full gap-6 p-6">
+        <!-- Header -->
+        <div
+            class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div class="shrink-0">
+                <p class="text-sm text-slate-200/50">筆記本</p>
+                <h1
+                    class="text-3xl font-semibold text-slate-50/95 leading-tight">
+                    所有筆記本
+                </h1>
             </div>
-            <div class="nb-header-controls">
+            <div class="flex gap-3 items-center">
                 <UInput
                     v-model="keyword"
                     icon="i-lucide-search"
                     placeholder="搜尋筆記本"
-                    class="nb-search" />
+                    class="min-w-[240px]"
+                    @keyup.enter="handleSearch" />
                 <UButton
                     icon="i-lucide-plus"
-                    color="accent"
+                    color="primary"
+                    class="text-white w-full"
                     @click="goCreate">
-                    新增
+                    新增筆記本
                 </UButton>
             </div>
         </div>
 
-        <div class="nb-content">
-            <div class="nb-grid">
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto pr-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <template v-for="item in notebooks" :key="item.id">
                     <NotebookCard
                         :id="item.id"
@@ -38,7 +46,7 @@
 
                 <div
                     ref="loadMoreTrigger"
-                    class="nb-load-more col-span-full">
+                    class="col-span-full flex items-center justify-center p-4 text-sm text-slate-200/65">
                     <UIcon
                         v-if="loadingMore"
                         name="i-lucide-loader-2"
@@ -47,9 +55,7 @@
                         v-else-if="hasMore"
                         class="flex items-center gap-1 hover:text-accent"
                         @click="loadMore">
-                        <UIcon
-                            name="i-lucide-chevron-down"
-                            class="w-4 h-4" />
+                        <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
                         載入更多
                     </button>
                     <span v-else>沒有更多筆記本</span>
@@ -145,12 +151,7 @@ async function updateNotebookDescription(id: string, description: string) {
     try {
         const notebook = notebooks.value.find((n) => n.id === id);
         if (!notebook) return;
-
-        await updateNotebook(userId.value, id, {
-            ...notebook,
-            description,
-        });
-
+        await updateNotebook(userId.value, id, { ...notebook, description });
         notebook.description = description;
     } catch (error) {
         console.error("Failed to update notebook description:", error);
@@ -179,9 +180,7 @@ onMounted(() => {
                     loadMore();
                 }
             },
-            {
-                threshold: 1,
-            },
+            { threshold: 1 },
         );
         observer.observe(loadMoreTrigger.value);
     }
@@ -191,94 +190,3 @@ onBeforeUnmount(() => {
     if (observer) observer.disconnect();
 });
 </script>
-
-<style scoped>
-.notebooks-page {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 1.5rem;
-    padding: 1.5rem;
-}
-
-.nb-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-@media (min-width: 768px) {
-    .nb-header {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    }
-}
-
-.nb-header-title {
-    flex-shrink: 0;
-}
-
-.nb-subtitle {
-    font-size: 0.875rem;
-    color: rgba(226, 232, 240, 0.5);
-    margin: 0;
-}
-
-.nb-title {
-    font-size: 1.875rem;
-    font-weight: 600;
-    color: rgba(248, 250, 252, 0.95);
-    margin: 0;
-    line-height: 1.2;
-}
-
-.nb-header-controls {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-}
-
-.nb-search {
-    min-width: 240px;
-}
-
-.nb-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 0.5rem;
-}
-
-.nb-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-
-@media (max-width: 640px) {
-    .nb-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    .nb-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .nb-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-.nb-load-more {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    font-size: 0.875rem;
-    color: rgba(226, 232, 240, 0.65);
-}
-</style>

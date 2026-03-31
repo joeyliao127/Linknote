@@ -1,92 +1,131 @@
 <template>
-    <div
-        class="inline-flex flex-wrap items-center gap-x-3 rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3 w-auto">
+    <div class="inline-flex items-center gap-2">
+        <!-- New Note Button -->
+        <UTooltip text="建立未命名筆記">
+            <UButton
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-plus"
+                class="border border-white/20 text-white hover:border-white/40 hover:bg-white/5"
+                :loading="creating"
+                @click="$emit('create')" />
+        </UTooltip>
+
+        <!-- Reset Filter -->
         <UTooltip text="清除所有篩選">
             <UButton
                 variant="ghost"
+                color="neutral"
                 icon="i-lucide-wand-2"
-                @click="$emit('reset')">
-                All
-            </UButton>
+                class="border border-white/20 text-white hover:border-white/40 hover:bg-white/5"
+                @click="$emit('reset')" />
         </UTooltip>
 
+        <!-- Tag Filter (Popover) -->
+        <UPopover :popper="{ placement: 'bottom' }">
+            <UButton
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-tag"
+                :class="
+                    selectedTagsModel.length > 0
+                        ? 'border border-accent bg-accent/15 text-accent hover:bg-accent/25'
+                        : 'border border-white/20 text-white hover:border-white/40 hover:bg-white/5'
+                " />
+
+            <template #content>
+                <TagForm
+                    :tags="tags"
+                    :selected-tag-ids="selectedTagsModel"
+                    @update:selected="
+                        $emit('change-tag', $event?.length ? $event : null)
+                    "
+                    @create="$emit('create-tag', $event)"
+                    @delete="$emit('delete-tag', $event)" />
+            </template>
+        </UPopover>
+
+        <!-- Star Filter -->
         <UTooltip text="僅顯示收藏">
             <UButton
-                :variant="starOnly ? 'solid' : 'ghost'"
-                :color="starOnly ? 'yellow' : 'neutral'"
+                variant="ghost"
+                color="neutral"
                 icon="i-lucide-star"
-                @click="$emit('toggle-star', !starOnly)">
-                Star
-            </UButton>
+                :class="
+                    starOnly
+                        ? 'border border-accent bg-accent/15 text-accent hover:bg-accent/25'
+                        : 'border border-white/20 text-white hover:border-white/40 hover:bg-white/5'
+                "
+                @click="$emit('toggle-star', !starOnly)" />
         </UTooltip>
 
+        <!-- Sort -->
         <UTooltip text="切換排序（更新時間）">
             <UButton
                 variant="ghost"
-                :color="sortOrder === 'asc' ? 'neutral' : 'accent'"
+                color="neutral"
                 icon="i-lucide-arrow-up-down"
+                :class="
+                    sortOrder === 'desc'
+                        ? 'border border-accent bg-accent/15 text-accent hover:bg-accent/25'
+                        : 'border border-white/20 text-white hover:border-white/40 hover:bg-white/5'
+                "
                 @click="
                     $emit('change-sort', sortOrder === 'asc' ? 'desc' : 'asc')
-                ">
-                {{ sortOrder === "asc" ? "升序" : "降序" }}
-            </UButton>
+                " />
         </UTooltip>
 
-        <USelect
-            v-model="selectedTagsModel"
-            :items="tagItems"
-            multiple
-            placeholder="篩選標籤"
-            class="w-44" />
+        <!-- Search -->
+        <UInput
+            v-model="keywordDraft"
+            icon="i-lucide-search"
+            placeholder="關鍵字"
+            size="sm"
+            color="neutral"
+            variant="outline"
+            class="w-40"
+            @keyup.enter="emitSearch" />
 
-        <div class="min-w-[260px] flex items-center gap-2">
-            <UInput
-                v-model="keywordDraft"
-                icon="i-lucide-search"
-                placeholder="關鍵字（前綴）"
-                @keyup.enter="emitSearch" />
-            <UTooltip text="搜尋">
-                <UButton
-                    variant="ghost"
-                    icon="i-lucide-search"
-                    @click="emitSearch" />
-            </UTooltip>
-        </div>
-
-        <UTooltip text="建立未命名筆記">
+        <!-- Delete Notebook -->
+        <UTooltip text="刪除筆記本">
             <UButton
-                color="accent"
-                icon="i-lucide-plus"
-                :loading="creating"
-                @click="$emit('create')">
-                Create
-            </UButton>
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-trash-2"
+                class="border border-white/20 text-white hover:border-white/40 hover:bg-white/5"
+                :loading="deletingNotebook"
+                @click="confirmDeleteNotebook" />
         </UTooltip>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { toSelection } from "~/composables/utils/useFormat";
+import TagForm from "~/components/note/TagForm.vue";
 import type { Tag } from "~~/types/Tag";
+import { useDialogs } from "~/composables/useDialogs";
 
 const props = withDefaults(
     defineProps<{
         tags?: Tag[];
         selectedTags?: string[] | null;
+        selectedTagIds?: string[];
         keyword?: string;
         starOnly?: boolean;
         sortOrder?: "asc" | "desc";
         creating?: boolean;
+        deletingNotebook?: boolean;
     }>(),
     {
         tags: () => [],
         selectedTags: () => [],
+        selectedTagIds: () => [],
         keyword: "",
         starOnly: false,
         sortOrder: "desc",
         creating: false,
-    }
+        deletingNotebook: false,
+    },
 );
 
 const emit = defineEmits<{
@@ -96,22 +135,32 @@ const emit = defineEmits<{
     (e: "change-tag", value: string[] | null): void;
     (e: "change-sort", value: "asc" | "desc"): void;
     (e: "search", value: string): void;
+    (e: "delete-notebook"): void;
+    (e: "create-tag", name: string): void;
+    (e: "delete-tag", tagId: string): void;
 }>();
 
-const tagItems = computed(() => toSelection(props.tags, "title", "id"));
-
-/** tags：這是 state sync（適合用 computed get/set） */
 const selectedTagsModel = computed<string[]>({
-    get: () => props.selectedTags ?? [],
+    get: () => props.selectedTags ?? props.selectedTagIds ?? [],
     set: (value) => emit("change-tag", value?.length ? value : null),
 });
+
+const { confirm } = useDialogs();
+
+function confirmDeleteNotebook() {
+    confirm(
+        "確定要刪除此筆記本？此操作無法復原。",
+        undefined,
+        () => emit("delete-notebook"),
+    );
+}
 
 const keywordDraft = ref(props.keyword ?? "");
 watch(
     () => props.keyword,
     (v) => {
         keywordDraft.value = v ?? "";
-    }
+    },
 );
 
 function emitSearch() {

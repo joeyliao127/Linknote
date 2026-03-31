@@ -39,6 +39,19 @@
                 <UButton variant="link" label="link" color="accent" />
             </div>
         </div>
+        <USeparator>
+            <h2 class="title text-2xl">Dialog Demo</h2>
+        </USeparator>
+
+        <div class="flex gap-3">
+            <UButton
+                color="accent"
+                icon="i-lucide-trash-2"
+                @click="showDeleteNotebookDialog">
+                刪除筆記本
+            </UButton>
+        </div>
+
         <UCarousel></UCarousel>
 
         <USeparator>
@@ -215,6 +228,17 @@ import NotebookForm from "~/components/notebook/NotebookForm.vue";
 import type { Tag } from "~~/types/Tag";
 
 const toast = useToast();
+const { confirm } = useDialogs();
+
+function showDeleteNotebookDialog() {
+    confirm(
+        "確定要刪除筆記本「Linknote UI」嗎？此操作無法復原。",
+        "刪除筆記本",
+        () => {
+            toast.add({ title: "筆記本已刪除（模擬）", color: "accent" });
+        },
+    );
+}
 
 const noteItems = ref([
     {

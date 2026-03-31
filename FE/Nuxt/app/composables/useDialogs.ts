@@ -1,6 +1,4 @@
 // composables/useDialogs.ts
-import { ref } from "vue";
-
 export type DialogType = "alert" | "confirm" | "inform";
 
 export interface DialogOptions {
@@ -15,9 +13,8 @@ interface DialogState extends DialogOptions {
     isOpen: boolean;
 }
 
-const dialogs = ref<DialogState[]>([]);
-
 export const useDialogs = () => {
+    const dialogs = useState<DialogState[]>("dialogs", () => []);
     const show = (options: DialogOptions) => {
         const id = `dialog-${Date.now()}-${Math.random()}`;
         const dialog: DialogState = {

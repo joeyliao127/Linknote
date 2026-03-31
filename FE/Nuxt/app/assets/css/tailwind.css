@@ -5,8 +5,12 @@
 
 @theme inline {
     --color-primary: var(--primary);
+    --color-primary-dark: var(--primary-dark);
     --color-secondary: var(--secondary);
     --color-accent: var(--accent);
+    --color-alert: var(--alert);
+    --color-dialog-bg: var(--dialog-bg);
+    --radius: var(--ui-radius);
 }
 
 :root {
@@ -18,8 +22,10 @@
     --primary-dark: #072a0b;
     --primary-light: #4ade80;
     --secondary: oklch(0.9491 0 0);
-    --accent: #e30606;
-    --accent-dark: #b80505;
+    --accent: #b8a76d;
+    --accent-dark: #b8a76d;
+    --alert: #e30606;
+    --dialog-bg: #363636;
 
     /* Border radius */
     --ui-radius: 0.3125rem;
@@ -31,8 +37,10 @@
     --primary-dark: #072a0b;
     --primary-light: #4ade80;
     --secondary: oklch(0.9491 0 0);
-    --accent: #e30606;
-    --accent-dark: #b80505;
+    --accent: #b8a76d;
+    --accent-dark: #b8a76d;
+    --alert: #e30606;
+    --dialog-bg: #363636;
 }
 
 @layer base {

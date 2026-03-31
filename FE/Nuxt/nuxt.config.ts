@@ -88,7 +88,7 @@ export default defineNuxtConfig({
     ui: {
         theme: {
             // tailwind 原本就支援 primary, secondary，若要套用 color 到 UButton，可以在此設定
-            colors: ["accent"],
+            colors: ["accent", "primary", "alert"],
         },
         // 強制深色模式，背景使用自定義的 --background: #1f221f
         colorMode: "dark",

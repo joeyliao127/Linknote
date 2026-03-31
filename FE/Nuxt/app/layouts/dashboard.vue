@@ -60,7 +60,7 @@ onMounted(() => {
     height: 100%;
     flex-shrink: 0;
     background: rgba(31, 34, 31, 0.75);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(2px);
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     overflow-y: auto;
 }
@@ -69,7 +69,7 @@ onMounted(() => {
     flex: 1;
     height: 100%;
     background: rgba(31, 34, 31, 0.5);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(0px);
     overflow-y: auto;
     padding: 0;
     color: rgba(226, 232, 240, 0.9);

@@ -1,56 +1,57 @@
 <template>
-    <DashboardShell>
-        <template #sidebar>
-            <Sidebar
-                :notebooks="notebooksNav"
-                :co-notebooks="[]"
-                :loading="notebooksLoading"
-                :current-id="notebooksNav[0]?.id"
-                :settings-sections="settingsSections"
-                @load-more="fetchNotebooks"
-                @create="goCreate"
-                @go-notebooks="goNotebooks"
-                @go-co-notebooks="goCoNotebooks"
-                @select="openNotebook"
-                @select-co="openNotebook" />
-        </template>
-
-        <template #header>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-slate-400">筆記本</p>
-                    <h1 class="text-2xl font-semibold">建立新的筆記本</h1>
-                </div>
-                <UButton
-                    variant="ghost"
-                    icon="i-lucide-arrow-left"
-                    @click="goBack">
-                    返回
-                </UButton>
+    <div class="flex flex-col h-full p-6 gap-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-1">
+                <p class="text-sm text-slate-200/50">筆記本</p>
+                <h1 class="text-3xl font-semibold text-white leading-tight">
+                    建立新的筆記本
+                </h1>
             </div>
-        </template>
-
-        <div class="max-w-2xl">
-            <UCard class="bg-slate-900/60 border-slate-800">
-                <template #header>
-                    <p class="font-semibold">填寫筆記本資訊</p>
-                </template>
-
-                <NotebookForm
-                    :submitting="submitting"
-                    submit-label="建立"
-                    @submit="handleSubmit" />
-            </UCard>
+            <UButton
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-arrow-left"
+                class="border border-white/20 text-white hover:border-white/40 hover:bg-white/5"
+                @click="goBack">
+                返回
+            </UButton>
         </div>
-    </DashboardShell>
+
+        <!-- Form Area -->
+        <div class="flex flex-1 items-start justify-center pt-8">
+            <div class="w-[420px] aspect-[4/5] flex flex-col">
+                <!-- Card -->
+                <div
+                    class="flex flex-col h-full bg-white/[0.04] border border-white/10 rounded-lg p-8 gap-6">
+                    <!-- Card Header -->
+                    <div
+                        class="flex items-center gap-3 pb-4 border-b border-white/10 shrink-0">
+                        <div
+                            class="flex items-center justify-center w-9 h-9 rounded bg-primary/30">
+                            <UIcon
+                                name="i-lucide-notebook-pen"
+                                class="w-5 h-5 text-primary-light" />
+                        </div>
+                        <p class="font-semibold text-white">填寫筆記本資訊</p>
+                    </div>
+
+                    <!-- Form -->
+                    <NotebookForm
+                        :submitting="submitting"
+                        submit-label="建立"
+                        class="flex-1 min-h-0"
+                        @submit="handleSubmit" />
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, useRouter, useAuth, useToast } from "#imports";
-import DashboardShell from "~/components/dashboard/DashboardShell.vue";
-import Sidebar from "~/components/dashboard/Sidebar.vue";
+import { ref, computed } from "vue";
+import { useRouter, useAuth, useToast } from "#imports";
 import NotebookForm from "~/components/notebook/NotebookForm.vue";
-import { useNotebookNav } from "~/composables/useNotebookNav";
 import { useNotebook } from "~/composables/model/useNotebook";
 
 definePageMeta({ layout: "dashboard" });
@@ -58,21 +59,9 @@ definePageMeta({ layout: "dashboard" });
 const router = useRouter();
 const toast = useToast();
 const auth = useAuth();
-const {
-    items: notebooksNav,
-    fetchNotebooks,
-    loading: notebooksLoading,
-} = useNotebookNav();
 const { createNotebook } = useNotebook();
 
-const settingsSections = [
-    { label: "個人資料", value: "profile" },
-    { label: "帳號安全", value: "security" },
-    { label: "通知", value: "notification" },
-];
-
 const submitting = ref(false);
-
 const userId = computed(() => auth.data.value?.user?.id || "");
 
 async function handleSubmit(value: {
@@ -88,10 +77,7 @@ async function handleSubmit(value: {
             description: value.description,
             active: value.active,
         });
-        toast.add({
-            title: "建立成功",
-            color: "accent",
-        });
+        toast.add({ title: "建立成功", color: "accent" });
         router.push("/notebooks");
     } catch (error: any) {
         toast.add({
@@ -107,26 +93,4 @@ async function handleSubmit(value: {
 function goBack() {
     router.back();
 }
-
-function goCreate() {
-    router.push("/notebooks/create");
-}
-
-function goNotebooks() {
-    router.push("/notebooks");
-}
-
-function goCoNotebooks() {
-    router.push({ path: "/notebooks", query: { collab: "true" } });
-}
-
-function openNotebook(id: string) {
-    navigateTo(`/notebooks/${id}/notes`);
-}
-
-onMounted(() => {
-    fetchNotebooks();
-});
 </script>
-
-<style scoped></style>

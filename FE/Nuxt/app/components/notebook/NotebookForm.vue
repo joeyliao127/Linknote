@@ -2,20 +2,23 @@
     <UForm
         :state="formState"
         :schema="schema"
-        class="space-y-4"
+        class="flex flex-col h-full gap-4"
         @submit="onSubmit">
         <UFormField label="名稱" name="title" required>
             <UInput
                 v-model="formState.title"
                 placeholder="輸入筆記本名稱"
-                icon="i-lucide-notebook-pen" />
+                icon="i-lucide-notebook-pen"
+                class="w-full" />
         </UFormField>
 
-        <UFormField label="描述" name="description">
+        <UFormField label="描述" name="description" class="flex flex-col flex-1 min-h-0">
             <UTextarea
                 v-model="formState.description"
                 placeholder="描述這本筆記本的用途"
-                :rows="3" />
+                autoresize
+                class="w-full h-full"
+                :ui="{ base: 'resize-none h-full' }" />
         </UFormField>
 
         <div class="flex items-center justify-between">
@@ -26,7 +29,8 @@
         <UButton
             type="submit"
             block
-            color="accent"
+            color="primary"
+            class="text-white"
             :loading="submitting"
             icon="i-lucide-save">
             {{ submitLabel }}
@@ -50,11 +54,14 @@ const props = withDefaults(
         initialValue: () => ({ active: true }),
         submitting: false,
         submitLabel: "建立筆記本",
-    }
+    },
 );
 
 const emit = defineEmits<{
-    (e: "submit", value: { title: string; description?: string; active?: boolean }): void;
+    (
+        e: "submit",
+        value: { title: string; description?: string; active?: boolean },
+    ): void;
 }>();
 
 const schema = z.object({
@@ -78,7 +85,7 @@ watch(
         formState.description = value?.description ?? "";
         formState.active = value?.active ?? true;
     },
-    { deep: true }
+    { deep: true },
 );
 
 function onSubmit(event: FormSubmitEvent<NotebookFormSchema>) {
