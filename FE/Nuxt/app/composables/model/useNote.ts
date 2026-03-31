@@ -12,17 +12,24 @@ const _useNote = () => {
             page?: number;
             pageSize?: number;
             title?: string;
-            tagIdList?: string[] | null;
+            tagIds?: string[] | null;
             star?: boolean;
             sort?: "asc" | "desc";
-        }
+        },
     ): Promise<Pagination<Note>> => {
+        const { tagIds, sort, ...rest } = query ?? {};
+        const mappedQuery: Record<string, unknown> = { ...rest };
+        if (tagIds && tagIds.length > 0) mappedQuery.tagIds = tagIds;
+        if (sort) {
+            mappedQuery.orderBy = "updated_at";
+            mappedQuery.orderDirection = sort;
+        }
         const response: Pagination<Note> = await $fetch(
             `${runtimeConfig.public.API_URL}/notebooks/${notebookId}/notes`,
             {
                 method: "GET",
-                query,
-            }
+                query: mappedQuery,
+            },
         );
         const items: Note[] = [];
         for (let note of response.items) {
@@ -38,7 +45,7 @@ const _useNote = () => {
             `${runtimeConfig.public.API_URL}/notes/${noteId}`,
             {
                 method: "GET",
-            }
+            },
         );
         // response.tagIdList = response.tags.map((item) => item.id);
         return response;
@@ -50,7 +57,7 @@ const _useNote = () => {
             {
                 method: "POST",
                 body: note,
-            }
+            },
         );
 
         return response;
@@ -62,7 +69,7 @@ const _useNote = () => {
             {
                 method: "PUT",
                 body: note,
-            }
+            },
         );
 
         return response;
@@ -73,7 +80,7 @@ const _useNote = () => {
             `${runtimeConfig.public.API_URL}/notes/${noteId}`,
             {
                 method: "DELETE",
-            }
+            },
         );
     };
 
@@ -85,7 +92,7 @@ const _useNote = () => {
                 body: {
                     tagIdList,
                 },
-            }
+            },
         );
     };
 

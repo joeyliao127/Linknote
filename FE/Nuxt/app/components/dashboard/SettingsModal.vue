@@ -11,9 +11,9 @@
             </UButton>
             <template #content>
                 <div
-                    class="flex w-full max-h-[80vh] aspect-[4/3] rounded-2xl border border-slate-800 bg-slate-950 text-slate-50 shadow-2xl overflow-hidden">
+                    class="flex w-[600px] h-[600px] rounded-xl border border-white/10 bg-[#363636]/80 backdrop-blur-sm text-slate-50 shadow-2xl overflow-hidden">
                     <div
-                        class="w-48 border-r border-slate-800 p-3 space-y-1 bg-slate-900/70">
+                        class="w-48 border-r border-white/10 p-3 space-y-1 bg-black/20">
                         <template v-for="item in sections" :key="item.value">
                             <UButton
                                 block
@@ -61,7 +61,7 @@
                         </div>
 
                         <div
-                            class="pt-4 border-t border-slate-800 flex flex-wrap gap-2">
+                            class="pt-4 border-t border-white/10 flex flex-wrap gap-2">
                             <slot name="footer" :close="closeModal" />
                         </div>
                     </div>
@@ -133,8 +133,7 @@ function closeModal() {
 }
 
 const modalUi = {
-    overlay: { base: "fixed inset-0 bg-black/50 backdrop-blur" },
-    container: "fixed inset-0 flex items-center justify-center p-4",
-    base: "w-[70vw] max-w-[770px]",
+    overlay: "bg-black/50",
+    content: "!bg-transparent !ring-0 !shadow-none !p-0 w-fit",
 };
 </script>

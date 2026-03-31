@@ -7,7 +7,7 @@
             </h1>
             <NoteToolbar
                 :tags="tags"
-                :selected-tags="noteFilter.tagIdList"
+                :selected-tags="noteFilter.tagIds"
                 :keyword="noteFilter.keyword"
                 :star-only="noteFilter.star"
                 :sort-order="noteFilter.sort"
@@ -102,7 +102,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
@@ -144,7 +143,7 @@ const notes = ref<Note[]>([]);
 const tags = ref<Tag[]>([]);
 const noteFilter = reactive({
     keyword: "",
-    tagIdList: [] as string[],
+    tagIds: [] as string[],
     star: false,
     sort: "desc" as "asc" | "desc",
 });
@@ -163,6 +162,9 @@ const hasMore = computed(() => notes.value.length < totalCount.value);
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
+
+// Delete modal
+const showDeleteModal = ref(false);
 
 // Computed
 const userId = computed(() => auth.data.value?.user?.id || "");
@@ -194,9 +196,9 @@ async function fetchNotes(reset = false) {
             page: page.value,
             pageSize,
             title: noteFilter.keyword || undefined,
-            tagIdList:
-                noteFilter.tagIdList && noteFilter.tagIdList.length > 0
-                    ? noteFilter.tagIdList
+            tagIds:
+                noteFilter.tagIds && noteFilter.tagIds.length > 0
+                    ? noteFilter.tagIds
                     : undefined,
             star: noteFilter.star || undefined,
             sort: noteFilter.sort,
@@ -304,10 +306,8 @@ async function handleDeleteTag(tagId: string) {
         await deleteTag(tagId);
         tags.value = tags.value.filter((t) => t.id !== tagId);
         // Remove from selected tags if it was selected
-        if (noteFilter.tagIdList.includes(tagId)) {
-            noteFilter.tagIdList = noteFilter.tagIdList.filter(
-                (id) => id !== tagId,
-            );
+        if (noteFilter.tagIds.includes(tagId)) {
+            noteFilter.tagIds = noteFilter.tagIds.filter((id) => id !== tagId);
         }
     } catch (error) {
         console.error("Failed to delete tag:", error);
@@ -334,7 +334,7 @@ function openNote(id: string) {
 // Filter management
 function resetFilters() {
     noteFilter.keyword = "";
-    noteFilter.tagIdList = [];
+    noteFilter.tagIds = [];
     noteFilter.star = false;
     noteFilter.sort = "desc";
 }
@@ -344,7 +344,7 @@ function toggleStarFilter(value: boolean) {
 }
 
 function changeTag(value: string[] | null) {
-    noteFilter.tagIdList = value ? value : [];
+    noteFilter.tagIds = value ? value : [];
 }
 
 function changeSort(value: "asc" | "desc") {

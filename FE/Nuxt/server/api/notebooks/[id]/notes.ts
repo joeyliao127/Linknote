@@ -3,6 +3,8 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const notebookId = event.context.params?.id;
 
+    console.log("query", query);
+
     // TODO(Forward): 這裡自動 forward 到 BE，可依照架構調整 path
     const config = useRuntimeConfig();
     return await $fetch(
@@ -13,6 +15,6 @@ export default defineEventHandler(async (event) => {
                 Authorization: `Bearer ${session?.token}`,
             },
             query,
-        }
+        },
     );
 });
