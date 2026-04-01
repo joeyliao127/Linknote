@@ -51,7 +51,30 @@ public class PermissionQueryRepositoryImpl implements PermissionQueryRepository 
 
 		var results = jdbcTemplate.query(sql, params, (rs, rowNum) -> 1);
 
-		return !results.isEmpty();
+		if (!results.isEmpty()) return true;
+
+		// For NOTE operations, also allow if the user has collaborator-level access
+		// to the notebook that contains the note (resource_acl keyed by notebookId).
+		if (resourceType == ResourceType.NOTE) {
+			String notebookFallbackSql = """
+				SELECT 1
+				FROM resource_acl ura
+				JOIN roles r ON ura.role_id = r.id
+				JOIN role_permissions rp ON rp.role_id = r.id
+				JOIN resources rs ON rp.resource_id = rs.id
+				JOIN operations op ON rp.operation_id = op.id
+				JOIN notes n ON n.notebook_id = ura.resource_instance_id
+				WHERE ura.user_id = :userId
+				AND n.id = :resourceInstanceId
+				AND rs.title = :resourceType
+				AND op.title = :operation
+				LIMIT 1
+				""";
+			var fallbackResults = jdbcTemplate.query(notebookFallbackSql, params, (rs, rowNum) -> 1);
+			return !fallbackResults.isEmpty();
+		}
+
+		return false;
 	}
 
 	@Override
