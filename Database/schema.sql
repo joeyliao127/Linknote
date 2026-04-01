@@ -139,9 +139,9 @@ CREATE TABLE users (
   CONSTRAINT fk_user_status_id FOREIGN KEY (user_status_id) REFERENCES user_status_codes (id),
   UNIQUE (email),
   PRIMARY KEY (id)
-)
+);
 
-CREATE INDEX idx_users_email ON Users (email);
+CREATE INDEX idx_users_email ON users (email);
 
 CREATE TABLE user_roles (
   role_id       INT           NOT NULL,
@@ -160,11 +160,9 @@ CREATE TABLE notebooks (
   is_active     BOOLEAN       DEFAULT TRUE,
   created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_notebooks_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT,
   PRIMARY KEY (id)
 );
 
-CREATE INDEX idx_notebooks_user_id ON notebooks (user_id);
 CREATE INDEX idx_notebooks_name ON notebooks (title);
 
 CREATE TABLE invitation_status_codes (
