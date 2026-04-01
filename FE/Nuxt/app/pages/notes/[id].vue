@@ -3,119 +3,212 @@
         <template #sidebar>
             <NoteSidebar
                 :is-open="isSidebarOpen"
-                :notebook-name="notebookName"
-                :notes="notes"
-                :current-note-id="currentNote?.id || ''"
+                :notebook-id="currentNote?.notebookId ?? ''"
+                :current-note-id="currentNote?.id ?? ''"
+                :current-note-title="currentNote?.title"
                 @close="isSidebarOpen = false"
-                @note-select="handleNoteSelect"
-                @return="handleReturn" />
+                @note-select="router.push(`/notes/${$event}`)" />
         </template>
 
         <template #header>
             <div
-                class="flex justify-between items-center border-b border-gray-500 px-2 h-12">
-                <template v-if="currentNote">
-                    <UButton
-                        color="gray"
-                        variant="ghost"
-                        class="hover:bg-gray-800"
-                        icon="i-lucide-menu"
-                        @click="isSidebarOpen = true" />
+                class="flex items-center h-12 px-2 gap-x-1 border-b border-slate-700/50 bg-[var(--background)]">
+                <!-- Left: sidebar toggle -->
+                <UButton
+                    variant="ghost"
+                    icon="i-lucide-menu"
+                    size="sm"
+                    class="text-slate-400 hover:text-white shrink-0"
+                    @click="isSidebarOpen = true" />
 
+                <!-- Center: breadcrumb + title + save status -->
+                <div
+                    class="flex-1 flex justify-center items-center gap-x-2 overflow-hidden px-1 min-w-0">
+                    <span
+                        class="text-xs text-slate-500 shrink-0 hidden sm:block">
+                        {{ notebookName }}
+                    </span>
+                    <span
+                        class="text-xs text-slate-600 shrink-0 hidden sm:block">
+                        ›
+                    </span>
                     <FormTitleEditor
+                        v-if="currentNote"
                         v-model="currentNote.title"
-                        @change="saveNote" />
+                        @change="scheduleSave" />
+                    <span
+                        v-if="saveStatus === 'saving'"
+                        class="text-xs text-slate-500 shrink-0">
+                        Saving...
+                    </span>
+                    <span
+                        v-else-if="saveStatus === 'saved'"
+                        class="text-xs text-emerald-500 shrink-0">
+                        Saved ✓
+                    </span>
+                </div>
 
-                    <div class="flex items-center gap-x-2">
-                        <UTooltip text="Create new note">
+                <!-- Right: action buttons -->
+                <div class="flex items-center gap-x-0.5 shrink-0">
+                    <!-- Tag popover -->
+                    <UPopover v-if="currentNote">
+                        <UTooltip text="Add tags">
                             <UButton
-                                icon="i-lucide-plus"
-                                class="hover:bg-gray-800"
-                                color="gray"
                                 variant="ghost"
-                                @click="handleCreate" />
+                                icon="i-lucide-tag"
+                                size="sm"
+                                class="text-slate-400 hover:text-white" />
                         </UTooltip>
+                        <template #content>
+                            <TagForm
+                                :tags="allTags"
+                                :selected-tag-ids="currentNote.tagIdList ?? []"
+                                @update:selected="handleTagsUpdate"
+                                @create="handleTagCreate"
+                                @delete="handleTagDelete" />
+                        </template>
+                    </UPopover>
 
-                        <UTooltip text="toggle star">
-                            <StarButton
-                                :id="currentNote.id"
-                                :stared="currentNote.star"
-                                @change="toggleStar" />
-                        </UTooltip>
+                    <!-- Layout toggle -->
+                    <UTooltip
+                        :text="
+                            editorMode === 'single'
+                                ? 'Dual editor'
+                                : 'Single editor'
+                        ">
+                        <UButton
+                            variant="ghost"
+                            :icon="
+                                editorMode === 'single'
+                                    ? 'i-lucide-columns-2'
+                                    : 'i-lucide-square'
+                            "
+                            size="sm"
+                            :class="[
+                                editorMode === 'dual'
+                                    ? 'text-accent'
+                                    : 'text-slate-400 hover:text-white',
+                            ]"
+                            @click="
+                                editorMode =
+                                    editorMode === 'single' ? 'dual' : 'single'
+                            " />
+                    </UTooltip>
 
-                        <UTooltip text="delete note">
-                            <UButton
-                                icon="i-lucide-trash"
-                                class="hover:bg-gray-800"
-                                color="gray"
-                                variant="ghost"
-                                @click="handleDelete" />
-                        </UTooltip>
-                    </div>
-                </template>
+                    <!-- TOC toggle -->
+                    <UTooltip text="Table of contents">
+                        <UButton
+                            variant="ghost"
+                            icon="i-lucide-list"
+                            size="sm"
+                            :class="[
+                                isTocOpen
+                                    ? 'text-accent'
+                                    : 'text-slate-400 hover:text-white',
+                            ]"
+                            @click="isTocOpen = !isTocOpen" />
+                    </UTooltip>
+
+                    <!-- Delete note -->
+                    <UTooltip text="Delete note">
+                        <UButton
+                            variant="ghost"
+                            icon="i-lucide-trash-2"
+                            size="sm"
+                            class="text-slate-400 hover:text-red-400"
+                            @click="handleDelete" />
+                    </UTooltip>
+                </div>
             </div>
         </template>
 
         <template #main>
-            <div v-if="currentNote" class="h-full flex bg-gray-900">
-                <!-- Left Panel - Note Content -->
-                <ResizablePanel
-                    orientation="vertical"
-                    :default-size="leftPanelWidth"
-                    :min-size="400"
-                    :max-size="1200"
-                    storage-key="note-left-panel-width">
-                    <NoteEditor
-                        v-model="currentNote.content"
-                        title="筆記內容"
-                        placeholder="在這裡開始撰寫筆記..."
-                        :default-height="600"
-                        :min-height="300"
-                        :max-height="1000"
-                        storage-key="note-content-height"
-                        @change="handleContentChange" />
-                </ResizablePanel>
+            <div v-if="currentNote" class="flex h-full overflow-hidden">
+                <!-- TOC nav column (collapsible) -->
+                <Transition name="toc-slide">
+                    <aside
+                        v-if="isTocOpen"
+                        class="w-40 shrink-0 border-r border-slate-700/60 overflow-y-auto bg-black/40 backdrop-blur-sm">
+                        <NoteHeadingNav
+                            :headings="contentHeadings"
+                            :editor-el="contentEditorElWrapper" />
+                    </aside>
+                </Transition>
 
-                <!-- Right Panel - Keypoint, Question, Tags -->
-                <div class="flex-1 flex flex-col overflow-hidden">
-                    <!-- Question Editor -->
-                    <NoteEditor
-                        v-model="currentNote.question"
-                        title="問題"
-                        subtitle="這篇筆記想解決什麼問題或目的是什麼？"
-                        placeholder="記錄這篇筆記要解決的問題..."
-                        :default-height="questionHeight"
-                        :min-height="150"
-                        :max-height="600"
-                        storage-key="note-question-height"
-                        @change="handleQuestionChange" />
+                <!-- Main content column -->
+                <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+                    <!-- Question section (collapsible) -->
+                    <div class="border-b border-slate-700/50 shrink-0">
+                        <button
+                            class="w-full flex items-center gap-2 px-4 py-2 text-xs text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition-colors bg-black/40 backdrop-blur-sm"
+                            @click="isQuestionOpen = !isQuestionOpen">
+                            <UIcon
+                                :name="
+                                    isQuestionOpen
+                                        ? 'i-lucide-chevron-down'
+                                        : 'i-lucide-chevron-right'
+                                "
+                                class="w-3.5 h-3.5 shrink-0" />
+                            <span class="font-medium">Question</span>
+                            <span class="text-slate-600 text-xs">
+                                Why are we writing this note?
+                            </span>
+                        </button>
+                        <Transition name="question-expand">
+                            <div
+                                v-if="isQuestionOpen"
+                                class="border-t border-slate-700/50 h-40">
+                                <TiptapEditor
+                                    v-model="currentNote.question"
+                                    placeholder="Why are we writing this note..."
+                                    @update:model-value="scheduleSave" />
+                            </div>
+                        </Transition>
+                    </div>
 
-                    <!-- Keypoint Editor -->
-                    <NoteEditor
-                        v-model="currentNote.keypoint"
-                        title="重點整理"
-                        subtitle="此區塊可簡單記錄概要"
-                        placeholder="記錄重點摘要..."
-                        :default-height="keypointHeight"
-                        :min-height="150"
-                        :max-height="600"
-                        storage-key="note-keypoint-height"
-                        @change="handleKeypointChange" />
-
-                    <!-- Tags Section -->
-                    <div class="border border-slate-700 bg-slate-900 p-4 h-40">
-                        <h3 class="text-sm font-semibold text-slate-100 mb-3">
-                            標籤
-                        </h3>
-                        <div class="h-[100px] overflow-y-auto">
-                            <UInputTags
-                                v-model="noteTags"
-                                placeholder="新增標籤..."
-                                @addTag="handleTagAdd"
-                                @removeTag="handleTagRemove" />
+                    <!-- Editor row -->
+                    <div class="flex flex-1 min-h-0 overflow-hidden">
+                        <!-- Content editor -->
+                        <div
+                            ref="contentEditorElWrapper"
+                            class="flex-1 min-w-0 overflow-hidden flex flex-col">
+                            <div
+                                class="px-4 py-1.5 text-xs font-medium text-slate-400 border-b border-slate-700/50 bg-black/50 backdrop-blur-sm shrink-0">
+                                Content / Capture
+                            </div>
+                            <TiptapEditor
+                                v-model="currentNote.content"
+                                placeholder="Start writing..."
+                                @update:model-value="scheduleSave"
+                                @headings="contentHeadings = $event" />
                         </div>
+
+                        <!-- Keypoint panel (dual mode) -->
+                        <Transition name="keypoint-slide">
+                            <div
+                                v-if="editorMode === 'dual'"
+                                class="w-1/2 shrink-0 border-l border-slate-700/50 flex flex-col overflow-hidden">
+                                <div
+                                    class="px-4 py-1.5 text-xs font-medium text-slate-400 border-b border-slate-700/50 bg-black/50 backdrop-blur-sm shrink-0">
+                                    Distill / Keypoints
+                                </div>
+                                <TiptapEditor
+                                    v-model="currentNote.keypoint"
+                                    placeholder="Key takeaways... (Distill)"
+                                    @update:model-value="scheduleSave" />
+                            </div>
+                        </Transition>
                     </div>
                 </div>
+            </div>
+
+            <!-- Loading state -->
+            <div
+                v-else
+                class="flex h-full items-center justify-center bg-black/40">
+                <UIcon
+                    name="i-lucide-loader-2"
+                    class="w-6 h-6 animate-spin text-slate-500" />
             </div>
         </template>
     </NoteShell>
@@ -124,192 +217,173 @@
 <script setup lang="ts">
 definePageMeta({ layout: "main" });
 
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { NoteShell } from "#components";
-import StarButton from "~/components/ui/StarButton.vue";
 import NoteSidebar from "~/components/note/NoteSidebar.vue";
-import ResizablePanel from "~/components/ui/ResizablePanel.vue";
-import NoteEditor from "~/components/note/NoteEditor.vue";
+import TiptapEditor from "~/components/note/TiptapEditor.vue";
+import NoteHeadingNav from "~/components/note/NoteHeadingNav.vue";
+import TagForm from "~/components/note/TagForm.vue";
+import FormTitleEditor from "~/components/form/FormTitleEditor.vue";
+import type { HeadingItem } from "~/components/note/TiptapEditor.vue";
 import type { Note } from "~~/types/Note";
+import type { Tag } from "~~/types/Tag";
 import { useNote } from "~/composables/model/useNote";
 import { useNotebook } from "~/composables/model/useNotebook";
 import { useTag } from "~/composables/model/useTag";
-import FormTitleEditor from "~/components/form/FormTitleEditor.vue";
-import type { Tag } from "~~/types/Tag";
 
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialogs();
 
-const { indexNotes, getNote, createNote, updateNote, deleteNote, addTags } =
-    useNote();
+const { getNote, updateNote, deleteNote, addTags } = useNote();
 const { getNotebook } = useNotebook();
-const { indexTags, createTag } = useTag();
+const { indexTags, createTag, deleteTag } = useTag();
 
+// ── State ──────────────────────────────────────────────────────────────
 const currentNote = ref<Note>();
-const notes = ref<Note[]>([]);
-const notebookName = ref("我的筆記本");
+const notebookName = ref("");
 const isSidebarOpen = ref(false);
-const isModify = ref(false);
+const editorMode = ref<"single" | "dual">("dual");
+const isQuestionOpen = ref(false);
+const isTocOpen = ref(false);
+const saveStatus = ref<"idle" | "saving" | "saved">("idle");
+const contentHeadings = ref<HeadingItem[]>([]);
+const allTags = ref<Tag[]>([]);
+const contentEditorElWrapper = useTemplateRef<HTMLElement>(
+    "contentEditorElWrapper",
+);
 
-// Panel sizes
-const leftPanelWidth = ref(800);
-const questionHeight = computed(() => {
-    // Calculate based on available space minus tags height (160px) and gaps
-    return 300;
-});
-const keypointHeight = computed(() => {
-    return 300;
-});
+// ── Auto-save ─────────────────────────────────────────────────────────
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+let savedTimer: ReturnType<typeof setTimeout> | null = null;
 
-interface tagItem {
-    id: string;
-    title: string;
-}
-
-let userTags: tagItem[] = [];
-const noteTags = ref<string[]>([]);
-
-async function toggleStar(value: { id: string; stared: boolean }) {
-    if (currentNote.value) {
-        currentNote.value.star = value.stared;
-        await saveNote();
-
-        // Sync with notes list
-        const noteInList = notes.value.find((n) => n.id === value.id);
-        if (noteInList) {
-            noteInList.star = value.stared;
+function scheduleSave() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveStatus.value = "saving";
+    saveTimer = setTimeout(async () => {
+        if (!currentNote.value) return;
+        try {
+            await updateNote({ ...currentNote.value });
+            saveStatus.value = "saved";
+            if (savedTimer) clearTimeout(savedTimer);
+            savedTimer = setTimeout(() => {
+                saveStatus.value = "idle";
+            }, 2000);
+        } catch {
+            saveStatus.value = "idle";
         }
-    }
+    }, 1000);
 }
 
-async function handleNoteSelect(noteId: string) {
-    await router.push(`/notes/${noteId}`);
-}
-
-function handleReturn() {
-    const notebookId = route.query.notebookId || currentNote.value?.notebookId;
-    if (notebookId) {
-        router.push(`/notebooks/${notebookId}/notes`);
-    } else {
-        router.push("/notebooks");
-    }
-}
-
-async function handleCreate() {
-    const newNote = await createNote({
-        notebookId: currentNote.value?.notebookId,
-        title: "未命名",
-    });
-
-    if (newNote.id) {
-        navigateTo(`/notes/${newNote.id}`);
-    }
-}
-
-async function handleDelete() {
+// ── Delete ────────────────────────────────────────────────────────────
+function handleDelete() {
     dialog.confirm(
         "確定要刪除這篇筆記嗎？此操作無法復原。",
         "刪除筆記",
         async () => {
-            if (currentNote.value) {
-                await deleteNote(currentNote.value.id);
-                dialog.inform("筆記已成功刪除");
-                handleReturn();
-            }
+            if (!currentNote.value) return;
+            await deleteNote(currentNote.value.id);
+            dialog.inform("筆記已成功刪除");
+            router.push("/notebooks");
         },
     );
 }
 
-// Save handlers - you can implement debounce or manual save here
-async function handleContentChange(value: string) {
-    // TODO: Implement auto-save or manual save
-    await saveNote();
-    console.log("Content changed:", value);
+// ── Tag management ────────────────────────────────────────────────────
+async function handleTagsUpdate(tagIds: string[]) {
+    if (!currentNote.value) return;
+    currentNote.value.tagIdList = tagIds;
+    await addTags(currentNote.value.id, tagIds);
 }
 
-async function handleQuestionChange(value: string) {
-    await saveNote();
-    // TODO: Implement auto-save or manual save
-    console.log("Question changed:", value);
+async function handleTagCreate(name: string) {
+    const tag = await createTag(name);
+    allTags.value.push(tag);
 }
 
-async function handleKeypointChange(value: string) {
-    await saveNote();
-    // TODO: Implement auto-save or manual save
-    console.log("Keypoint changed:", value);
-}
-
-function handleTagsChange(tags: string[]) {
-    // TODO: Implement auto-save or manual save
-    console.log("Tags changed:", tags);
-}
-
-async function saveNote() {
+async function handleTagDelete(tagId: string) {
+    await deleteTag(tagId);
+    allTags.value = allTags.value.filter((t) => t.id !== tagId);
     if (currentNote.value) {
-        await updateNote(currentNote.value);
+        currentNote.value.tagIdList = (
+            currentNote.value.tagIdList ?? []
+        ).filter((id) => id !== tagId);
     }
 }
 
-async function fetchNotes() {
-    if (currentNote.value?.notebookId) {
-        const result = await indexNotes(currentNote.value.notebookId);
-        const notebook = await getNotebook(currentNote.value.notebookId);
-        notes.value = result.items || [];
-        notebookName.value = notebook.title || "我的筆記本";
+// ── Hotkeys ───────────────────────────────────────────────────────────
+function handleHotkey(e: KeyboardEvent) {
+    if (!e.metaKey || !e.shiftKey) return;
+    if (e.key === "1") {
+        e.preventDefault();
+        isSidebarOpen.value = !isSidebarOpen.value;
+    } else if (e.key === "2") {
+        e.preventDefault();
+        editorMode.value = editorMode.value === "dual" ? "single" : "dual";
     }
 }
 
-async function fetchUserTags() {
-    const res = await indexTags();
-    userTags = res.items.map((it) => {
-        return { id: it.id, title: it.title };
-    });
-    console.log("init");
-    console.log(userTags);
-}
+onMounted(() => window.addEventListener("keydown", handleHotkey));
+onUnmounted(() => window.removeEventListener("keydown", handleHotkey));
 
-async function handleTagAdd(val: string) {
-    await nextTick();
-    if (isTagNotExist(val, userTags)) {
-        const tag = await createTag(val);
-        userTags.push({ id: tag.id, title: tag.title });
-        noteTags.value.push(tag.title);
-    }
-
-    await updateNoteTags();
-
-    function isTagNotExist(target: string, tags: tagItem[]) {
-        for (let it of tags) {
-            if (it.title === target) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-async function handleTagRemove() {
-    // nextTick 等待畫面變更後 noteTags value 才會更新
-    await nextTick();
-    await updateNoteTags();
-}
-
-async function updateNoteTags() {
-    const tagIdList = userTags
-        .filter((it) => {
-            return noteTags.value.includes(it.title);
-        })
-        .map((it) => it.id);
-
-    await addTags(currentNote.value?.id, tagIdList);
-}
-
+// ── Init ──────────────────────────────────────────────────────────────
 onMounted(async () => {
-    const note = await getNote(route.params.id as string);
-    noteTags.value = note.tags.map((it) => it.title);
+    const [note, tags] = await Promise.all([
+        getNote(route.params.id as string),
+        indexTags(),
+    ]);
+    note.tagIdList = note.tags.map((t) => t.id);
     currentNote.value = note;
-    await fetchNotes();
-    await fetchUserTags();
+    allTags.value = (tags.items as unknown as Tag[]) ?? [];
+
+    if (note.notebookId) {
+        const notebook = await getNotebook(note.notebookId);
+        notebookName.value = notebook.title || "";
+    }
 });
 </script>
+
+<style scoped>
+/* TOC panel slide in/out */
+.toc-slide-enter-active,
+.toc-slide-leave-active {
+    transition:
+        width 0.2s ease,
+        opacity 0.15s ease;
+    overflow: hidden;
+}
+.toc-slide-enter-from,
+.toc-slide-leave-to {
+    width: 0 !important;
+    opacity: 0;
+}
+
+/* Question collapsible */
+.question-expand-enter-active,
+.question-expand-leave-active {
+    transition:
+        max-height 0.25s ease,
+        opacity 0.2s ease;
+    max-height: 200px;
+    overflow: hidden;
+}
+.question-expand-enter-from,
+.question-expand-leave-to {
+    max-height: 0;
+    opacity: 0;
+}
+
+/* Keypoint panel slide in/out */
+.keypoint-slide-enter-active,
+.keypoint-slide-leave-active {
+    transition:
+        width 0.22s ease,
+        opacity 0.18s ease;
+    overflow: hidden;
+}
+.keypoint-slide-enter-from,
+.keypoint-slide-leave-to {
+    width: 0 !important;
+    opacity: 0;
+}
+</style>

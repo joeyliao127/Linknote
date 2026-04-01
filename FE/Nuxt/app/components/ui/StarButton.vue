@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-if="props.stared">
-            <UButton variant="ghost" icon="uis-star" @click="change" />
+            <UButton variant="ghost" icon="uis-star" class="text-yellow-400 hover:text-yellow-300" @click="change" />
         </template>
 
         <template v-else>

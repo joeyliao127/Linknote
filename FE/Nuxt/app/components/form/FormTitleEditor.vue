@@ -1,5 +1,5 @@
 <template>
-    <div class="flex rounded-md hover:bg-muted">
+    <div class="flex rounded-md hover:bg-[var(--background)]">
         <!-- 顯示模式 -->
         <div
             v-if="!isEditing"
@@ -16,7 +16,6 @@
             @blur="handleBlur"
             @keydown="handleKeydown"
             @change="change" />
-        <UButton color="gray" variant="ghost" size="sm" icon="i-lucide-pen" />
     </div>
 </template>
 
