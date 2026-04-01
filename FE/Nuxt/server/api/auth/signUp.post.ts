@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const runtimeConfig = useRuntimeConfig();
-    const apiBase = runtimeConfig.public.AUTH_API_BASE;
+    const apiBase = runtimeConfig.AUTH_API;
 
     try {
         await $fetch(`${apiBase}/users/signUp`, {

@@ -24,6 +24,11 @@ export default defineAppConfig({
                 content: "!bg-[#363636]/80 backdrop-blur-sm !ring-0 border border-white/10 rounded-lg shadow-xl",
             },
         },
+        toast: {
+            slots: {
+                root: "!bg-[#363636]/80 backdrop-blur-sm border border-white/10 shadow-xl",
+            },
+        },
         card: {
             slots: {
                 root: "!ring-0 shadow-none !bg-black/35",
