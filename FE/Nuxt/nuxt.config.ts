@@ -1,11 +1,6 @@
 import { defineNuxtConfig } from "nuxt/config";
 import tailwindcss from "@tailwindcss/vite";
 
-const redisHost = process.env.REDIS_HOST || "redis";
-const redisPort = Number.parseInt(process.env.REDIS_PORT || "6379", 10) || 6379;
-const redisDb = Number.parseInt(process.env.REDIS_DB || "0", 10) || 0;
-const redisUsername = process.env.REDIS_USERNAME || "";
-const redisPassword = process.env.REDIS_PASSWORD || "";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -113,15 +108,6 @@ export default defineNuxtConfig({
         externals: {
             inline: ["next-auth"],
         },
-        storage: {
-            redis: {
-                driver: "redis",
-                host: redisHost,
-                port: redisPort,
-                db: redisDb,
-                username: redisUsername,
-                password: redisPassword,
-            },
-        },
+        storage: {},
     },
 });

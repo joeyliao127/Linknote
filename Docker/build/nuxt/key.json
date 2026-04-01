@@ -1,9 +1,9 @@
 {
   "app": {
     "FRONTEND_PORT": "3000",
-    "AUTH_API_BASE": "",
-    "RESOURCE_API_BASE": "",
-    "RAG_API_BASE": ""
+    "NUXT_AUTH_API": "",
+    "NUXT_RESOURCE_API": "",
+    "NUXT_RAG_API": ""
   },
   "auth": {
     "AUTH_SECRET": "",

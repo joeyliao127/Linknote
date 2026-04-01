@@ -30,9 +30,9 @@ services:
             - "${FRONTEND_PORT}:${FRONTEND_PORT}"
         environment:
             - API_URL=${API_URL}
-            - AUTH_API_BASE=${AUTH_API_BASE}
-            - RESOURCE_API_BASE=${RESOURCE_API_BASE}
-            - RAG_API_BASE=${RAG_API_BASE}
+            - NUXT_AUTH_API=${AUTH_API_BASE}
+            - NUXT_RESOURCE_API=${RESOURCE_API_BASE}
+            - NUXT_RAG_API=${RAG_API_BASE}
             - REDIS_HOST=${REDIS_HOST}
             - REDIS_PORT=${REDIS_PORT}
             - REDIS_USERNAME=${REDIS_USERNAME}
