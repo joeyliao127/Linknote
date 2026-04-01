@@ -1,0 +1,49 @@
+services:
+  springboot:
+    container_name: ${PROJECT_NAME}_springboot
+    image: ghcr.io/joeyliao127/linknote/springboot:latest
+    env_file: ./springboot/.env
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    restart: unless-stopped
+    networks:
+      - app_net
+
+  fastapi:
+    container_name: ${PROJECT_NAME}_fastapi
+    image: ghcr.io/joeyliao127/linknote/fastapi:latest
+    env_file: ./fastapi/.env
+    ports:
+      - "${RAG_PORT}:${RAG_PORT}"
+    restart: unless-stopped
+    networks:
+      - app_net
+
+  nuxt:
+    container_name: ${PROJECT_NAME}_nuxt
+    image: ghcr.io/joeyliao127/linknote/nuxt:latest
+    env_file: ./nuxt/.env
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    restart: unless-stopped
+    networks:
+      - app_net
+
+  nginx:
+    container_name: ${PROJECT_NAME}_nginx
+    image: nginx:alpine
+    env_file: ./nginx/.env
+    ports:
+      - "80:80"
+    volumes:
+      - ../nginx/conf.d:/etc/nginx/conf.d
+    restart: unless-stopped
+    depends_on:
+      - nuxt
+      - springboot
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
