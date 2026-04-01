@@ -1,0 +1,6 @@
+{
+  "qdrant": {
+    "QDRANT_PORT": "6333",
+    "QDRANT_API_KEY": ""
+  }
+}

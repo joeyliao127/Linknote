@@ -1,0 +1,15 @@
+FROM node:24-slim AS build
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@latest --activate
+COPY Nuxt/package.json Nuxt/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+COPY Nuxt/ .
+ARG API_URL=/api
+ENV API_URL=${API_URL}
+RUN pnpm build_production
+
+FROM node:24-slim
+WORKDIR /app
+COPY --from=build /app/.output .output
+ENV PORT=3000
+CMD ["node", ".output/server/index.mjs"]

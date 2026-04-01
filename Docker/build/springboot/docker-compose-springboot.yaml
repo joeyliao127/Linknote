@@ -1,0 +1,16 @@
+services:
+  springboot:
+    container_name: ${PROJECT_NAME}_springboot
+    image: ghcr.io/joeyliao127/linknote/springboot:latest
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - BACKEND_PORT=${BACKEND_PORT}
+      - PROJECT_NAME=${PROJECT_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+    restart: unless-stopped

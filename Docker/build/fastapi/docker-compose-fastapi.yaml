@@ -1,0 +1,22 @@
+services:
+  fastapi:
+    container_name: ${PROJECT_NAME}_fastapi
+    image: ghcr.io/joeyliao127/linknote/fastapi:latest
+    ports:
+      - "${RAG_PORT}:${RAG_PORT}"
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - QDRANT_HOST=${QDRANT_HOST}
+      - QDRANT_PORT=${QDRANT_PORT}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - QDRANT_DISTANCE=${QDRANT_DISTANCE}
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER}
+      - OPENAPI_EMBEDDING=${OPENAPI_EMBEDDING}
+      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - RAG_PORT=${RAG_PORT}
+    restart: unless-stopped

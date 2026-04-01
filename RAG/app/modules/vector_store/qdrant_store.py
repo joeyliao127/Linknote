@@ -12,7 +12,12 @@ def _get_distance() -> Distance:
 
 
 def get_client() -> AsyncQdrantClient:
-    return AsyncQdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+    return AsyncQdrantClient(
+        host=settings.QDRANT_HOST,
+        port=settings.QDRANT_PORT,
+        api_key=settings.QDRANT_API_KEY or None,
+        https=False,
+    )
 
 
 async def ensure_collection(client: AsyncQdrantClient, vector_size: int) -> str:

@@ -1,0 +1,19 @@
+services:
+  nginx:
+    container_name: ${PROJECT_NAME}_nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../../nginx/conf.d:/etc/nginx/conf.d
+      - ../../nginx/ssl:/etc/nginx/ssl
+    restart: unless-stopped
+    networks:
+      project_net:
+        ipv4_address: ${NGINX_HOST}
+
+networks:
+  project_net:
+    name: ${PROJECT_NAME}_net
+    external: true

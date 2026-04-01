@@ -1,0 +1,21 @@
+services:
+  nuxt:
+    container_name: ${PROJECT_NAME}_nuxt
+    image: ghcr.io/joeyliao127/linknote/nuxt:latest
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      # server-side runtimeConfig — 透過 NUXT_* 在 runtime 注入
+      - NUXT_AUTH_API=${AUTH_API_BASE}
+      - NUXT_RESOURCE_API=${RESOURCE_API_BASE}
+      - NUXT_RAG_API=${RAG_API_BASE}
+      # nuxt-auth
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_ORIGIN=${AUTH_ORIGIN}
+      # Redis session store
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_USERNAME=${REDIS_USERNAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DB=${REDIS_DB}
+    restart: unless-stopped

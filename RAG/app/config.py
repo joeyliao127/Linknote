@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     QDRANT_HOST: str
     QDRANT_PORT: int = 6333
     QDRANT_COLLECTION: str = "notes"
+    QDRANT_API_KEY: str = ""
 
     EMBEDDING_PROVIDER: str = "openai"  # "ollama" | "openai"
     OPENAPI_EMBEDDING: str = ""

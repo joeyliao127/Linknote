@@ -1,0 +1,8 @@
+{
+  "redis": {
+    "REDIS_PORT": "6379",
+    "REDIS_USERNAME": "",
+    "REDIS_PASSWORD": "",
+    "REDIS_DB": "0"
+  }
+}

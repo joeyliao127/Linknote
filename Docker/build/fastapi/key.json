@@ -1,0 +1,24 @@
+{
+  "app": {
+    "RAG_PORT": "8001"
+  },
+  "postgres": {
+    "POSTGRES_HOST": "",
+    "POSTGRES_PORT": "5432",
+    "POSTGRES_DB": "linknote",
+    "POSTGRES_USER": "",
+    "POSTGRES_PASSWORD": ""
+  },
+  "qdrant": {
+    "QDRANT_HOST": "",
+    "QDRANT_PORT": "6333",
+    "QDRANT_API_KEY": "",
+    "QDRANT_DISTANCE": "COSINE"
+  },
+  "embedding": {
+    "EMBEDDING_PROVIDER": "openai",
+    "OPENAPI_EMBEDDING": "",
+    "OPENAI_EMBEDDING_MODEL": "text-embedding-3-small",
+    "OLLAMA_BASE_URL": "http://host.docker.internal:11434"
+  }
+}
