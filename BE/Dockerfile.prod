@@ -7,5 +7,5 @@ RUN mvn package -DskipTests -q
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-COPY --from=build /app/target/linknote-*.jar app.jar
+COPY --from=build /app/target/app.jar .
 ENTRYPOINT ["java", "-jar", "app.jar"]
