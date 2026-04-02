@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
             httpOnly: true,
             sameSite: "lax",
             path: "/",
-            secure: process.env.NODE_ENV === "production",
+            secure: process.env.COOKIE_SECURE === "true",
             maxAge: 60 * 60 * 24 * 7, // 7 天
         });
 
