@@ -12,6 +12,8 @@ import com.penguin.linknote.domain.note.NoteDTO;
 public interface NoteService {
     PageResponse<NoteDTO> indexNotes(NoteCondition condition, PageCommand pageCommand);
 
+    PageResponse<NoteDTO> listNotes(NoteCondition condition, PageCommand pageCommand);
+
     NoteDTO get(UUID noteId);
 
     List<NoteDTO> getByIds(List<UUID> noteIds);

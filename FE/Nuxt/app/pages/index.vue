@@ -4,7 +4,9 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm text-slate-400">概覽</p>
-                <h1 class="text-2xl font-semibold text-white">早安，歡迎回來</h1>
+                <h1 class="text-2xl font-semibold text-white">
+                    早安，歡迎回來
+                </h1>
             </div>
             <UButton icon="i-lucide-plus" color="accent" variant="soft">
                 新增筆記
@@ -17,8 +19,12 @@
                 <UCard class="bg-slate-900/60 border-slate-800">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-400">{{ stat.label }}</p>
-                            <p class="text-3xl font-bold mt-1">{{ stat.value }}</p>
+                            <p class="text-sm text-slate-400">
+                                {{ stat.label }}
+                            </p>
+                            <p class="text-3xl font-bold mt-1">
+                                {{ stat.value }}
+                            </p>
                         </div>
                         <div
                             class="h-10 w-10 rounded-xl bg-accent/20 text-accent flex items-center justify-center">
@@ -55,14 +61,50 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "#imports";
 import NoteCard from "~/components/ui/NoteCard.vue";
-import { useDashboardMock } from "~/composables/model/useDashboardMock";
+import { useNotebook } from "~/composables/model/useNotebook";
+import { useNote } from "~/composables/model/useNote";
+import type { Note } from "~~/types/Note";
 
 definePageMeta({ layout: "dashboard" });
 
 const router = useRouter();
-const { overview, recentNotes } = useDashboardMock();
+const { indexNotebook } = useNotebook();
+const { listNotes } = useNote();
+
+const notebookCount = ref(0);
+const noteCount = ref(0);
+const collabCount = ref(0);
+const recentNotes = ref<Note[]>([]);
+
+const overview = computed(() => [
+    {
+        label: "筆記本",
+        value: notebookCount.value,
+        icon: "i-lucide-notebook-pen",
+    },
+    { label: "筆記", value: noteCount.value, icon: "i-lucide-sticky-note" },
+    { label: "共編", value: collabCount.value, icon: "i-lucide-users" },
+]);
+
+onMounted(async () => {
+    const [notebooksRes, notesRes, collabRes, recentRes] = await Promise.all([
+        indexNotebook({ pageSize: 1 }),
+        listNotes({ pageSize: 1 }),
+        indexNotebook({ collab: true, pageSize: 1 }),
+        listNotes({
+            pageSize: 6,
+            orderBy: "updated_at",
+            orderDirection: "desc",
+        }),
+    ]);
+    notebookCount.value = notebooksRes.count;
+    noteCount.value = notesRes.count;
+    collabCount.value = collabRes.count;
+    recentNotes.value = recentRes.items;
+});
 
 function goNote(id: string) {
     router.push(`/notes/${id}`);

@@ -15,6 +15,8 @@ public interface NoteRepository {
 
     PageResponse<Note> paginate(int page, int limit, NoteCondition condition);
 
+    PageResponse<Note> paginateAll(int page, int limit, NoteCondition condition);
+
     Optional<Note> get(UUID id);
 
     Note create(Note note);

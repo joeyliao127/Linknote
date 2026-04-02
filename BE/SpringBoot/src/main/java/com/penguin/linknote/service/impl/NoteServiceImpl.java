@@ -75,6 +75,38 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
+    public PageResponse<NoteDTO> listNotes(NoteCondition condition, PageCommand pageCommand) {
+        int page = pageCommand == null || pageCommand.getPage() == null ? 1 : pageCommand.getPage();
+        int limit = pageCommand == null || pageCommand.getPageSize() == null ? 0 : pageCommand.getPageSize();
+
+        PageResponse<Note> notePage = noteRepository.paginateAll(page, limit, condition);
+
+        PageResponse<NoteDTO> response = new PageResponse<>();
+        response.setCount(notePage.getCount());
+        response.setCurrentPage(notePage.getCurrentPage());
+        response.setPageSize(notePage.getPageSize());
+        response.setTotalPage(notePage.getTotalPage());
+        List<NoteDTO> noteDTOs = notePage.getItems().stream().map(NoteDTO::fromEntity).toList();
+        response.setItems(noteDTOs);
+
+        if (noteDTOs.isEmpty()) {
+            return response;
+        }
+
+        List<UUID> noteIds = noteDTOs.stream().map(NoteDTO::getId).toList();
+        Map<UUID, List<Tag>> noteTags = noteTagsRepository.findTagsByNoteIds(noteIds);
+        noteDTOs.forEach(note -> {
+            List<TagDTO> tags = noteTags.getOrDefault(note.getId(), Collections.emptyList())
+                    .stream()
+                    .map(TagDTO::fromEntity)
+                    .toList();
+            note.setTags(tags);
+        });
+
+        return response;
+    }
+
+    @Override
     public List<NoteDTO> getByIds(List<UUID> noteIds) {
         if (noteIds == null || noteIds.isEmpty()) {
             return List.of();

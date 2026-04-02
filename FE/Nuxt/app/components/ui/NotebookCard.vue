@@ -8,7 +8,7 @@
                     </p>
                     <UBadge
                         v-if="collab"
-                        color="primary"
+                        color="accent"
                         variant="soft"
                         size="xs">
                         共編

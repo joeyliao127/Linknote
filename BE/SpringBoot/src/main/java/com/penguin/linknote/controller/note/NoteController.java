@@ -1,11 +1,14 @@
 package com.penguin.linknote.controller.note;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.penguin.linknote.common.command.PageCommand;
 import com.penguin.linknote.common.dto.ApiResponse;
+import com.penguin.linknote.common.dto.PageResponse;
 import com.penguin.linknote.domain.note.NoteCommand;
+import com.penguin.linknote.domain.note.NoteCondition;
 import com.penguin.linknote.domain.note.NoteDTO;
 import com.penguin.linknote.domain.note.NoteTagCommand;
 import com.penguin.linknote.domain.note.exception.InvalidNoteParameterException;
 import com.penguin.linknote.service.NoteInteractionService;
 import com.penguin.linknote.service.NoteService;
-
-import java.util.List;
-import java.util.Map;
 
 import jakarta.validation.Valid;
 
@@ -36,6 +39,16 @@ public class NoteController {
     public NoteController(NoteService noteService, NoteInteractionService noteInteractionService) {
         this.noteService = noteService;
         this.noteInteractionService = noteInteractionService;
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponse<NoteDTO>> listNotes(
+            @ModelAttribute NoteCondition condition,
+            PageCommand pageCommand,
+            Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
+        condition.setUserId(userId);
+        return ResponseEntity.ok(noteService.listNotes(condition, pageCommand));
     }
 
     @PostMapping("/batch")

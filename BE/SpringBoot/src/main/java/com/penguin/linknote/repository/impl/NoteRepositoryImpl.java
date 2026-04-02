@@ -114,6 +114,39 @@ public class NoteRepositoryImpl implements NoteRepository {
     }
 
     @Override
+    public PageResponse<Note> paginateAll(int page, int limit, NoteCondition condition) {
+        int normalizedPage = normalizePage(page);
+        int normalizedLimit = normalizeLimit(limit);
+
+        Map<String, Object> params = new HashMap<>();
+        List<String> conditions = buildConditionsAll(condition, params);
+
+        String whereClause = conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions);
+        Integer total = jdbcTemplate.queryForObject(BASE_COUNT + whereClause, params, Integer.class);
+        if (total == null) {
+            total = 0;
+        }
+
+        int totalPage = calculateTotalPage(total, normalizedLimit);
+
+        params.put("limit", normalizedLimit);
+        params.put("offset", (normalizedPage - 1) * normalizedLimit);
+
+        String sql = BASE_SELECT + whereClause + "\n" + buildOrderBy(condition)
+            + "\nLIMIT :limit\nOFFSET :offset";
+
+        List<Note> items = jdbcTemplate.query(sql, params, rowMapper);
+
+        PageResponse<Note> response = new PageResponse<>();
+        response.setItems(items);
+        response.setCount(total);
+        response.setCurrentPage(normalizedPage);
+        response.setPageSize(normalizedLimit);
+        response.setTotalPage(totalPage);
+        return response;
+    }
+
+    @Override
     public List<Note> findByIds(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) {
             return List.of();
@@ -200,6 +233,40 @@ public class NoteRepositoryImpl implements NoteRepository {
     public void incrementViewCount(UUID noteId) {
         String sql = "UPDATE notes SET view_count = view_count + 1 WHERE id = :noteId";
         jdbcTemplate.update(sql, Map.of("noteId", noteId));
+    }
+
+    private List<String> buildConditionsAll(NoteCondition condition, Map<String, Object> params) {
+        if (condition == null || condition.getUserId() == null) {
+            throw new InvalidNoteParameterException();
+        }
+
+        List<String> conditions = new ArrayList<>();
+        conditions.add("ra.user_id = :userId");
+        conditions.add("rs.title = :resourceType");
+
+        params.put("userId", condition.getUserId());
+        params.put("resourceType", ResourceType.NOTEBOOK.name());
+
+        if (condition.getTitle() != null && !condition.getTitle().isBlank()) {
+            conditions.add("n.title ILIKE :title");
+            params.put("title", "%" + condition.getTitle() + "%");
+        }
+        if (condition.getStar() != null) {
+            conditions.add("n.star = :star");
+            params.put("star", condition.getStar());
+        }
+        if (condition.getTagIds() != null && !condition.getTagIds().isEmpty()) {
+            conditions.add("""
+                n.id IN (
+                    SELECT nt.note_id
+                    FROM note_tags nt
+                    WHERE nt.tag_id IN (:tagIds)
+                )
+                """);
+            params.put("tagIds", condition.getTagIds());
+        }
+
+        return conditions;
     }
 
     private List<String> buildConditions(NoteCondition condition, Map<String, Object> params) {

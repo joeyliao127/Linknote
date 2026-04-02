@@ -25,7 +25,8 @@
                 <div
                     class="flex-1 flex justify-center items-center gap-x-2 overflow-hidden px-1 min-w-0">
                     <span
-                        class="text-xs text-slate-500 shrink-0 hidden sm:block">
+                        class="text-xs text-slate-500 shrink-0 hidden sm:block cursor-pointer hover:underline hover:decoration-white hover:text-white transition-colors"
+                        @click="router.push(`/notebooks/${currentNote?.notebookId}`)">
                         {{ notebookName }}
                     </span>
                     <span

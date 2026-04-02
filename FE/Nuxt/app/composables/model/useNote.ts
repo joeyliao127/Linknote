@@ -40,6 +40,18 @@ const _useNote = () => {
         return response;
     };
 
+    const listNotes = async (query?: {
+        page?: number;
+        pageSize?: number;
+        orderBy?: string;
+        orderDirection?: "asc" | "desc";
+    }): Promise<Pagination<Note>> => {
+        return await $fetch(`${runtimeConfig.public.API_URL}/notes`, {
+            method: "GET",
+            query,
+        });
+    };
+
     const getNote = async (noteId: string): Promise<Note> => {
         const response: Note = await $fetch(
             `${runtimeConfig.public.API_URL}/notes/${noteId}`,
@@ -98,6 +110,7 @@ const _useNote = () => {
 
     return {
         indexNotes,
+        listNotes,
         getNote,
         createNote,
         updateNote,
