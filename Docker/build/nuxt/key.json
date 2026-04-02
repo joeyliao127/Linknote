@@ -3,7 +3,8 @@
     "FRONTEND_PORT": "3000",
     "NUXT_AUTH_API": "",
     "NUXT_RESOURCE_API": "",
-    "NUXT_RAG_API": ""
+    "NUXT_RAG_API": "",
+    "COOKIE_SECURE": ""
   },
   "auth": {
     "AUTH_SECRET": "",
