@@ -11,17 +11,27 @@
             </UButton>
             <template #content>
                 <div
-                    class="flex w-[600px] h-[600px] rounded-xl border border-white/10 bg-[#363636]/80 backdrop-blur-sm text-slate-50 shadow-2xl overflow-hidden">
+                    class="flex w-[760px] h-[600px] rounded-xl border border-white/10 bg-[#363636]/80 backdrop-blur-sm text-slate-50 shadow-2xl overflow-hidden">
                     <div
                         class="w-48 border-r border-white/10 p-3 space-y-1 bg-black/20">
                         <template v-for="item in sections" :key="item.value">
                             <UButton
                                 block
-                                :variant="activeSection === item.value ? 'soft' : 'ghost'"
-                                :color="activeSection === item.value ? 'accent' : 'neutral'"
+                                :variant="
+                                    activeSection === item.value
+                                        ? 'soft'
+                                        : 'ghost'
+                                "
+                                :color="
+                                    activeSection === item.value
+                                        ? 'accent'
+                                        : 'neutral'
+                                "
                                 class="justify-start"
                                 @click="changeSection(item.value)">
-                                <UIcon :name="item.icon || 'i-lucide-circle'" class="w-4 h-4 mr-2" />
+                                <UIcon
+                                    :name="item.icon || 'i-lucide-circle'"
+                                    class="w-4 h-4 mr-2" />
                                 {{ item.label }}
                             </UButton>
                         </template>
@@ -32,14 +42,16 @@
                                 <p class="text-lg font-semibold">
                                     {{
                                         sections.find(
-                                            (tab) => tab.value === activeSection
+                                            (tab) =>
+                                                tab.value === activeSection,
                                         )?.label
                                     }}
                                 </p>
                                 <p class="text-sm text-slate-400">
                                     {{
                                         sections.find(
-                                            (tab) => tab.value === activeSection
+                                            (tab) =>
+                                                tab.value === activeSection,
                                         )?.description || "設定細項"
                                     }}
                                 </p>
@@ -95,7 +107,7 @@ const props = withDefaults(
             { label: "通知", value: "notification", icon: "i-lucide-bell" },
         ],
         active: "",
-    }
+    },
 );
 
 const emit = defineEmits<{
@@ -115,7 +127,7 @@ watch(
     () => props.active,
     (val) => {
         if (val) activeSection.value = val;
-    }
+    },
 );
 
 function changeSection(value: string) {

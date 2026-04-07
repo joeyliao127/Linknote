@@ -40,6 +40,8 @@ nav:
   profile: Profile
   security: Security
   notification: Notifications
+  language: Language
+  account: Account
   settingsPlaceholder: Settings form content will be injected here.
   welcomeTo: Welcome to
 
@@ -215,6 +217,28 @@ components:
 
   tiptap:
     defaultPlaceholder: Start writing...
+
+settings:
+  profile:
+    username: Username
+    email: Email
+    emailReadonly: Email cannot be changed
+    saveSuccess: Profile updated successfully
+    saveFailed: Update failed, please try again
+  security:
+    currentPassword: Current password
+    newPassword: New password
+    confirmPassword: Confirm new password
+    passwordMismatch: Passwords do not match
+    wrongPassword: Current password is incorrect
+    saveSuccess: Password updated successfully
+    saveFailed: Update failed, please try again
+  language:
+    description: Select interface language
+  account:
+    deleteTitle: Delete Account
+    deleteWarning: This action cannot be undone. All your data will be permanently deleted.
+    deleteConfirmBtn: Confirm Delete
 
   notebookForm:
     nameLabel: Name

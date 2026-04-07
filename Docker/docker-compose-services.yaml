@@ -20,6 +20,8 @@ services:
             POSTGRES_DB: ${POSTGRES_DB}
         volumes:
             - ../Database/data:/var/lib/postgresql/data
+            - ../Database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+            - ../Database/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
         networks:
             project_net:
                 ipv4_address: ${POSTGRES_HOST}

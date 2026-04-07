@@ -9,6 +9,13 @@ export default defineAppConfig({
             slots: {
                 base: ["justify-center font-bold rounded "],
             },
+            compoundVariants: [
+                {
+                    color: "primary",
+                    variant: "solid",
+                    class: "text-white",
+                },
+            ],
         },
         select: {
             slots: {
@@ -27,6 +34,15 @@ export default defineAppConfig({
         toast: {
             slots: {
                 root: "!bg-[#363636]/80 backdrop-blur-sm border border-white/10 shadow-xl",
+            },
+        },
+        modal: {
+            variants: {
+                fullscreen: {
+                    false: {
+                        content: "w-[calc(100vw-2rem)] max-w-none rounded-lg shadow-lg ring ring-default",
+                    },
+                },
             },
         },
         card: {

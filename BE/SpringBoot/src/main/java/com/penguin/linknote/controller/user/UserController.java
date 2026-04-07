@@ -3,10 +3,15 @@ package com.penguin.linknote.controller.user;
 import java.net.URI;
 import java.util.Map;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.penguin.linknote.domain.auth.AuthClaim;
+import com.penguin.linknote.domain.user.UserChangePasswordCommand;
 import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.domain.user.UserSignInCommand;
+import com.penguin.linknote.domain.user.UserUpdateProfileCommand;
 import com.penguin.linknote.service.JWTService;
 import com.penguin.linknote.service.UserService;
 
@@ -61,7 +68,44 @@ public class UserController {
 
     @GetMapping("/token")
     public ResponseEntity<AuthClaim> signIn(@RequestHeader("Authorization") String authorization) {
-        
         return ResponseEntity.ok(jwtService.parseBearerToken(authorization.toString()));
+    }
+
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<UserDTO> updateProfile(
+            @PathVariable UUID id,
+            @RequestBody @Valid UserUpdateProfileCommand cmd,
+            @RequestHeader("Authorization") String authorization) {
+        AuthClaim claim = jwtService.parseBearerToken(authorization);
+        if (!claim.getUserId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        UserDTO result = userService.updateProfile(id, cmd);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable UUID id,
+            @RequestBody @Valid UserChangePasswordCommand cmd,
+            @RequestHeader("Authorization") String authorization) {
+        AuthClaim claim = jwtService.parseBearerToken(authorization);
+        if (!claim.getUserId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        userService.changePassword(id, cmd);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable UUID id,
+            @RequestHeader("Authorization") String authorization) {
+        AuthClaim claim = jwtService.parseBearerToken(authorization);
+        if (!claim.getUserId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

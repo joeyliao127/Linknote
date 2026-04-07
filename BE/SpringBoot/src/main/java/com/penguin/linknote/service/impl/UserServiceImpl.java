@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.penguin.linknote.domain.user.UserChangePasswordCommand;
 import com.penguin.linknote.domain.user.UserCreateCommand;
 import com.penguin.linknote.domain.user.UserDTO;
 import com.penguin.linknote.domain.user.UserSignInCommand;
+import com.penguin.linknote.domain.user.UserUpdateProfileCommand;
 import com.penguin.linknote.domain.user.exception.BadCredentialsException;
 import com.penguin.linknote.domain.user.exception.EmailAlreadyExistException;
 import com.penguin.linknote.entity.User;
@@ -20,9 +23,11 @@ import com.penguin.linknote.service.UserService;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -68,22 +73,57 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserCreateCommand userCreateCommand) {
-        return null;
+    public UserDTO updateProfile(UUID userId, UserUpdateProfileCommand cmd) {
+        Optional<User> existUser = userRepository.get(userId);
+        if (existUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = existUser.get();
+        user.setUsername(cmd.getUsername());
+        user.setUpdatedAt(Instant.now());
+        User updated = userRepository.update(user);
+        return UserDTO.fromEntity(updated);
     }
 
     @Override
-    public UserDTO deleteUser(UUID userId) {
-        return null;
+    public void changePassword(UUID userId, UserChangePasswordCommand cmd) {
+        Optional<User> existUser = userRepository.get(userId);
+        if (existUser.isEmpty()) {
+            throw new BadCredentialsException("User not found");
+        }
+        User user = existUser.get();
+        String stored = user.getPassword();
+        boolean valid = stored.startsWith("$2a$") || stored.startsWith("$2b$")
+            ? passwordEncoder.matches(cmd.getOldPassword(), stored)
+            : stored.equals(cmd.getOldPassword());
+        if (!valid) {
+            throw new BadCredentialsException("Current password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(cmd.getNewPassword()));
+        user.setUpdatedAt(Instant.now());
+        userRepository.update(user);
+    }
+
+    @Override
+    public void deleteUser(UUID userId) {
+        userRepository.delete(userId);
     }
 
     @Override
     public UserDTO verifyUser(UserSignInCommand command) {
-        Optional<User> existUser = userRepository.findByEmailAndPassword(command.getEmail(), command.getPassword());
-        if(existUser.isEmpty()) {
+        Optional<User> existUser = userRepository.findByEmail(command.getEmail());
+        if (existUser.isEmpty()) {
             throw new BadCredentialsException("Email or password is incorrect");
         }
-        return UserDTO.fromEntity(existUser.get());
+        User user = existUser.get();
+        String stored = user.getPassword();
+        boolean valid = stored.startsWith("$2a$") || stored.startsWith("$2b$")
+            ? passwordEncoder.matches(command.getPassword(), stored)
+            : stored.equals(command.getPassword());
+        if (!valid) {
+            throw new BadCredentialsException("Email or password is incorrect");
+        }
+        return UserDTO.fromEntity(user);
     }
 
     @Override

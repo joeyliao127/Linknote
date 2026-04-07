@@ -1,7 +1,6 @@
 import { defineNuxtConfig } from "nuxt/config";
 import tailwindcss from "@tailwindcss/vite";
 
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2025-05-15",
@@ -29,6 +28,9 @@ export default defineNuxtConfig({
     },
 
     devtools: { enabled: true },
+    devServer: {
+        host: "0.0.0.0",
+    },
     modules: [
         "@nuxtjs/i18n",
         "@nuxt/ui",
@@ -60,8 +62,8 @@ export default defineNuxtConfig({
         },
     },
     i18n: {
-        defaultLocale: "zh",
-        langDir: "i18n/locales/",
+        defaultLocale: "en",
+        // langDir: "../i18n/locales/",
         locales: [
             { code: "en", language: "en-US", file: "en.yaml" },
             { code: "zh", language: "zh-TW", file: "zh.yaml" },
@@ -75,7 +77,7 @@ export default defineNuxtConfig({
         plugins: [tailwindcss()],
         server: {
             // TODO: Domain 改為 project name
-            allowedHosts: ["nuxt", "linknote.local.com"],
+            allowedHosts: ["nuxt", "linknote.local.com", "localhost"],
         },
         hmr: {
             protocol: "ws",

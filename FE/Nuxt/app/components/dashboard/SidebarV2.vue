@@ -155,14 +155,14 @@
                     @change="activeSettings = $event"
                     @close="settingsOpen = false">
                     <template #content="{ section }">
-                        <slot name="settings-content" :section="section">
-                            <p class="text-sm text-slate-400">
-                                {{ $t('nav.settingsPlaceholder') }}
-                            </p>
-                        </slot>
-                    </template>
-                    <template #footer="{ close }">
-                        <slot name="settings-footer" :close="close" />
+                        <SettingsProfile
+                            v-if="section === 'profile'"
+                            :username="userInfo?.username ?? ''"
+                            :email="userInfo?.email ?? ''"
+                            @saved="(name) => { if (userInfo) userInfo.username = name }" />
+                        <SettingsSecurity v-else-if="section === 'security'" />
+                        <SettingsLanguage v-else-if="section === 'language'" />
+                        <SettingsAccount v-else-if="section === 'account'" />
                     </template>
                 </SettingsModal>
             </div>
@@ -217,7 +217,8 @@ const resolvedSections = computed(() =>
         : [
               { label: t('nav.profile'), value: "profile", icon: "i-lucide-user" },
               { label: t('nav.security'), value: "security", icon: "i-lucide-shield" },
-              { label: t('nav.notification'), value: "notification", icon: "i-lucide-bell" },
+              { label: t('nav.language'), value: "language", icon: "i-lucide-languages" },
+              { label: t('nav.account'), value: "account", icon: "i-lucide-circle-user" },
           ],
 );
 

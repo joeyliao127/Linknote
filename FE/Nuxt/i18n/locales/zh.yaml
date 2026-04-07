@@ -40,6 +40,8 @@ nav:
   profile: 個人資料
   security: 帳號安全
   notification: 通知
+  language: 語言
+  account: 帳號
   settingsPlaceholder: 此處預留設定表單內容（由外部頁面注入或後續補充）。
   welcomeTo: 歡迎使用
 
@@ -215,6 +217,28 @@ components:
 
   tiptap:
     defaultPlaceholder: 開始輸入...
+
+settings:
+  profile:
+    username: 使用者名稱
+    email: 電子郵件
+    emailReadonly: 電子郵件無法修改
+    saveSuccess: 個人資料已更新
+    saveFailed: 更新失敗，請稍後再試
+  security:
+    currentPassword: 目前密碼
+    newPassword: 新密碼
+    confirmPassword: 確認新密碼
+    passwordMismatch: 新密碼與確認密碼不符
+    wrongPassword: 目前密碼錯誤
+    saveSuccess: 密碼已更新
+    saveFailed: 更新失敗，請稍後再試
+  language:
+    description: 選擇介面語言
+  account:
+    deleteTitle: 刪除帳號
+    deleteWarning: 此操作無法復原，所有資料將永久刪除。
+    deleteConfirmBtn: 確認刪除
 
   notebookForm:
     nameLabel: 名稱
