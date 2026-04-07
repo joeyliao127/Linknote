@@ -1,2 +1,226 @@
 zh: 繁體中文
 en: English
+
+common:
+  save: 儲存
+  cancel: 取消
+  delete: 刪除
+  confirm: 確認
+  create: 建立
+  edit: 編輯
+  search: 搜尋
+  loadMore: 載入更多
+  noMore: 沒有更多
+  note: 筆記
+  notebook: 筆記本
+  tag: 標籤
+  collab: 共編
+  signOut: 登出
+  saving: 儲存中...
+  saved: 已儲存 ✓
+  retryLater: 請稍後再試
+  back: 返回
+  send: 發送
+  accept: 接受
+  reject: 拒絕
+  view: 查看
+
+nav:
+  overview: 概覽
+  aiKnowledgeBase: AI 個人知識庫
+  myNotebooks: 我的筆記本
+  collabNotebooks: 共編筆記本
+  invitationsManagement: 邀請管理
+  ragKnowledgeBase: RAG 知識庫
+  newNotebook: 新增筆記本
+  loadMore: 載入更多
+  noMoreNotebooks: 沒有更多筆記本
+  noNotebooks: 尚無筆記本
+  knowledgeNetwork: 知識網絡
+  profile: 個人資料
+  security: 帳號安全
+  notification: 通知
+  settingsPlaceholder: 此處預留設定表單內容（由外部頁面注入或後續補充）。
+  welcomeTo: 歡迎使用
+
+pages:
+  index:
+    breadcrumb: 概覽
+    greeting: 早安，歡迎回來
+    addNote: 新增筆記
+    recentNotes: 最近開啟的筆記
+    recentNotesDesc: 點擊可快速前往筆記內容
+    viewAll: 查看全部
+    statNotebook: 筆記本
+    statNote: 筆記
+    statCollab: 共編
+
+  signIn:
+    tagline: 與夥伴協作
+    buildBrain: 建立你的第二大腦
+    withCode: 以
+    method: 方法
+    signInTitle: 登入
+    signUpTitle: 註冊
+    email: 電子郵件
+    password: 密碼
+    username: 使用者名稱
+    confirmPassword: 確認密碼
+    signInBtn: 登入
+    signUpBtn: 註冊
+    noAccount: 還沒有帳號？點擊
+    register: 註冊
+    backTo: 返回
+    signinLink: 登入
+    passwordMismatch: 密碼與確認密碼不符
+    signUpFailed: 註冊失敗，請稍後再試
+
+  notebooks:
+    breadcrumb: 筆記本
+    title: 所有筆記本
+    searchPlaceholder: 搜尋筆記本
+    addNotebook: 新增筆記本
+    noMore: 沒有更多筆記本
+    loadMore: 載入更多
+
+  notebookCreate:
+    breadcrumb: 筆記本
+    title: 建立新的筆記本
+    cardTitle: 填寫筆記本資訊
+    createSuccess: 建立成功
+    createFailed: 建立失敗
+
+  notebookNotes:
+    addDesc: 點擊新增描述
+    descPlaceholder: 輸入描述...
+    notesLabel: Notes
+    untitledNote: 未命名筆記
+    loadMore: 載入更多
+    noMore: 沒有更多筆記
+
+  notes:
+    addTags: 新增標籤
+    dualEditor: 雙欄編輯
+    singleEditor: 單欄編輯
+    tableOfContents: 目錄
+    deleteNote: 刪除筆記
+    question: Question
+    questionHint: Why are we writing this note?
+    questionPlaceholder: Why are we writing this note...
+    contentCapture: Content / Capture
+    distillKeypoints: Distill / Keypoints
+    contentPlaceholder: 開始輸入...
+    distillPlaceholder: 重點摘要... (Distill)
+    deleteConfirm: 確定要刪除這篇筆記嗎？此操作無法復原。
+    deleteTitle: 刪除筆記
+    deleteSuccess: 筆記已成功刪除
+
+  invitations:
+    breadcrumb: 協作
+    title: 邀請管理
+    received: 收到的邀請
+    sent: 寄出的邀請
+    sendInvitation: 發送邀請
+    sendModal: 發送筆記本邀請
+    inviteeEmail: 受邀者 Email
+    notebook: 筆記本
+    message: 訊息（選填）
+    messagePlaceholder: 附帶訊息...
+    notebookPlaceholder: 選擇筆記本
+    colNotebook: 筆記本
+    colInviter: 邀請人
+    colMessage: 訊息
+    colStatus: 狀態
+    colInvitee: 受邀者
+    statusPending: 待接受
+    statusAccepted: 已接受
+    statusRejected: 已拒絕
+    statusResend: 重新邀請
+    toastAccepted: 已接受邀請
+    toastRejected: 已拒絕邀請
+    toastActionFailed: 操作失敗，請稍後再試
+    toastDeleted: 邀請已刪除
+    toastDeleteFailed: 刪除失敗，請稍後再試
+    toastSent: 邀請已發送
+    toastSendFailed: 發送失敗，請確認 Email 是否存在
+
+  coNotebooks:
+    breadcrumb: 協作
+    title: 共編筆記本
+    empty: 尚無共編筆記本
+    emptyHint: 接受邀請後，筆記本將會顯示在這裡
+
+  rag:
+    breadcrumb: AI 功能
+    title: 筆記 RAG 管理
+    addRag: 加入 RAG
+    addRagBtn: 加入 RAG（{count}）
+    notebookPlaceholder: 選擇筆記本
+    selectNotebookFirst: 請先選擇筆記本
+    ragStatus: RAG 筆記狀態
+    colNote: 筆記名稱
+    colNoteUpdated: 筆記更新日期
+    colRagUpdated: RAG 建立日期
+    colStatus: 狀態
+    colDate: 更新日期
+    deleted: （已刪除）
+    removeConfirmTitle: 確認從知識庫移除
+    removeConfirm: 確定要將 {title} 從 RAG 知識庫中移除嗎？此操作不會刪除原始筆記。
+    thisNote: 此筆記
+    removeConfirmBtn: 確認移除
+    statusUpToDate: 已是最新
+    statusOutdated: 落後 {days} 天
+    statusDeleted: 已刪除
+    ingestSuccess: RAG 建立成功
+    ingestSuccessDesc: 已成功儲存 {count} 篇筆記至知識庫
+    ingestFailed: RAG 建立失敗
+    removeSuccess: 已從知識庫移除
+    removeFailed: 移除失敗，請稍後再試
+
+components:
+  notebookCard:
+    collab: 共編
+    noDescription: 尚未填寫描述
+    descPlaceholder: 輸入描述...
+    deleteConfirm: 確定要刪除筆記本「{title}」？此操作無法復原。
+    noteCount: '{count} 筆記'
+
+  noteCard:
+    star: 收藏
+    deleteNote: 刪除筆記
+    view: 查看
+    updated: 更新 {date}
+    deleteConfirm: 確定要刪除筆記「{title}」？此操作無法復原。
+
+  noteToolbar:
+    createNote: 建立未命名筆記
+    clearFilters: 清除所有篩選
+    starOnly: 僅顯示收藏
+    sortByDate: 切換排序（更新時間）
+    keyword: 關鍵字
+    deleteNotebook: 刪除筆記本
+    deleteNotebookConfirm: 確定要刪除此筆記本？此操作無法復原。
+
+  tagForm:
+    title: 標籤
+    noTags: 尚無標籤
+    addTagPlaceholder: 新增標籤
+
+  noteSidebar:
+    searchPlaceholder: 搜尋筆記
+    new: 新增
+    noNotes: 無筆記
+    untitled: （未命名）
+    signOut: 登出
+
+  tiptap:
+    defaultPlaceholder: 開始輸入...
+
+  notebookForm:
+    nameLabel: 名稱
+    namePlaceholder: 輸入筆記本名稱
+    descLabel: 描述
+    descPlaceholder: 描述這本筆記本的用途
+    active: 啟用
+    nameRequired: 筆記本名稱不能為空值
+    defaultSubmit: 建立筆記本

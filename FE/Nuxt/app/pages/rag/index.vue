@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm text-slate-400">AI 功能</p>
-                <h1 class="text-2xl font-semibold text-white">筆記 RAG 管理</h1>
+                <p class="text-sm text-slate-400">{{ $t('pages.rag.breadcrumb') }}</p>
+                <h1 class="text-2xl font-semibold text-white">{{ $t('pages.rag.title') }}</h1>
             </div>
         </div>
 
@@ -12,12 +12,12 @@
         <UCard class="bg-slate-900/60 border-slate-800">
             <template #header>
                 <div class="flex items-center justify-between">
-                    <p class="font-semibold">加入 RAG</p>
+                    <p class="font-semibold">{{ $t('pages.rag.addRag') }}</p>
                     <div class="flex items-center gap-3">
                         <USelect
                             v-model="selectedNotebookId"
                             :items="notebookOptions"
-                            placeholder="選擇筆記本"
+                            :placeholder="$t('pages.rag.notebookPlaceholder')"
                             class="w-64"
                             @update:model-value="onNotebookChange" />
                         <UButton
@@ -27,7 +27,7 @@
                             class="text-white"
                             icon="i-lucide-brain"
                             @click="handleIngest">
-                            加入 RAG（{{ selectedNoteIds.size }}）
+                            {{ $t('pages.rag.addRagBtn', { count: selectedNoteIds.size }) }}
                         </UButton>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                                 ? 'text-slate-500'
                                 : ''
                         ">
-                        {{ row.original.title || "未命名" }}
+                        {{ row.original.title || $t('pages.notebookNotes.untitledNote') }}
                     </span>
                 </template>
                 <template #updatedAt-cell="{ row }">
@@ -63,7 +63,7 @@
                 </template>
             </UTable>
             <p v-else class="text-sm text-slate-500 py-6 text-center">
-                請先選擇筆記本
+                {{ $t('pages.rag.selectNotebookFirst') }}
             </p>
         </UCard>
 
@@ -71,7 +71,7 @@
         <UCard class="bg-slate-900/60 border-slate-800">
             <template #header>
                 <div class="flex items-center justify-between">
-                    <p class="font-semibold">RAG 筆記狀態</p>
+                    <p class="font-semibold">{{ $t('pages.rag.ragStatus') }}</p>
                     <UButton
                         v-if="selectedNotebookId"
                         variant="ghost"
@@ -94,7 +94,7 @@
                                 ? 'line-through text-slate-500'
                                 : ''
                         ">
-                        {{ row.original.noteTitle ?? "（已刪除）" }}
+                        {{ row.original.noteTitle ?? $t('pages.rag.deleted') }}
                     </span>
                 </template>
                 <template #noteUpdatedAt-cell="{ row }">
@@ -138,15 +138,11 @@
         <!-- 刪除確認 Dialog -->
         <UModal v-model:open="confirmOpen" :dismissible="false">
             <template #header>
-                <p class="font-semibold">確認從知識庫移除</p>
+                <p class="font-semibold">{{ $t('pages.rag.removeConfirmTitle') }}</p>
             </template>
             <template #body>
                 <p class="text-sm text-slate-300">
-                    確定要將
-                    <span class="font-medium text-white">
-                        {{ confirmTarget?.noteTitle ?? "此筆記" }}
-                    </span>
-                    從 RAG 知識庫中移除嗎？此操作不會刪除原始筆記。
+                    {{ $t('pages.rag.removeConfirm', { title: confirmTarget?.noteTitle ?? $t('pages.rag.thisNote') }) }}
                 </p>
             </template>
             <template #footer>
@@ -155,13 +151,13 @@
                         variant="ghost"
                         color="neutral"
                         @click="confirmOpen = false">
-                        取消
+                        {{ $t('common.cancel') }}
                     </UButton>
                     <UButton
                         color="red"
                         :loading="deletingNoteId !== null"
                         @click="confirmDelete">
-                        確認移除
+                        {{ $t('pages.rag.removeConfirmBtn') }}
                     </UButton>
                 </div>
             </template>
@@ -177,6 +173,7 @@ import type { RagNote } from "~~/types/RagNote";
 
 definePageMeta({ layout: "dashboard" });
 
+const { t } = useI18n();
 const toast = useToast();
 const { indexNotebook } = useNotebook();
 const { ingest, getRagNotes } = useRag();
@@ -205,19 +202,19 @@ function isNoteDisabled(noteId: string) {
     return ragStatusMap.value.get(noteId) === "up_to_date";
 }
 
-const noteColumns = [
+const noteColumns = computed(() => [
     { id: "select", header: "" },
-    { accessorKey: "title", header: "筆記名稱" },
-    { accessorKey: "updatedAt", header: "更新日期" },
-];
+    { accessorKey: "title", header: t('pages.rag.colNote') },
+    { accessorKey: "updatedAt", header: t('pages.rag.colDate') },
+]);
 
-const ragColumns = [
-    { accessorKey: "noteTitle", header: "筆記名稱" },
-    { accessorKey: "noteUpdatedAt", header: "筆記更新日期" },
-    { accessorKey: "ragUpdatedAt", header: "RAG 建立日期" },
-    { accessorKey: "status", header: "狀態" },
+const ragColumns = computed(() => [
+    { accessorKey: "noteTitle", header: t('pages.rag.colNote') },
+    { accessorKey: "noteUpdatedAt", header: t('pages.rag.colNoteUpdated') },
+    { accessorKey: "ragUpdatedAt", header: t('pages.rag.colRagUpdated') },
+    { accessorKey: "status", header: t('pages.rag.colStatus') },
     { id: "action", header: "" },
-];
+]);
 
 async function loadNotebooks() {
     const res = await indexNotebook({ page: 1, pageSize: 50 });
@@ -266,14 +263,14 @@ async function handleIngest() {
         selectedNoteIds.value.clear();
         await loadRagNotes();
         toast.add({
-            title: "RAG 建立成功",
-            description: `已成功儲存 ${count} 篇筆記至知識庫`,
+            title: t('pages.rag.ingestSuccess'),
+            description: t('pages.rag.ingestSuccessDesc', { count }),
             color: "success",
         });
     } catch {
         toast.add({
-            title: "RAG 建立失敗",
-            description: "請稍後再試",
+            title: t('pages.rag.ingestFailed'),
+            description: t('common.retryLater'),
             color: "error",
         });
     } finally {
@@ -294,9 +291,9 @@ async function confirmDelete() {
     try {
         await $fetch(`/api/rag/notes/${noteId}`, { method: "DELETE" });
         await loadRagNotes();
-        toast.add({ title: "已從知識庫移除", color: "success" });
+        toast.add({ title: t('pages.rag.removeSuccess'), color: "success" });
     } catch {
-        toast.add({ title: "移除失敗，請稍後再試", color: "error" });
+        toast.add({ title: t('pages.rag.removeFailed'), color: "error" });
     } finally {
         deletingNoteId.value = null;
         confirmTarget.value = null;
@@ -320,9 +317,9 @@ function statusColor(status: string) {
 }
 
 function statusLabel(status: string, behindDays: number) {
-    if (status === "up_to_date") return "已是最新";
-    if (status === "outdated") return `落後 ${behindDays} 天`;
-    return "已刪除";
+    if (status === "up_to_date") return t('pages.rag.statusUpToDate');
+    if (status === "outdated") return t('pages.rag.statusOutdated', { days: behindDays });
+    return t('pages.rag.statusDeleted');
 }
 
 onMounted(() => {

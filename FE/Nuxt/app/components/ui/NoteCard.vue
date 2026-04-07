@@ -16,7 +16,7 @@
                         v-html="description"
                         class="text-xs text-slate-400 line-clamp-2 my-3"></p>
                 </div>
-                <UTooltip text="收藏">
+                <UTooltip :text="$t('components.noteCard.star')">
                     <UButton
                         color="neutral"
                         variant="ghost"
@@ -54,11 +54,11 @@
                 class="mt-1 flex items-center justify-between text-xs text-slate-400">
                 <div class="flex gap-x-2">
                     <UIcon name="i-lucide-clock-3" class="w-4 h-4" />
-                    <span v-if="updatedAt">更新 {{ formattedUpdatedAt }}</span>
+                    <span v-if="updatedAt">{{ $t('components.noteCard.updated', { date: formattedUpdatedAt }) }}</span>
                 </div>
 
                 <div class="flex items-center gap-2 ml-auto">
-                    <UTooltip text="刪除筆記">
+                    <UTooltip :text="$t('components.noteCard.deleteNote')">
                         <UButton
                             icon="i-lucide-trash-2"
                             color="red"
@@ -72,7 +72,7 @@
                         size="sm"
                         icon-right="i-lucide-arrow-right"
                         @click="$emit('open', id)">
-                        查看
+                        {{ $t('components.noteCard.view') }}
                     </UButton>
                 </div>
             </div>
@@ -83,6 +83,8 @@
 import { computed } from "vue";
 import type { Tag } from "~~/types/Tag";
 import { useDialogs } from "~/composables/useDialogs";
+
+const { t } = useI18n();
 
 const props = withDefaults(
     defineProps<{
@@ -111,7 +113,7 @@ const { confirm } = useDialogs();
 
 function confirmDelete() {
     confirm(
-        `確定要刪除筆記「${props.title}」？此操作無法復原。`,
+        t('components.noteCard.deleteConfirm', { title: props.title }),
         undefined,
         () => emit("delete", props.id),
     );

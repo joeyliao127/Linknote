@@ -38,7 +38,7 @@
             <div class="px-3 py-2 border-b border-slate-700/50 shrink-0">
                 <UInput
                     v-model="searchKeyword"
-                    placeholder="Search note"
+                    :placeholder="$t('components.noteSidebar.searchPlaceholder')"
                     size="sm"
                     class="w-full"
                     :trailing-icon="'i-lucide-search'" />
@@ -58,7 +58,7 @@
                     color="primary"
                     class="shrink-0 text-white font-semibold"
                     @click="handleCreateNote">
-                    New
+                    {{ $t('components.noteSidebar.new') }}
                 </UButton>
 
                 <!-- Filter popover -->
@@ -114,7 +114,7 @@
                         ]"
                         @click="handleNoteSelect(note.id)">
                         <span class="flex-1 truncate text-left">
-                            {{ note.title || "(Untitled)" }}
+                            {{ note.title || $t('components.noteSidebar.untitled') }}
                         </span>
                         <StarButton
                             :id="note.id"
@@ -126,7 +126,7 @@
                     <p
                         v-if="!isLoading && notes.length === 0"
                         class="text-center text-xs text-slate-600 italic py-6">
-                        No notes found
+                        {{ $t('components.noteSidebar.noNotes') }}
                     </p>
 
                     <!-- Loading spinner -->
@@ -155,7 +155,7 @@
                     icon="i-lucide-log-out"
                     class="text-white font-semibold"
                     @click="handleSignOut">
-                    SignOut
+                    {{ $t('components.noteSidebar.signOut') }}
                 </UButton>
             </div>
         </aside>

@@ -11,7 +11,7 @@
                         color="accent"
                         variant="soft"
                         size="xs">
-                        共編
+                        {{ $t('components.notebookCard.collab') }}
                     </UBadge>
                 </div>
                 <div
@@ -19,13 +19,13 @@
                     class="py-1 pl-2 rounded cursor-pointer transition-colors border border-transparent hover:bg-white/5 hover:border-accent/30"
                     @click.stop="startEditingDesc">
                     <p class="text-sm text-slate-400 line-clamp-2">
-                        {{ description || "尚未填寫描述" }}
+                        {{ description || $t('components.notebookCard.noDescription') }}
                     </p>
                 </div>
                 <div v-else class="flex flex-col gap-2" @click.stop>
                     <UInput
                         v-model="editingDesc"
-                        placeholder="輸入描述..."
+                        :placeholder="$t('components.notebookCard.descPlaceholder')"
                         class="w-full"
                         :ui="{
                             base: 'bg-transparent border border-accent rounded text-slate-50/90 text-sm placeholder:text-slate-200/40 transition-colors',
@@ -38,14 +38,14 @@
                             variant="soft"
                             color="accent"
                             @click="saveDescription">
-                            儲存
+                            {{ $t('common.save') }}
                         </UButton>
                         <UButton
                             size="xs"
                             variant="ghost"
                             color="secondary"
                             @click="cancelEdit">
-                            取消
+                            {{ $t('common.cancel') }}
                         </UButton>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                 icon="i-lucide-trash-2"
                 class="relative -bottom-1 -left-3"
                 @click.stop="confirmDelete">
-                刪除
+                {{ $t('common.delete') }}
             </UButton>
 
             <div class="flex-1" />
@@ -78,7 +78,7 @@
                 class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-400">
                 <div class="flex items-center gap-1">
                     <UIcon name="i-lucide-notebook-pen" class="w-4 h-4" />
-                    <span>{{ noteCount ?? 0 }} 筆記</span>
+                    <span>{{ $t('components.notebookCard.noteCount', { count: noteCount ?? 0 }) }}</span>
                 </div>
                 <div v-if="owner" class="flex items-center gap-1">
                     <UIcon name="i-lucide-user" class="w-4 h-4" />
@@ -96,6 +96,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useDialogs } from "~/composables/useDialogs";
+
+const { t } = useI18n();
 
 const props = withDefaults(
     defineProps<{
@@ -128,7 +130,7 @@ const { confirm } = useDialogs();
 
 function confirmDelete() {
     confirm(
-        `確定要刪除筆記本「${props.title}」？此操作無法復原。`,
+        t('components.notebookCard.deleteConfirm', { title: props.title }),
         undefined,
         () => emit("delete", props.id),
     );

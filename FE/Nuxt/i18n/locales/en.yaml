@@ -1,2 +1,226 @@
 zh: 繁體中文
 en: English
+
+common:
+  save: Save
+  cancel: Cancel
+  delete: Delete
+  confirm: Confirm
+  create: Create
+  edit: Edit
+  search: Search
+  loadMore: Load more
+  noMore: No more
+  note: Note
+  notebook: Notebook
+  tag: Tag
+  collab: Collaborative
+  signOut: Sign out
+  saving: Saving...
+  saved: Saved ✓
+  retryLater: Please try again later
+  back: Back
+  send: Send
+  accept: Accept
+  reject: Reject
+  view: View
+
+nav:
+  overview: Overview
+  aiKnowledgeBase: AI Knowledge Base
+  myNotebooks: My Notebooks
+  collabNotebooks: Collaborative Notebooks
+  invitationsManagement: Invitations Management
+  ragKnowledgeBase: RAG Knowledge Base
+  newNotebook: New Notebook
+  loadMore: Load more
+  noMoreNotebooks: No more notebooks
+  noNotebooks: No notebooks yet
+  knowledgeNetwork: Knowledge Network
+  profile: Profile
+  security: Security
+  notification: Notifications
+  settingsPlaceholder: Settings form content will be injected here.
+  welcomeTo: Welcome to
+
+pages:
+  index:
+    breadcrumb: Overview
+    greeting: Good morning, welcome back
+    addNote: New Note
+    recentNotes: Recently Opened Notes
+    recentNotesDesc: Click to navigate to note
+    viewAll: View All
+    statNotebook: Notebooks
+    statNote: Notes
+    statCollab: Collaborative
+
+  signIn:
+    tagline: Collaborate with partners
+    buildBrain: Build your second brain
+    withCode: with
+    method: Method.
+    signInTitle: Sign In
+    signUpTitle: Sign Up
+    email: Email
+    password: Password
+    username: Username
+    confirmPassword: Confirm Your Password
+    signInBtn: Sign In
+    signUpBtn: Sign Up
+    noAccount: "Don't have an account? Click"
+    register: Register
+    backTo: Back to
+    signinLink: Sign in
+    passwordMismatch: Passwords do not match
+    signUpFailed: Registration failed, please try again
+
+  notebooks:
+    breadcrumb: Notebooks
+    title: All Notebooks
+    searchPlaceholder: Search notebooks
+    addNotebook: New Notebook
+    noMore: No more notebooks
+    loadMore: Load more
+
+  notebookCreate:
+    breadcrumb: Notebooks
+    title: Create New Notebook
+    cardTitle: Fill in notebook info
+    createSuccess: Created successfully
+    createFailed: Failed to create
+
+  notebookNotes:
+    addDesc: Click to add description
+    descPlaceholder: Enter description...
+    notesLabel: Notes
+    untitledNote: Untitled Note
+    loadMore: Load more
+    noMore: No more notes
+
+  notes:
+    addTags: Add tags
+    dualEditor: Dual editor
+    singleEditor: Single editor
+    tableOfContents: Table of contents
+    deleteNote: Delete note
+    question: Question
+    questionHint: Why are we writing this note?
+    questionPlaceholder: Why are we writing this note...
+    contentCapture: Content / Capture
+    distillKeypoints: Distill / Keypoints
+    contentPlaceholder: Start writing...
+    distillPlaceholder: Key takeaways... (Distill)
+    deleteConfirm: Are you sure you want to delete this note? This action cannot be undone.
+    deleteTitle: Delete Note
+    deleteSuccess: Note deleted successfully
+
+  invitations:
+    breadcrumb: Collaboration
+    title: Invitation Management
+    received: Received Invitations
+    sent: Sent Invitations
+    sendInvitation: Send Invitation
+    sendModal: Send Notebook Invitation
+    inviteeEmail: Invitee Email
+    notebook: Notebook
+    message: Message (optional)
+    messagePlaceholder: Additional message...
+    notebookPlaceholder: Select notebook
+    colNotebook: Notebook
+    colInviter: Inviter
+    colMessage: Message
+    colStatus: Status
+    colInvitee: Invitee
+    statusPending: Pending
+    statusAccepted: Accepted
+    statusRejected: Rejected
+    statusResend: Resend
+    toastAccepted: Invitation accepted
+    toastRejected: Invitation rejected
+    toastActionFailed: Action failed, please try again
+    toastDeleted: Invitation deleted
+    toastDeleteFailed: Failed to delete, please try again
+    toastSent: Invitation sent
+    toastSendFailed: Failed to send, please verify the email
+
+  coNotebooks:
+    breadcrumb: Collaboration
+    title: Collaborative Notebooks
+    empty: No collaborative notebooks yet
+    emptyHint: Notebooks will appear here after accepting an invitation
+
+  rag:
+    breadcrumb: AI Features
+    title: Note RAG Management
+    addRag: Add to RAG
+    addRagBtn: Add to RAG ({count})
+    notebookPlaceholder: Select notebook
+    selectNotebookFirst: Please select a notebook first
+    ragStatus: RAG Note Status
+    colNote: Note Name
+    colNoteUpdated: Note Updated
+    colRagUpdated: RAG Created
+    colStatus: Status
+    colDate: Updated Date
+    deleted: (Deleted)
+    removeConfirmTitle: Confirm Removal from Knowledge Base
+    removeConfirm: Are you sure you want to remove {title} from the RAG knowledge base? This will not delete the original note.
+    thisNote: this note
+    removeConfirmBtn: Confirm Remove
+    statusUpToDate: Up to date
+    statusOutdated: '{days} days behind'
+    statusDeleted: Deleted
+    ingestSuccess: RAG created successfully
+    ingestSuccessDesc: Successfully saved {count} notes to knowledge base
+    ingestFailed: Failed to create RAG
+    removeSuccess: Removed from knowledge base
+    removeFailed: Failed to remove, please try again
+
+components:
+  notebookCard:
+    collab: Collaborative
+    noDescription: No description
+    descPlaceholder: Enter description...
+    deleteConfirm: 'Are you sure you want to delete notebook "{title}"? This action cannot be undone.'
+    noteCount: '{count} notes'
+
+  noteCard:
+    star: Favorite
+    deleteNote: Delete note
+    view: View
+    updated: Updated {date}
+    deleteConfirm: 'Are you sure you want to delete note "{title}"? This action cannot be undone.'
+
+  noteToolbar:
+    createNote: Create untitled note
+    clearFilters: Clear all filters
+    starOnly: Show favorites only
+    sortByDate: Toggle sort (by update time)
+    keyword: Keyword
+    deleteNotebook: Delete notebook
+    deleteNotebookConfirm: Are you sure you want to delete this notebook? This action cannot be undone.
+
+  tagForm:
+    title: Tags
+    noTags: No tags yet
+    addTagPlaceholder: Add tag
+
+  noteSidebar:
+    searchPlaceholder: Search note
+    new: New
+    noNotes: No notes found
+    untitled: (Untitled)
+    signOut: Sign out
+
+  tiptap:
+    defaultPlaceholder: Start writing...
+
+  notebookForm:
+    nameLabel: Name
+    namePlaceholder: Enter notebook name
+    descLabel: Description
+    descPlaceholder: Describe the purpose of this notebook
+    active: Active
+    nameRequired: Notebook name cannot be empty
+    defaultSubmit: Create Notebook

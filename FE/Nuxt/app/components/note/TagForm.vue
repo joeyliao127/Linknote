@@ -1,7 +1,7 @@
 <template>
     <div class="w-64 p-4 space-y-3">
         <!-- Title -->
-        <h3 class="text-sm font-semibold text-white">Tags</h3>
+        <h3 class="text-sm font-semibold text-white">{{ $t('components.tagForm.title') }}</h3>
 
         <!-- Tag List -->
         <div class="space-y-1 max-h-48 overflow-y-auto">
@@ -30,7 +30,7 @@
             </template>
 
             <p v-if="tags.length === 0" class="text-xs text-slate-500 italic py-2">
-                尚無標籤
+                {{ $t('components.tagForm.noTags') }}
             </p>
         </div>
 
@@ -41,7 +41,7 @@
         <div class="flex gap-2">
             <UInput
                 v-model="newTagName"
-                placeholder="新增標籤"
+                :placeholder="$t('components.tagForm.addTagPlaceholder')"
                 size="sm"
                 @keyup.enter="handleCreateTag" />
             <UButton

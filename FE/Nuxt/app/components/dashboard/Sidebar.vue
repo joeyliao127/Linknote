@@ -8,7 +8,7 @@
                 </div>
                 <div>
                     <p class="text-base font-semibold">Linknote</p>
-                    <p class="text-xs text-slate-400">知識網絡</p>
+                    <p class="text-xs text-slate-400">{{ $t('nav.knowledgeNetwork') }}</p>
                 </div>
             </div>
             <UButton
@@ -16,7 +16,7 @@
                 color="accent"
                 variant="soft"
                 size="sm"
-                aria-label="新增筆記本"
+                :aria-label="$t('nav.newNotebook')"
                 @click="emit('create')" />
         </div>
 
@@ -29,7 +29,7 @@
                         variant="ghost"
                         icon="i-lucide-activity"
                         class="justify-start">
-                        概覽
+                        {{ $t('nav.overview') }}
                     </UButton>
                 </NuxtLink>
                 <NuxtLink to="/rag">
@@ -38,7 +38,7 @@
                         variant="ghost"
                         icon="i-lucide-brain"
                         class="justify-start">
-                        AI 個人知識庫
+                        {{ $t('nav.aiKnowledgeBase') }}
                     </UButton>
                 </NuxtLink>
             </nav>
@@ -55,7 +55,7 @@
                     ">
                     <div class="flex items-center gap-2">
                         <UIcon name="i-lucide-notebook-pen" class="w-4 h-4" />
-                        <span class="font-semibold">我的筆記本</span>
+                        <span class="font-semibold">{{ $t('nav.myNotebooks') }}</span>
                     </div>
                     <UIcon
                         :name="
@@ -114,10 +114,10 @@
                                 <UIcon
                                     name="i-lucide-chevron-down"
                                     class="w-4 h-4" />
-                                載入更多
+                                {{ $t('nav.loadMore') }}
                             </button>
                             <span v-else class="text-slate-600">
-                                沒有更多筆記本
+                                {{ $t('nav.noMoreNotebooks') }}
                             </span>
                         </div>
                     </div>
@@ -135,7 +135,7 @@
                     ">
                     <div class="flex items-center gap-2">
                         <UIcon name="i-lucide-users" class="w-4 h-4" />
-                        <span class="font-semibold">共編筆記本</span>
+                        <span class="font-semibold">{{ $t('nav.collabNotebooks') }}</span>
                     </div>
                     <UIcon
                         :name="
@@ -194,10 +194,10 @@
                                 <UIcon
                                     name="i-lucide-chevron-down"
                                     class="w-4 h-4" />
-                                載入更多
+                                {{ $t('nav.loadMore') }}
                             </button>
                             <span v-else class="text-slate-600">
-                                沒有更多筆記本
+                                {{ $t('nav.noMoreNotebooks') }}
                             </span>
                         </div>
                     </div>
@@ -208,14 +208,14 @@
         <div class="mt-auto p-4 space-y-2 border-t border-slate-800">
             <SettingsModal
                 v-model="settingsOpen"
-                :sections="props.settingsSections"
+                :sections="resolvedSections"
                 :active="activeSettings"
                 @change="handleSettingsChange"
                 @close="settingsOpen = false">
                 <template #content="{ section }">
                     <slot name="settings-content" :section="section">
                         <p class="text-sm text-slate-400">
-                            此處預留設定表單內容（由外部頁面注入或後續補充）。
+                            {{ $t('nav.settingsPlaceholder') }}
                         </p>
                     </slot>
                 </template>
@@ -231,7 +231,7 @@
                 icon="i-lucide-log-out"
                 class="justify-start"
                 @click="emit('logout')">
-                登出
+                {{ $t('common.signOut') }}
             </UButton>
         </div>
     </div>
@@ -247,6 +247,8 @@ import {
     watchEffect,
 } from "vue";
 import SettingsModal from "./SettingsModal.vue";
+
+const { t } = useI18n();
 
 export interface NotebookNavItem {
     id: string;
@@ -277,11 +279,7 @@ const props = withDefaults(
         coHasMore: false,
         currentId: undefined,
         currentCoId: undefined,
-        settingsSections: () => [
-            { label: "個人資料", value: "profile" },
-            { label: "帳號安全", value: "security" },
-            { label: "通知", value: "notification" },
-        ],
+        settingsSections: () => [],
     },
 );
 
@@ -301,10 +299,20 @@ const dashboardNav = inject<{
     goCoNotebooks?: () => void;
 } | null>("dashboard-nav", null);
 
+const resolvedSections = computed(() =>
+    props.settingsSections.length > 0
+        ? props.settingsSections
+        : [
+              { label: t('nav.profile'), value: "profile" },
+              { label: t('nav.security'), value: "security" },
+              { label: t('nav.notification'), value: "notification" },
+          ],
+);
+
 const isMyOpen = ref(false);
 const isCoOpen = ref(false);
 const settingsOpen = ref(false);
-const activeSettings = ref(props.settingsSections[0]?.value ?? "profile");
+const activeSettings = ref("profile");
 
 function handleSettingsChange(value: string) {
     activeSettings.value = value;

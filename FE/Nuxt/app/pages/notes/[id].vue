@@ -40,12 +40,12 @@
                     <span
                         v-if="saveStatus === 'saving'"
                         class="text-xs text-slate-500 shrink-0">
-                        Saving...
+                        {{ $t('common.saving') }}
                     </span>
                     <span
                         v-else-if="saveStatus === 'saved'"
                         class="text-xs text-emerald-500 shrink-0">
-                        Saved ✓
+                        {{ $t('common.saved') }}
                     </span>
                 </div>
 
@@ -53,7 +53,7 @@
                 <div class="flex items-center gap-x-0.5 shrink-0">
                     <!-- Tag popover -->
                     <UPopover v-if="currentNote">
-                        <UTooltip text="Add tags">
+                        <UTooltip :text="$t('pages.notes.addTags')">
                             <UButton
                                 variant="ghost"
                                 icon="i-lucide-tag"
@@ -74,8 +74,8 @@
                     <UTooltip
                         :text="
                             editorMode === 'single'
-                                ? 'Dual editor'
-                                : 'Single editor'
+                                ? $t('pages.notes.dualEditor')
+                                : $t('pages.notes.singleEditor')
                         ">
                         <UButton
                             variant="ghost"
@@ -97,7 +97,7 @@
                     </UTooltip>
 
                     <!-- TOC toggle -->
-                    <UTooltip text="Table of contents">
+                    <UTooltip :text="$t('pages.notes.tableOfContents')">
                         <UButton
                             variant="ghost"
                             icon="i-lucide-list"
@@ -111,7 +111,7 @@
                     </UTooltip>
 
                     <!-- Delete note -->
-                    <UTooltip text="Delete note">
+                    <UTooltip :text="$t('pages.notes.deleteNote')">
                         <UButton
                             variant="ghost"
                             icon="i-lucide-trash-2"
@@ -150,9 +150,9 @@
                                         : 'i-lucide-chevron-right'
                                 "
                                 class="w-3.5 h-3.5 shrink-0" />
-                            <span class="font-medium">Question</span>
+                            <span class="font-medium">{{ $t('pages.notes.question') }}</span>
                             <span class="text-slate-600 text-xs">
-                                Why are we writing this note?
+                                {{ $t('pages.notes.questionHint') }}
                             </span>
                         </button>
                         <Transition name="question-expand">
@@ -161,7 +161,7 @@
                                 class="border-t border-slate-700/50 h-40">
                                 <TiptapEditor
                                     v-model="currentNote.question"
-                                    placeholder="Why are we writing this note..."
+                                    :placeholder="$t('pages.notes.questionPlaceholder')"
                                     @update:model-value="scheduleSave" />
                             </div>
                         </Transition>
@@ -175,11 +175,11 @@
                             class="flex-1 min-w-0 overflow-hidden flex flex-col">
                             <div
                                 class="px-4 py-1.5 text-xs font-medium text-slate-400 border-b border-slate-700/50 bg-black/50 backdrop-blur-sm shrink-0">
-                                Content / Capture
+                                {{ $t('pages.notes.contentCapture') }}
                             </div>
                             <TiptapEditor
                                 v-model="currentNote.content"
-                                placeholder="Start writing..."
+                                :placeholder="$t('pages.notes.contentPlaceholder')"
                                 @update:model-value="scheduleSave"
                                 @headings="contentHeadings = $event" />
                         </div>
@@ -191,11 +191,11 @@
                                 class="w-1/2 shrink-0 border-l border-slate-700/50 flex flex-col overflow-hidden">
                                 <div
                                     class="px-4 py-1.5 text-xs font-medium text-slate-400 border-b border-slate-700/50 bg-black/50 backdrop-blur-sm shrink-0">
-                                    Distill / Keypoints
+                                    {{ $t('pages.notes.distillKeypoints') }}
                                 </div>
                                 <TiptapEditor
                                     v-model="currentNote.keypoint"
-                                    placeholder="Key takeaways... (Distill)"
+                                    :placeholder="$t('pages.notes.distillPlaceholder')"
                                     @update:model-value="scheduleSave" />
                             </div>
                         </Transition>
@@ -235,6 +235,7 @@ import { useTag } from "~/composables/model/useTag";
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialogs();
+const { t } = useI18n();
 
 const { getNote, updateNote, deleteNote, addTags } = useNote();
 const { getNotebook } = useNotebook();
@@ -279,12 +280,12 @@ function scheduleSave() {
 // ── Delete ────────────────────────────────────────────────────────────
 function handleDelete() {
     dialog.confirm(
-        "確定要刪除這篇筆記嗎？此操作無法復原。",
-        "刪除筆記",
+        t('pages.notes.deleteConfirm'),
+        t('pages.notes.deleteTitle'),
         async () => {
             if (!currentNote.value) return;
             await deleteNote(currentNote.value.id);
-            dialog.inform("筆記已成功刪除");
+            dialog.inform(t('pages.notes.deleteSuccess'));
             router.push("/notebooks");
         },
     );

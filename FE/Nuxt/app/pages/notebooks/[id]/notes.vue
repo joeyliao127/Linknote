@@ -36,33 +36,33 @@
             </p>
             <p v-else class="flex items-center gap-1 text-sm text-slate-200/55">
                 <UIcon name="i-lucide-plus" class="w-4 h-4" />
-                點擊新增描述
+                {{ $t('pages.notebookNotes.addDesc') }}
             </p>
         </div>
         <div v-else class="flex gap-3 items-center">
             <UInput
                 v-model="descDraft"
-                placeholder="輸入描述..."
+                :placeholder="$t('pages.notebookNotes.descPlaceholder')"
                 class="flex-1"
                 :ui="{
                     base: 'bg-transparent border border-accent rounded text-slate-50/90 text-sm placeholder:text-slate-200/40 transition-colors',
                 }" />
             <UButton size="sm" color="accent" variant="soft" @click="saveDesc">
-                儲存
+                {{ $t('common.save') }}
             </UButton>
             <UButton
                 size="sm"
                 color="secondary"
                 variant="ghost"
                 @click="cancelEditDesc">
-                取消
+                {{ $t('common.cancel') }}
             </UButton>
         </div>
 
         <!-- Notes Section Label -->
         <div
             class="text-sm font-semibold text-slate-200/75 uppercase tracking-[0.05em]">
-            Notes
+            {{ $t('pages.notebookNotes.notesLabel') }}
         </div>
 
         <!-- Notes List -->
@@ -72,7 +72,7 @@
                 <template v-for="note in notes" :key="note.id">
                     <NoteCard
                         :id="note.id"
-                        :title="note.title || '未命名筆記'"
+                        :title="note.title || $t('pages.notebookNotes.untitledNote')"
                         :description="note.keypoint"
                         :tags="note.tags"
                         :starred="note.star"
@@ -95,9 +95,9 @@
                         class="flex items-center gap-1 hover:text-accent"
                         @click="loadMore">
                         <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
-                        載入更多
+                        {{ $t('pages.notebookNotes.loadMore') }}
                     </button>
-                    <span v-else>沒有更多筆記</span>
+                    <span v-else>{{ $t('pages.notebookNotes.noMore') }}</span>
                 </div>
             </div>
         </div>

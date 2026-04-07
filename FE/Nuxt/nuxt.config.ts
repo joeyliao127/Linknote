@@ -61,9 +61,10 @@ export default defineNuxtConfig({
     },
     i18n: {
         defaultLocale: "zh",
+        langDir: "i18n/locales/",
         locales: [
-            { code: "en", language: "en-US" },
-            { code: "zh", language: "zh-TW" },
+            { code: "en", language: "en-US", file: "en.yaml" },
+            { code: "zh", language: "zh-TW", file: "zh.yaml" },
         ],
         bundle: {
             optimizeTranslationDirective: false,

@@ -1,7 +1,7 @@
 <template>
     <div class="inline-flex items-center gap-2">
         <!-- New Note Button -->
-        <UTooltip text="建立未命名筆記">
+        <UTooltip :text="$t('components.noteToolbar.createNote')">
             <UButton
                 variant="ghost"
                 color="neutral"
@@ -12,7 +12,7 @@
         </UTooltip>
 
         <!-- Reset Filter -->
-        <UTooltip text="清除所有篩選">
+        <UTooltip :text="$t('components.noteToolbar.clearFilters')">
             <UButton
                 variant="ghost"
                 color="neutral"
@@ -46,7 +46,7 @@
         </UPopover>
 
         <!-- Star Filter -->
-        <UTooltip text="僅顯示收藏">
+        <UTooltip :text="$t('components.noteToolbar.starOnly')">
             <UButton
                 variant="ghost"
                 color="neutral"
@@ -60,7 +60,7 @@
         </UTooltip>
 
         <!-- Sort -->
-        <UTooltip text="切換排序（更新時間）">
+        <UTooltip :text="$t('components.noteToolbar.sortByDate')">
             <UButton
                 variant="ghost"
                 color="neutral"
@@ -79,7 +79,7 @@
         <UInput
             v-model="keywordDraft"
             icon="i-lucide-search"
-            placeholder="關鍵字"
+            :placeholder="$t('components.noteToolbar.keyword')"
             size="sm"
             color="neutral"
             variant="outline"
@@ -87,7 +87,7 @@
             @keyup.enter="emitSearch" />
 
         <!-- Delete Notebook -->
-        <UTooltip text="刪除筆記本">
+        <UTooltip :text="$t('components.noteToolbar.deleteNotebook')">
             <UButton
                 variant="ghost"
                 color="neutral"
@@ -104,6 +104,8 @@ import { computed, ref, watch } from "vue";
 import TagForm from "~/components/note/TagForm.vue";
 import type { Tag } from "~~/types/Tag";
 import { useDialogs } from "~/composables/useDialogs";
+
+const { t } = useI18n();
 
 const props = withDefaults(
     defineProps<{
@@ -149,7 +151,7 @@ const { confirm } = useDialogs();
 
 function confirmDeleteNotebook() {
     confirm(
-        "確定要刪除此筆記本？此操作無法復原。",
+        t('components.noteToolbar.deleteNotebookConfirm'),
         undefined,
         () => emit("delete-notebook"),
     );

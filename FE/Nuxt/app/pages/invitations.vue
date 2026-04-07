@@ -2,15 +2,15 @@
     <div class="p-6 space-y-6">
         <!-- Header -->
         <div>
-            <p class="text-sm text-slate-400">協作</p>
-            <h1 class="text-2xl font-semibold text-white">邀請管理</h1>
+            <p class="text-sm text-slate-400">{{ $t('pages.invitations.breadcrumb') }}</p>
+            <h1 class="text-2xl font-semibold text-white">{{ $t('pages.invitations.title') }}</h1>
         </div>
 
         <!-- 收到的邀請 -->
         <UCard class="bg-slate-900/60 border-slate-800">
             <template #header>
                 <div class="flex items-center justify-between">
-                    <p class="font-semibold">收到的邀請</p>
+                    <p class="font-semibold">{{ $t('pages.invitations.received') }}</p>
                     <UButton
                         variant="ghost"
                         icon="i-lucide-refresh-cw"
@@ -49,7 +49,7 @@
                             class="text-white"
                             :loading="actionId === row.original.id"
                             @click="handleUpdate(row.original.id, 'accept')">
-                            接受
+                            {{ $t('common.accept') }}
                         </UButton>
                         <UButton
                             size="xs"
@@ -58,7 +58,7 @@
                             class="border border-white/20"
                             :loading="actionId === row.original.id"
                             @click="handleUpdate(row.original.id, 'reject')">
-                            拒絕
+                            {{ $t('common.reject') }}
                         </UButton>
                     </div>
                 </template>
@@ -69,7 +69,7 @@
         <UCard class="bg-slate-900/60 border-slate-800">
             <template #header>
                 <div class="flex items-center justify-between">
-                    <p class="font-semibold">寄出的邀請</p>
+                    <p class="font-semibold">{{ $t('pages.invitations.sent') }}</p>
                     <div class="flex items-center gap-3">
                         <UButton
                             variant="ghost"
@@ -82,7 +82,7 @@
                             class="text-white"
                             icon="i-lucide-send"
                             @click="openCreate = true">
-                            發送邀請
+                            {{ $t('pages.invitations.sendInvitation') }}
                         </UButton>
                     </div>
                 </div>
@@ -122,34 +122,34 @@
         <!-- 發送邀請 Modal -->
         <UModal v-model:open="openCreate" :ui="{ content: 'bg-[#363636]/80 backdrop-blur-sm border border-white/10 rounded-xl', overlay: 'bg-black/50' }">
             <template #header>
-                <p class="font-semibold">發送筆記本邀請</p>
+                <p class="font-semibold">{{ $t('pages.invitations.sendModal') }}</p>
             </template>
             <template #body>
                 <div class="space-y-4 p-1">
-                    <UFormField label="受邀者 Email">
+                    <UFormField :label="$t('pages.invitations.inviteeEmail')">
                         <UInput v-model="form.inviteeEmail" placeholder="user@example.com" />
                     </UFormField>
-                    <UFormField label="筆記本">
+                    <UFormField :label="$t('pages.invitations.notebook')">
                         <USelect
                             v-model="form.notebookId"
                             :items="notebookOptions"
-                            placeholder="選擇筆記本" />
+                            :placeholder="$t('pages.invitations.notebookPlaceholder')" />
                     </UFormField>
-                    <UFormField label="訊息（選填）">
-                        <UTextarea v-model="form.message" placeholder="附帶訊息..." :rows="3" />
+                    <UFormField :label="$t('pages.invitations.message')">
+                        <UTextarea v-model="form.message" :placeholder="$t('pages.invitations.messagePlaceholder')" :rows="3" />
                     </UFormField>
                 </div>
             </template>
             <template #footer>
                 <div class="flex justify-end gap-2">
-                    <UButton variant="ghost" color="neutral" @click="openCreate = false">取消</UButton>
+                    <UButton variant="ghost" color="neutral" @click="openCreate = false">{{ $t('common.cancel') }}</UButton>
                     <UButton
                         color="primary"
                         class="text-white"
                         :loading="creating"
                         :disabled="!form.inviteeEmail || !form.notebookId"
                         @click="handleCreate">
-                        發送
+                        {{ $t('common.send') }}
                     </UButton>
                 </div>
             </template>
@@ -166,6 +166,7 @@ import { useToast } from "#imports";
 
 definePageMeta({ layout: "dashboard" });
 
+const { t } = useI18n();
 const toast = useToast();
 const { indexReceived, indexSent, createInvitation, updateInvitation, deleteInvitation } = useInvitation();
 const { indexNotebook } = useNotebook();
@@ -187,21 +188,21 @@ const notebookOptions = computed(() =>
     notebooks.value.map((nb) => ({ label: nb.title, value: nb.id })),
 );
 
-const receivedColumns = [
-    { accessorKey: "notebookTitle", header: "筆記本" },
-    { accessorKey: "inviterName", header: "邀請人" },
-    { accessorKey: "message", header: "訊息" },
-    { accessorKey: "status", header: "狀態" },
+const receivedColumns = computed(() => [
+    { accessorKey: "notebookTitle", header: t('pages.invitations.colNotebook') },
+    { accessorKey: "inviterName", header: t('pages.invitations.colInviter') },
+    { accessorKey: "message", header: t('pages.invitations.colMessage') },
+    { accessorKey: "status", header: t('pages.invitations.colStatus') },
     { id: "action", header: "" },
-];
+]);
 
-const sentColumns = [
-    { accessorKey: "notebookTitle", header: "筆記本" },
-    { accessorKey: "inviteeEmail", header: "受邀者" },
-    { accessorKey: "message", header: "訊息" },
-    { accessorKey: "status", header: "狀態" },
+const sentColumns = computed(() => [
+    { accessorKey: "notebookTitle", header: t('pages.invitations.colNotebook') },
+    { accessorKey: "inviteeEmail", header: t('pages.invitations.colInvitee') },
+    { accessorKey: "message", header: t('pages.invitations.colMessage') },
+    { accessorKey: "status", header: t('pages.invitations.colStatus') },
     { id: "action", header: "" },
-];
+]);
 
 async function loadReceived() {
     receivedLoading.value = true;
@@ -227,11 +228,11 @@ async function handleUpdate(id: string, action: "accept" | "reject") {
     actionId.value = id;
     try {
         await updateInvitation({ invitationId: id, status: action });
-        toast.add({ title: action === "accept" ? "已接受邀請" : "已拒絕邀請", color: "success" });
+        toast.add({ title: action === "accept" ? t('pages.invitations.toastAccepted') : t('pages.invitations.toastRejected'), color: "success" });
         await loadReceived();
         if (action === "accept") await fetchCoNotebooks(true);
     } catch {
-        toast.add({ title: "操作失敗，請稍後再試", color: "error" });
+        toast.add({ title: t('pages.invitations.toastActionFailed'), color: "error" });
     } finally {
         actionId.value = null;
     }
@@ -241,10 +242,10 @@ async function handleDelete(id: string) {
     deletingId.value = id;
     try {
         await deleteInvitation(id);
-        toast.add({ title: "邀請已刪除", color: "success" });
+        toast.add({ title: t('pages.invitations.toastDeleted'), color: "success" });
         await loadSent();
     } catch {
-        toast.add({ title: "刪除失敗，請稍後再試", color: "error" });
+        toast.add({ title: t('pages.invitations.toastDeleteFailed'), color: "error" });
     } finally {
         deletingId.value = null;
     }
@@ -258,12 +259,12 @@ async function handleCreate() {
             notebookId: form.value.notebookId,
             message: form.value.message || undefined,
         });
-        toast.add({ title: "邀請已發送", color: "success" });
+        toast.add({ title: t('pages.invitations.toastSent'), color: "success" });
         openCreate.value = false;
         form.value = { inviteeEmail: "", notebookId: "", message: "" };
         await loadSent();
     } catch {
-        toast.add({ title: "發送失敗，請確認 Email 是否存在", color: "error" });
+        toast.add({ title: t('pages.invitations.toastSendFailed'), color: "error" });
     } finally {
         creating.value = false;
     }
@@ -277,10 +278,10 @@ function statusColor(status: string) {
 
 function statusLabel(status: string) {
     const map: Record<string, string> = {
-        pending: "待接受",
-        accepted: "已接受",
-        rejected: "已拒絕",
-        resend: "重新邀請",
+        pending: t('pages.invitations.statusPending'),
+        accepted: t('pages.invitations.statusAccepted'),
+        rejected: t('pages.invitations.statusRejected'),
+        resend: t('pages.invitations.statusResend'),
     };
     return map[status] ?? status;
 }

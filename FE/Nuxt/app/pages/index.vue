@@ -3,13 +3,13 @@
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm text-slate-400">概覽</p>
+                <p class="text-sm text-slate-400">{{ $t('pages.index.breadcrumb') }}</p>
                 <h1 class="text-2xl font-semibold text-white">
-                    早安，歡迎回來
+                    {{ $t('pages.index.greeting') }}
                 </h1>
             </div>
             <UButton icon="i-lucide-plus" color="accent" variant="soft">
-                新增筆記
+                {{ $t('pages.index.addNote') }}
             </UButton>
         </div>
 
@@ -39,11 +39,11 @@
         <UCard class="bg-slate-900/60 border-slate-800">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <p class="text-lg font-semibold">最近開啟的筆記</p>
-                    <p class="text-sm text-slate-400">點擊可快速前往筆記內容</p>
+                    <p class="text-lg font-semibold">{{ $t('pages.index.recentNotes') }}</p>
+                    <p class="text-sm text-slate-400">{{ $t('pages.index.recentNotesDesc') }}</p>
                 </div>
                 <UButton variant="ghost" icon="i-lucide-arrow-right">
-                    查看全部
+                    {{ $t('pages.index.viewAll') }}
                 </UButton>
             </div>
             <div class="grid gap-3 md:grid-cols-3">
@@ -71,6 +71,7 @@ import type { Note } from "~~/types/Note";
 definePageMeta({ layout: "dashboard" });
 
 const router = useRouter();
+const { t } = useI18n();
 const { indexNotebook } = useNotebook();
 const { listNotes } = useNote();
 
@@ -80,13 +81,9 @@ const collabCount = ref(0);
 const recentNotes = ref<Note[]>([]);
 
 const overview = computed(() => [
-    {
-        label: "筆記本",
-        value: notebookCount.value,
-        icon: "i-lucide-notebook-pen",
-    },
-    { label: "筆記", value: noteCount.value, icon: "i-lucide-sticky-note" },
-    { label: "共編", value: collabCount.value, icon: "i-lucide-users" },
+    { label: t('pages.index.statNotebook'), value: notebookCount.value, icon: "i-lucide-notebook-pen" },
+    { label: t('pages.index.statNote'), value: noteCount.value, icon: "i-lucide-sticky-note" },
+    { label: t('pages.index.statCollab'), value: collabCount.value, icon: "i-lucide-users" },
 ]);
 
 onMounted(async () => {

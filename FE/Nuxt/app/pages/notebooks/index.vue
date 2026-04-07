@@ -4,17 +4,17 @@
         <div
             class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div class="shrink-0">
-                <p class="text-sm text-slate-200/50">筆記本</p>
+                <p class="text-sm text-slate-200/50">{{ $t('pages.notebooks.breadcrumb') }}</p>
                 <h1
                     class="text-3xl font-semibold text-slate-50/95 leading-tight">
-                    所有筆記本
+                    {{ $t('pages.notebooks.title') }}
                 </h1>
             </div>
             <div class="flex gap-3 items-center">
                 <UInput
                     v-model="keyword"
                     icon="i-lucide-search"
-                    placeholder="搜尋筆記本"
+                    :placeholder="$t('pages.notebooks.searchPlaceholder')"
                     class="min-w-[240px]"
                     @keyup.enter="handleSearch" />
                 <UButton
@@ -22,7 +22,7 @@
                     color="primary"
                     class="text-white w-full"
                     @click="goCreate">
-                    新增筆記本
+                    {{ $t('pages.notebooks.addNotebook') }}
                 </UButton>
             </div>
         </div>
@@ -56,9 +56,9 @@
                         class="flex items-center gap-1 hover:text-accent"
                         @click="loadMore">
                         <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
-                        載入更多
+                        {{ $t('pages.notebooks.loadMore') }}
                     </button>
-                    <span v-else>沒有更多筆記本</span>
+                    <span v-else>{{ $t('pages.notebooks.noMore') }}</span>
                 </div>
             </div>
         </div>

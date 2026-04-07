@@ -2,8 +2,8 @@
     <div class="flex flex-col h-full gap-6 p-6">
         <!-- Header -->
         <div>
-            <p class="text-sm text-slate-200/50">協作</p>
-            <h1 class="text-3xl font-semibold text-slate-50/95 leading-tight">共編筆記本</h1>
+            <p class="text-sm text-slate-200/50">{{ $t('pages.coNotebooks.breadcrumb') }}</p>
+            <h1 class="text-3xl font-semibold text-slate-50/95 leading-tight">{{ $t('pages.coNotebooks.title') }}</h1>
         </div>
 
         <!-- Content -->
@@ -28,8 +28,8 @@
 
             <div v-else class="flex flex-col items-center justify-center py-20 gap-3 text-slate-500">
                 <UIcon name="i-lucide-book-open" class="w-10 h-10" />
-                <p class="text-sm">尚無共編筆記本</p>
-                <p class="text-xs">接受邀請後，筆記本將會顯示在這裡</p>
+                <p class="text-sm">{{ $t('pages.coNotebooks.empty') }}</p>
+                <p class="text-xs">{{ $t('pages.coNotebooks.emptyHint') }}</p>
             </div>
         </div>
     </div>

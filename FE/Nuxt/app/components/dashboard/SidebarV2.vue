@@ -14,7 +14,7 @@
                 </div>
                 <p
                     class="text-base text-center font-semibold text-white leading-tight">
-                    Welcome to Linknote !
+                    {{ $t('nav.welcomeTo') }} Linknote !
                 </p>
             </div>
         </div>
@@ -27,7 +27,7 @@
                 icon="i-lucide-plus"
                 class="text-white text-lg font-semibold h-12"
                 @click="onCreate">
-                New Notebook
+                {{ $t('nav.newNotebook') }}
             </UButton>
         </div>
 
@@ -42,7 +42,7 @@
                     <UIcon
                         name="i-lucide-notebook-pen"
                         class="w-4 h-4 shrink-0 text-slate-200/60" />
-                    <span class="flex-1 font-medium">My Notebooks</span>
+                    <span class="flex-1 font-medium">{{ $t('nav.myNotebooks') }}</span>
                     <UIcon
                         :name="
                             isMyOpen
@@ -75,7 +75,7 @@
                         <p
                             v-else
                             class="py-[0.45rem] pl-11 pr-5 text-[0.78rem] text-slate-200/35 italic">
-                            尚無筆記本
+                            {{ $t('nav.noNotebooks') }}
                         </p>
                     </div>
                 </transition>
@@ -90,7 +90,7 @@
                         name="i-lucide-users"
                         class="w-4 h-4 shrink-0 text-slate-200/60" />
                     <span class="flex-1 font-medium">
-                        Collaborative Notebooks
+                        {{ $t('nav.collabNotebooks') }}
                     </span>
                     <UIcon
                         :name="
@@ -120,7 +120,7 @@
                         <p
                             v-else
                             class="py-[0.45rem] pl-11 pr-5 text-[0.78rem] text-slate-200/35 italic">
-                            尚無筆記本
+                            {{ $t('nav.noNotebooks') }}
                         </p>
                     </div>
                 </transition>
@@ -133,7 +133,7 @@
                 <UIcon
                     name="i-lucide-mail"
                     class="w-4 h-4 shrink-0 text-slate-200/60" />
-                <span class="flex-1 font-medium">Invitations Management</span>
+                <span class="flex-1 font-medium">{{ $t('nav.invitationsManagement') }}</span>
             </NuxtLink>
 
             <!-- RAG 知識庫 -->
@@ -143,21 +143,21 @@
                 <UIcon
                     name="i-lucide-brain"
                     class="w-4 h-4 shrink-0 text-slate-200/60" />
-                <span class="flex-1 font-medium">RAG 知識庫</span>
+                <span class="flex-1 font-medium">{{ $t('nav.ragKnowledgeBase') }}</span>
             </NuxtLink>
 
             <!-- Setting -->
             <div class="sb-settings-wrap">
                 <SettingsModal
                     v-model="settingsOpen"
-                    :sections="settingsSections"
+                    :sections="resolvedSections"
                     :active="activeSettings"
                     @change="activeSettings = $event"
                     @close="settingsOpen = false">
                     <template #content="{ section }">
                         <slot name="settings-content" :section="section">
                             <p class="text-sm text-slate-400">
-                                此處預留設定表單內容。
+                                {{ $t('nav.settingsPlaceholder') }}
                             </p>
                         </slot>
                     </template>
@@ -183,7 +183,7 @@
                 icon="i-lucide-log-out"
                 class="text-white font-semibold"
                 @click="onLogout">
-                SignOut
+                {{ $t('common.signOut') }}
             </UButton>
         </div>
     </div>
@@ -195,6 +195,8 @@ import { useAuth, navigateTo, useRoute, useFetch } from "#imports";
 import { useNotebookNav } from "~/composables/useNotebookNav";
 import SettingsModal from "./SettingsModal.vue";
 
+const { t } = useI18n();
+
 const props = withDefaults(
     defineProps<{
         settingsSections?: {
@@ -205,12 +207,18 @@ const props = withDefaults(
         }[];
     }>(),
     {
-        settingsSections: () => [
-            { label: "個人資料", value: "profile", icon: "i-lucide-user" },
-            { label: "帳號安全", value: "security", icon: "i-lucide-shield" },
-            { label: "通知", value: "notification", icon: "i-lucide-bell" },
-        ],
+        settingsSections: () => [],
     },
+);
+
+const resolvedSections = computed(() =>
+    props.settingsSections.length > 0
+        ? props.settingsSections
+        : [
+              { label: t('nav.profile'), value: "profile", icon: "i-lucide-user" },
+              { label: t('nav.security'), value: "security", icon: "i-lucide-shield" },
+              { label: t('nav.notification'), value: "notification", icon: "i-lucide-bell" },
+          ],
 );
 
 const emit = defineEmits<{
@@ -266,7 +274,7 @@ async function onLogout() {
 
 // ── Settings ──────────────────────────────────────────
 const settingsOpen = ref(false);
-const activeSettings = ref(props.settingsSections[0]?.value ?? "profile");
+const activeSettings = ref("profile");
 
 // ── Init：使用 useState cache，initialized 時不重複 fetch ─
 onMounted(() => {

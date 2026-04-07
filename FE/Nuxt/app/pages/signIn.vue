@@ -6,13 +6,13 @@
         <div class="auth-layout">
             <!-- Left: Branding -->
             <div class="auth-left">
-                <h1 class="auth-tagline">Collaborate with partners</h1>
+                <h1 class="auth-tagline">{{ $t('pages.signIn.tagline') }}</h1>
                 <div class="auth-sub">
-                    <p class="sub-line sub-left">Build your second brain</p>
+                    <p class="sub-line sub-left">{{ $t('pages.signIn.buildBrain') }}</p>
                     <p class="sub-line sub-right">
-                        with
+                        {{ $t('pages.signIn.withCode') }}
                         <span class="code-word">CODE</span>
-                        Method.
+                        {{ $t('pages.signIn.method') }}
                     </p>
                 </div>
                 <ul class="code-list">
@@ -40,7 +40,7 @@
                 <div class="glass-card">
                     <!-- Sign In Form -->
                     <template v-if="mode === 'signIn'">
-                        <h2 class="form-title">SignIn</h2>
+                        <h2 class="form-title">{{ $t('pages.signIn.signInTitle') }}</h2>
 
                         <UForm
                             :state="signInState"
@@ -51,7 +51,7 @@
                                 <UInput
                                     v-model="signInState.email"
                                     type="email"
-                                    placeholder="Email"
+                                    :placeholder="$t('pages.signIn.email')"
                                     trailing-icon="i-lucide-mail"
                                     class="form-input w-full" />
                             </UFormField>
@@ -60,7 +60,7 @@
                                 <UInput
                                     v-model="signInState.password"
                                     type="password"
-                                    placeholder="Password"
+                                    :placeholder="$t('pages.signIn.password')"
                                     trailing-icon="i-lucide-lock"
                                     class="form-input w-full" />
                             </UFormField>
@@ -73,23 +73,23 @@
                                 type="submit"
                                 :loading="isLoading"
                                 class="form-submit text-sencondary w-full">
-                                SignIn
+                                {{ $t('pages.signIn.signInBtn') }}
                             </UButton>
                         </UForm>
 
                         <p class="form-switch">
-                            Don't have an account? Click
+                            {{ $t('pages.signIn.noAccount') }}
                             <button
                                 class="switch-link"
                                 @click="switchMode('signUp')">
-                                Register
+                                {{ $t('pages.signIn.register') }}
                             </button>
                         </p>
                     </template>
 
                     <!-- Sign Up Form -->
                     <template v-else>
-                        <h2 class="form-title">SignUp</h2>
+                        <h2 class="form-title">{{ $t('pages.signIn.signUpTitle') }}</h2>
 
                         <UForm
                             :state="signUpState"
@@ -99,7 +99,7 @@
                             <UFormField name="username">
                                 <UInput
                                     v-model="signUpState.username"
-                                    placeholder="username"
+                                    :placeholder="$t('pages.signIn.username')"
                                     trailing-icon="i-lucide-user"
                                     class="form-input w-full" />
                             </UFormField>
@@ -108,7 +108,7 @@
                                 <UInput
                                     v-model="signUpState.email"
                                     type="email"
-                                    placeholder="Email"
+                                    :placeholder="$t('pages.signIn.email')"
                                     trailing-icon="i-lucide-mail"
                                     class="form-input w-full" />
                             </UFormField>
@@ -117,7 +117,7 @@
                                 <UInput
                                     v-model="signUpState.password"
                                     type="password"
-                                    placeholder="Password"
+                                    :placeholder="$t('pages.signIn.password')"
                                     trailing-icon="i-lucide-lock"
                                     class="form-input w-full" />
                             </UFormField>
@@ -126,7 +126,7 @@
                                 <UInput
                                     v-model="signUpState.passwordConfirm"
                                     type="password"
-                                    placeholder="Confirm Your Password"
+                                    :placeholder="$t('pages.signIn.confirmPassword')"
                                     trailing-icon="i-lucide-lock"
                                     class="form-input w-full" />
                             </UFormField>
@@ -139,16 +139,16 @@
                                 type="submit"
                                 :loading="isLoading"
                                 class="form-submit text-sencondary w-full">
-                                SignUp
+                                {{ $t('pages.signIn.signUpBtn') }}
                             </UButton>
                         </UForm>
 
                         <p class="form-switch">
-                            Back to
+                            {{ $t('pages.signIn.backTo') }}
                             <button
                                 class="switch-link"
                                 @click="switchMode('signIn')">
-                                Signin
+                                {{ $t('pages.signIn.signinLink') }}
                             </button>
                         </p>
                     </template>
@@ -160,12 +160,13 @@
 
 <script setup lang="ts">
 import * as z from "zod";
-import { ref, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { navigateTo, useAuth } from "#imports";
 import { ValidationMessages } from "#imports";
 
 definePageMeta({ layout: "default", auth: false });
 
+const { t } = useI18n();
 const { signIn, status } = useAuth();
 
 const mode = ref<"signIn" | "signUp">("signIn");
@@ -214,22 +215,24 @@ const signUpState = ref({
     passwordConfirm: "",
 });
 
-const signUpSchema = z
-    .object({
-        email: z.email(ValidationMessages.email.invalid),
-        username: z.string().nonempty(ValidationMessages.username.required),
-        password: z
-            .string()
-            .nonempty(ValidationMessages.password.required)
-            .min(8, ValidationMessages.password.minLength),
-        passwordConfirm: z
-            .string()
-            .nonempty(ValidationMessages.password.required),
-    })
-    .refine((d) => d.password === d.passwordConfirm, {
-        message: "密碼與確認密碼不符",
-        path: ["passwordConfirm"],
-    });
+const signUpSchema = computed(() =>
+    z
+        .object({
+            email: z.email(ValidationMessages.email.invalid),
+            username: z.string().nonempty(ValidationMessages.username.required),
+            password: z
+                .string()
+                .nonempty(ValidationMessages.password.required)
+                .min(8, ValidationMessages.password.minLength),
+            passwordConfirm: z
+                .string()
+                .nonempty(ValidationMessages.password.required),
+        })
+        .refine((d) => d.password === d.passwordConfirm, {
+            message: t('pages.signIn.passwordMismatch'),
+            path: ["passwordConfirm"],
+        }),
+);
 
 async function onSignUp() {
     isLoading.value = true;
@@ -253,7 +256,7 @@ async function onSignUp() {
         await onSignIn();
     } catch (error: any) {
         authError.value =
-            error?.data?.message || error?.message || "註冊失敗，請稍後再試";
+            error?.data?.message || error?.message || t('pages.signIn.signUpFailed');
     } finally {
         isLoading.value = false;
     }

@@ -3,9 +3,9 @@
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="flex flex-col gap-1">
-                <p class="text-sm text-slate-200/50">筆記本</p>
+                <p class="text-sm text-slate-200/50">{{ $t('pages.notebookCreate.breadcrumb') }}</p>
                 <h1 class="text-3xl font-semibold text-white leading-tight">
-                    建立新的筆記本
+                    {{ $t('pages.notebookCreate.title') }}
                 </h1>
             </div>
             <UButton
@@ -14,7 +14,7 @@
                 icon="i-lucide-arrow-left"
                 class="border border-white/20 text-white hover:border-white/40 hover:bg-white/5"
                 @click="goBack">
-                返回
+                {{ $t('common.back') }}
             </UButton>
         </div>
 
@@ -33,13 +33,13 @@
                                 name="i-lucide-notebook-pen"
                                 class="w-5 h-5 text-primary-light" />
                         </div>
-                        <p class="font-semibold text-white">填寫筆記本資訊</p>
+                        <p class="font-semibold text-white">{{ $t('pages.notebookCreate.cardTitle') }}</p>
                     </div>
 
                     <!-- Form -->
                     <NotebookForm
                         :submitting="submitting"
-                        submit-label="建立"
+                        :submit-label="$t('common.create')"
                         class="flex-1 min-h-0"
                         @submit="handleSubmit" />
                 </div>
@@ -59,6 +59,7 @@ definePageMeta({ layout: "dashboard" });
 
 const router = useRouter();
 const toast = useToast();
+const { t } = useI18n();
 const auth = useAuth();
 const { createNotebook } = useNotebook();
 const { fetchNotebooks } = useNotebookNav();
@@ -79,13 +80,13 @@ async function handleSubmit(value: {
             description: value.description,
             active: value.active,
         });
-        toast.add({ title: "建立成功", color: "accent" });
+        toast.add({ title: t('pages.notebookCreate.createSuccess'), color: "accent" });
         fetchNotebooks(true);
         router.push("/notebooks");
     } catch (error: any) {
         toast.add({
-            title: "建立失敗",
-            description: error?.data?.message || error?.message || "請稍後再試",
+            title: t('pages.notebookCreate.createFailed'),
+            description: error?.data?.message || error?.message || t('common.retryLater'),
             color: "red",
         });
     } finally {
