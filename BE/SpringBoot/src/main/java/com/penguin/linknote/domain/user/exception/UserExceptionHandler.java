@@ -16,6 +16,12 @@ public class UserExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException e) {
+        ApiResponse apiResponse = new ApiResponse(false, e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception e) {
         ApiResponse apiResponse = new ApiResponse(false, e.getMessage());

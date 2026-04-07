@@ -6,13 +6,15 @@
         <div class="auth-layout">
             <!-- Left: Branding -->
             <div class="auth-left">
-                <h1 class="auth-tagline">{{ $t('pages.signIn.tagline') }}</h1>
+                <h1 class="auth-tagline">{{ $t("pages.signIn.tagline") }}</h1>
                 <div class="auth-sub">
-                    <p class="sub-line sub-left">{{ $t('pages.signIn.buildBrain') }}</p>
+                    <p class="sub-line sub-left">
+                        {{ $t("pages.signIn.buildBrain") }}
+                    </p>
                     <p class="sub-line sub-right">
-                        {{ $t('pages.signIn.withCode') }}
+                        {{ $t("pages.signIn.withCode") }}
                         <span class="code-word">CODE</span>
-                        {{ $t('pages.signIn.method') }}
+                        {{ $t("pages.signIn.method") }}
                     </p>
                 </div>
                 <ul class="code-list">
@@ -40,7 +42,9 @@
                 <div class="glass-card">
                     <!-- Sign In Form -->
                     <template v-if="mode === 'signIn'">
-                        <h2 class="form-title">{{ $t('pages.signIn.signInTitle') }}</h2>
+                        <h2 class="form-title">
+                            {{ $t("pages.signIn.signInTitle") }}
+                        </h2>
 
                         <UForm
                             :state="signInState"
@@ -73,23 +77,25 @@
                                 type="submit"
                                 :loading="isLoading"
                                 class="form-submit text-sencondary w-full">
-                                {{ $t('pages.signIn.signInBtn') }}
+                                {{ $t("pages.signIn.signInBtn") }}
                             </UButton>
                         </UForm>
 
                         <p class="form-switch">
-                            {{ $t('pages.signIn.noAccount') }}
+                            {{ $t("pages.signIn.noAccount") }}
                             <button
                                 class="switch-link"
                                 @click="switchMode('signUp')">
-                                {{ $t('pages.signIn.register') }}
+                                {{ $t("pages.signIn.register") }}
                             </button>
                         </p>
                     </template>
 
                     <!-- Sign Up Form -->
                     <template v-else>
-                        <h2 class="form-title">{{ $t('pages.signIn.signUpTitle') }}</h2>
+                        <h2 class="form-title">
+                            {{ $t("pages.signIn.signUpTitle") }}
+                        </h2>
 
                         <UForm
                             :state="signUpState"
@@ -126,7 +132,9 @@
                                 <UInput
                                     v-model="signUpState.passwordConfirm"
                                     type="password"
-                                    :placeholder="$t('pages.signIn.confirmPassword')"
+                                    :placeholder="
+                                        $t('pages.signIn.confirmPassword')
+                                    "
                                     trailing-icon="i-lucide-lock"
                                     class="form-input w-full" />
                             </UFormField>
@@ -139,16 +147,16 @@
                                 type="submit"
                                 :loading="isLoading"
                                 class="form-submit text-sencondary w-full">
-                                {{ $t('pages.signIn.signUpBtn') }}
+                                {{ $t("pages.signIn.signUpBtn") }}
                             </UButton>
                         </UForm>
 
                         <p class="form-switch">
-                            {{ $t('pages.signIn.backTo') }}
+                            {{ $t("pages.signIn.backTo") }}
                             <button
                                 class="switch-link"
                                 @click="switchMode('signIn')">
-                                {{ $t('pages.signIn.signinLink') }}
+                                {{ $t("pages.signIn.signinLink") }}
                             </button>
                         </p>
                     </template>
@@ -174,7 +182,7 @@ const isLoading = ref(false);
 const authError = ref<string | null>(null);
 
 // ── Sign In ──────────────────────────────────────────
-const signInState = ref({ email: "joey@test.com", password: "test123" });
+const signInState = ref({ email: "test@test.com", password: "test1234" });
 
 const signInSchema = z.object({
     email: z.email(ValidationMessages.email.invalid),
@@ -188,23 +196,31 @@ async function onSignIn() {
     isLoading.value = true;
     authError.value = null;
 
-    const result = await signIn(
-        {
-            email: signInState.value.email,
-            password: signInState.value.password,
-            redirect: false,
-        },
-        { callbackUrl: "/notebooks" },
-    );
+    try {
+        const result = await signIn(
+            {
+                email: signInState.value.email,
+                password: signInState.value.password,
+                redirect: false,
+            },
+            { callbackUrl: "/" },
+        );
 
-    if (result?.error) {
-        authError.value = result.error;
+        if (result?.error) {
+            authError.value = result.error;
+            return;
+        }
+
+        await navigateTo("/");
+    } catch (error: any) {
+        authError.value =
+            error?.data?.statusMessage ||
+            error?.statusMessage ||
+            error?.message ||
+            t("common.retryLater");
+    } finally {
         isLoading.value = false;
-        return;
     }
-
-    isLoading.value = false;
-    await navigateTo("/notebooks");
 }
 
 // ── Sign Up ──────────────────────────────────────────
@@ -229,7 +245,7 @@ const signUpSchema = computed(() =>
                 .nonempty(ValidationMessages.password.required),
         })
         .refine((d) => d.password === d.passwordConfirm, {
-            message: t('pages.signIn.passwordMismatch'),
+            message: t("pages.signIn.passwordMismatch"),
             path: ["passwordConfirm"],
         }),
 );
@@ -256,7 +272,9 @@ async function onSignUp() {
         await onSignIn();
     } catch (error: any) {
         authError.value =
-            error?.data?.message || error?.message || t('pages.signIn.signUpFailed');
+            error?.data?.message ||
+            error?.message ||
+            t("pages.signIn.signUpFailed");
     } finally {
         isLoading.value = false;
     }

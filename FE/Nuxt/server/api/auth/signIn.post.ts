@@ -59,17 +59,10 @@ export default defineEventHandler(async (event) => {
 
         return session;
     } catch (error: any) {
-        if (error?.statusCode) {
-            throw error;
-        }
-
-        const statusCode = error?.response?.status || error?.statusCode || 500;
+        const statusCode = error?.response?.status ?? error?.statusCode ?? 500;
         const statusMessage =
-            error?.data?.message || error?.message || "登入失敗，請稍後再試";
+            error?.data?.message ?? error?.statusMessage ?? "登入失敗，請稍後再試";
 
-        throw createError({
-            statusCode,
-            statusMessage,
-        });
+        throw createError({ statusCode, statusMessage });
     }
 });
