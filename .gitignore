@@ -40,7 +40,6 @@ node_modules/
 .pnpm-store/
 .output/
 screenshot/
-pnpm-lock.yaml
 node-compile-cache
 api.d.ts
 
