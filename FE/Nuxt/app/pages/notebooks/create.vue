@@ -80,14 +80,14 @@ async function handleSubmit(value: {
             description: value.description,
             active: value.active,
         });
-        toast.add({ title: t('pages.notebookCreate.createSuccess'), color: "accent" });
+        toast.add({ title: t('pages.notebookCreate.createSuccess'), color: "primary" });
         fetchNotebooks(true);
         router.push("/notebooks");
     } catch (error: any) {
         toast.add({
             title: t('pages.notebookCreate.createFailed'),
             description: error?.data?.message || error?.message || t('common.retryLater'),
-            color: "red",
+            color: "alert",
         });
     } finally {
         submitting.value = false;

@@ -219,6 +219,15 @@ components:
   tiptap:
     defaultPlaceholder: Start writing...
 
+  notebookForm:
+    nameLabel: Name
+    namePlaceholder: Enter notebook name
+    descLabel: Description
+    descPlaceholder: Describe the purpose of this notebook
+    active: Active
+    nameRequired: Notebook name cannot be empty
+    defaultSubmit: Create Notebook
+
 settings:
   profile:
     username: Username
@@ -240,12 +249,3 @@ settings:
     deleteTitle: Delete Account
     deleteWarning: This action cannot be undone. All your data will be permanently deleted.
     deleteConfirmBtn: Confirm Delete
-
-  notebookForm:
-    nameLabel: Name
-    namePlaceholder: Enter notebook name
-    descLabel: Description
-    descPlaceholder: Describe the purpose of this notebook
-    active: Active
-    nameRequired: Notebook name cannot be empty
-    defaultSubmit: Create Notebook
